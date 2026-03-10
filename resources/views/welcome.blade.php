@@ -90,7 +90,7 @@
                         <span class="material-symbols-outlined dark-icon">dark_mode</span>
                     </button>
                     <div class="hidden sm:flex items-center gap-3">
-                        <a class="bg-primary text-background-dark text-sm font-bold px-5 py-2.5 rounded-lg hover:shadow-lg hover:shadow-primary/20 transition-all" href="/login">Se connectez</a>
+                        <a class="bg-primary text-background-dark text-sm font-bold px-5 py-2.5 rounded-lg hover:shadow-lg hover:shadow-primary/20 transition-all" href="/login">Se connecter</a>
                     </div>
                     <input class="hidden" id="mobile-menu-toggle" type="checkbox"/>
                     <label class="lg:hidden w-10 h-10 flex items-center justify-center rounded-lg cursor-pointer hover:bg-slate-100 dark:hover:bg-white/10 text-slate-500 dark:text-slate-400" for="mobile-menu-toggle">
@@ -107,7 +107,7 @@
                         </nav>
                         <hr class="border-slate-100 dark:border-white/5"/>
                         <div class="flex flex-col gap-3">
-                            <a class="w-full text-center py-4 font-bold bg-primary text-background-dark rounded-xl" href="/login">Se connectez</a>
+                            <a class="w-full text-center py-4 font-bold bg-primary text-background-dark rounded-xl" href="/login">Se connecter</a>
                         </div>
                     </div>
                 </div>
