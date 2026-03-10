@@ -9,7 +9,14 @@
     'label' => null,
     'placeholder' => '',
     'required' => false,
+    // allow passing an explicit value and/or use old input
+    'value' => '',
 ])
+
+@php
+    // determine the input's value: old input wins, otherwise any passed value
+    $inputValue = old($name, $value);
+@endphp
 
 <div class="flex flex-col gap-2">
 
@@ -28,6 +35,7 @@
         type="{{ $type }}"
         name="{{ $name }}"
         placeholder="{{ $placeholder }}"
+        value="{{ $inputValue }}"
         {{ $required ? 'required' : '' }}
         class="w-full rounded-xl
                border border-slate-300 dark:border-white/10
@@ -41,4 +49,6 @@
                outline-none transition-all"
     />
 
+    {{-- validation feedback --}}
+    <x-input-error :messages="$errors->get($name)" class="mt-1" />
 </div>
