@@ -29,13 +29,26 @@ Route::middleware('auth')->group(function () {
 
     Route::controller(DriverController::class)->group(function () {
         Route::get('/driver/create-tips', 'showCreateTips')->name('driver.create-tips');
+        Route::get('/driver/requests', 'requests')->name('driver.requests');
+        Route::post('/driver/requests/{pastrip}/accept', 'acceptRequest')->name('driver.accept');
+        Route::get('/driver/chat/{pastrip}',        'chat')         ->name('driver.chat');
+
     });
 
     Route::controller(PassengerController::class)->group(function () {
         Route::get('/passenger/create-request', 'showCreateRequest')->name('passenger.showtrips');
         Route::post('/passenger/requests', 'storetrips')->name('passenger.storetrips');
         Route::get('/passenger/my-requests', 'showMyRequests')->name('passenger.my-requests');
+        Route::get('/passenger/chat/{pastrip}', 'chat')->name('passenger.chat');
     });
+
+      Route::controller(DriverController::class)->prefix('chat/{pastrip}')->group(function () {
+        Route::get('/messages',   'pollMessages')->name('chat.poll');
+         Route::post('/read',      'markRead')    ->name('chat.read');
+        Route::post('/typing',    'typingStart') ->name('chat.typing');
+         Route::post('/typing/stop','typingStop') ->name('chat.typing.stop');
+     });
+
 
 });
 

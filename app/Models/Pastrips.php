@@ -8,14 +8,16 @@ use Illuminate\Database\Eloquent\Model;
 
 class Pastrips extends Model
 {
-      use HasFactory;
-
     protected $fillable = [
         'user_id',
         'departure_city',
         'arrival_city',
         'departure_address',
         'arrival_address',
+        'departure_lat',
+        'departure_lng',
+        'arrival_lat',
+        'arrival_lng',
         'requested_date',
         'requested_time',
         'flexibility',
@@ -32,9 +34,28 @@ class Pastrips extends Model
         'accepted_by',
     ];
 
-    public function user(): BelongsTo
+    protected $casts = [
+        'requested_date'     => 'date',
+        'expires_at'         => 'datetime',
+        'need_luggage_space' => 'boolean',
+        'female_driver_only' => 'boolean',
+        'pets_with_me'       => 'boolean',
+        'silent_ride'        => 'boolean',
+        'departure_lat'      => 'float',
+        'departure_lng'      => 'float',
+        'arrival_lat'        => 'float',
+        'arrival_lng'        => 'float',
+    ];
+
+    // Passager qui a créé la demande
+    public function user()
     {
         return $this->belongsTo(User::class);
     }
-}
 
+    // Conducteur qui a accepté la course
+    public function driver()
+    {
+        return $this->belongsTo(User::class, 'accepted_by');
+    }
+}

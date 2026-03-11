@@ -3,6 +3,10 @@
 namespace App\Http\Controllers;
 use App\Models\Pastrips;
 use Illuminate\Support\Facades\Auth;
+use App\Models\User;
+use App\Models\ChatMessage;
+
+
 
 use Illuminate\Http\Request;
 
@@ -13,19 +17,31 @@ class PassengerController extends Controller
        return view('passager.add-trips');
     }
 
-    public function showMyRequests(Request $request)
+     public function showMyRequests(Request $request)
     {
-        // Expiration automatique : pending → expired si expires_at dépassé
-        Pastrips::where('user_id', Auth::id())
+        $userId = Auth::id();
+
+        // Expiration automatique
+        Pastrips::where('user_id', $userId)
             ->where('status', 'pending')
             ->whereNotNull('expires_at')
             ->where('expires_at', '<', now())
             ->update(['status' => 'expired']);
 
-        $query = Pastrips::where('user_id', Auth::id())
+        // Comptages réels (toutes pages confondues, indépendants du filtre actif)
+        $counts = [
+            'total'     => Pastrips::where('user_id', $userId)->count(),
+            'pending'   => Pastrips::where('user_id', $userId)->where('status', 'pending')->count(),
+            'accepted'  => Pastrips::where('user_id', $userId)->where('status', 'accepted')->count(),
+            'cancelled' => Pastrips::where('user_id', $userId)->where('status', 'cancelled')->count(),
+            'expired'   => Pastrips::where('user_id', $userId)->where('status', 'expired')->count(),
+        ];
+
+        // Requête avec filtre optionnel + eager load du conducteur
+        $query = Pastrips::where('user_id', $userId)
+            ->with('driver')       // relation sur accepted_by
             ->orderBy('created_at', 'desc');
 
-        // Filtre par statut si présent dans l'URL (?status=pending)
         $allowedStatuses = ['pending', 'accepted', 'cancelled', 'expired'];
         if ($request->filled('status') && in_array($request->status, $allowedStatuses)) {
             $query->where('status', $request->status);
@@ -33,7 +49,7 @@ class PassengerController extends Controller
 
         $requests = $query->paginate(10)->withQueryString();
 
-        return view('Passager.Request', compact('requests'));
+        return view('Passager.Request', compact('requests', 'counts'));
     }
 
     public function storetrips(Request $request)
@@ -110,5 +126,32 @@ class PassengerController extends Controller
 
         return redirect()->route('dashboard')
             ->with('success', 'Votre demande de trajet a été publiée ! Les conducteurs aux alentours seront notifiés.');
+    }
+
+     public function chat(Pastrips $pastrip)
+    {
+        // Seul le passager propriétaire peut accéder
+        abort_unless($pastrip->user_id === Auth::id(), 403);
+        abort_if($pastrip->status !== 'accepted', 403, 'La course doit être acceptée.');
+
+        $driver = User::findOrFail($pastrip->accepted_by);
+
+        $messages = ChatMessage::where('trip_id', $pastrip->id)
+            ->orderBy('created_at', 'asc')
+            ->take(60)
+            ->get();
+
+        // Marquer les messages du conducteur comme lus
+        ChatMessage::where('trip_id', $pastrip->id)
+            ->where('sender_id', '!=', Auth::id())
+            ->whereNull('read_at')
+            ->update(['read_at' => now()]);
+
+        return view('passager.chat', [
+            'trip'      => $pastrip,
+            'passenger' => $driver,   // variable $passenger = l'interlocuteur affiché dans la vue
+            'messages'  => $messages,
+            'isDriver'  => false,
+        ]);
     }
 }

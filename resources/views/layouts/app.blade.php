@@ -209,7 +209,7 @@
                     <span class="material-symbols-outlined text-xl">directions_car</span>
                     Trajets publiés
                 </a>
-                <a href="#" class="sidebar-link flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-semibold text-slate-700 dark:text-slate-300 hover:bg-green-50 hover:text-green-600">
+                <a href="{{ route('driver.requests') }}" class="sidebar-link flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-semibold text-slate-700 dark:text-slate-300 hover:bg-green-50 hover:text-green-600">
                     <span class="material-symbols-outlined text-xl">pending_actions</span>
                     Demandes
                     <span class="ml-auto bg-primary text-background-dark text-xs font-black px-2 py-0.5 rounded-full">3</span>
