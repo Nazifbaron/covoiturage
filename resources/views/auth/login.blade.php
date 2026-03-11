@@ -32,81 +32,45 @@
     </head>
 
     <body class="bg-background text-gray-900 min-h-screen flex flex-col">
-    <!-- HEADER -->
-    <header class="flex items-center justify-between px-6 py-4 border-b bg-white shadow-sm">
+        <!-- MAIN -->
+        <main class="flex-1 flex items-center justify-center px-6 py-16">
+            <div class="w-full max-w-[500px] bg-white rounded-3xl shadow-xl p-10 border border-gray-100">
+                <!-- TITLE -->
+                <div class="mb-8 text-center">
+                    <h1 class="text-3xl font-extrabold mb-2">Se connectez</h1>
+                </div>
+                <!-- FORM -->
+                <form class="space-y-6" method="POST" action="{{ route('login') }}">
+                    @csrf
+                    <!-- EMAIL -->
+                    <div class="space-y-2">
+                        <label class="text-sm font-medium">Email</label>
+                        <input type="email" name="email" required placeholder="email@exemple.com" class="w-full rounded-xl border border-gray-200 p-3 focus:border-primary focus:ring-2 focus:ring-primary/30 outline-none transition">
+                    </div>
+                    <!-- PASSWORD -->
+                    <div class="space-y-2">
+                        <div class="flex justify-between items-center px-1">
+                            <label class="text-sm font-medium">Mot de passe</label>
+                            <a class="text-sm font-bold text-primary hover:underline" href="{{ route('password.request') }}">Mot de passe oublié?</a>
+                        </div>
+                        <input type="password" name="password" required placeholder="••••••••" class="w-full rounded-xl border border-gray-200 p-3 focus:border-primary focus:ring-2 focus:ring-primary/30 outline-none transition">
+                    </div>
+                    <!-- BUTTON -->
+                    <button type="submit"
+                            class="w-full bg-primary text-black font-bold py-3 rounded-xl
+                                hover:shadow-lg hover:opacity-90 transition">
+                        Se Connectez
+                    </button>
 
-        <div class="flex items-center gap-3">
-            <div class="text-primary w-8 h-8">
-                <svg viewBox="0 0 48 48" fill="currentColor">
-                    <path d="M24 4C25.7818 14.2173 33.7827 22.2182 44 24C33.7827 25.7818 25.7818 33.7827 24 44C22.2182 33.7827 14.2173 25.7818 4 24C14.2173 22.2182 22.2182 14.2173 24 4Z"/>
-                </svg>
+                </form>
+                <!-- LOGIN LINK -->
+                <div class="mt-6 text-center text-sm text-gray-500">
+                    Vous n'avez pas encore de compte ?
+                    <a class="font-bold text-primary hover:underline" href="register">Inscrivez-vous gratuitement</a>
+                </div>
+
             </div>
-            <h2 class="text-xl font-bold">Covoiturage Bénin</h2>
-        </div>
-
-        <div class="hidden md:flex items-center gap-6 text-sm font-medium">
-
-
-        </div>
-
-    </header>
-
-
-<!-- MAIN -->
-<main class="flex-1 flex items-center justify-center px-6 py-16">
-
-<div class="w-full max-w-[500px] bg-white rounded-3xl shadow-xl p-10 border border-gray-100">
-
-    <!-- TITLE -->
-    <div class="mb-8 text-center">
-        <h1 class="text-3xl font-extrabold mb-2">Se connectez</h1>
-        <p class="text-gray-500 text-sm">
-
-        </p>
-    </div>
-
-    <!-- FORM -->
-    <form class="space-y-6" method="POST" action="{{ route('login') }}">
-        @csrf
-        <!-- EMAIL -->
-        <div class="space-y-2">
-            <label class="text-sm font-medium">Email</label>
-            <input type="email" name="email" required placeholder="email@exemple.com" class="w-full rounded-xl border border-gray-200 p-3 focus:border-primary focus:ring-2 focus:ring-primary/30 outline-none transition">
-        </div>
-        <!-- PASSWORD -->
-        <div class="space-y-2">
-            <div class="flex justify-between items-center px-1">
-                <label class="text-sm font-medium">Mot de passe</label>
-                <a class="text-sm font-bold text-primary hover:underline" href="{{ route('password.request') }}">Mot de passe oublié?</a>
-            </div>
-            <input type="password" name="password" required placeholder="••••••••" class="w-full rounded-xl border border-gray-200 p-3 focus:border-primary focus:ring-2 focus:ring-primary/30 outline-none transition">
-
-        </div>
-        <!-- BUTTON -->
-        <button type="submit"
-                class="w-full bg-primary text-black font-bold py-3 rounded-xl
-                       hover:shadow-lg hover:opacity-90 transition">
-            Se Connectez
-        </button>
-
-    </form>
-
-    <!-- LOGIN LINK -->
-    <div class="mt-6 text-center text-sm text-gray-500">
-         Vous n'avez pas encore de compte ?
-        <a class="font-bold text-primary hover:underline" href="register">Inscrivez-vous gratuitement</a>
-
-    </div>
-
-</div>
-
-</main>
-
-
-<!-- FOOTER -->
-<footer class="py-6 text-center text-xs text-gray-500 border-t bg-white">
-    © 2026 Tous droits réservés – Covoiturage Connect
-</footer>
-
-</body>
+        </main>
+        
+    </body>
 </html>
