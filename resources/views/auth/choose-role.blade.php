@@ -69,10 +69,7 @@
 
             {{-- Header --}}
             <div class="text-center space-y-3">
-                <div class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-primary/10 border border-primary/20 text-primary text-sm font-bold mb-2">
-                    <span class="material-symbols-outlined text-base">how_to_reg</span>
-                    Étape 2 sur 3
-                </div>
+              
                 <h1 class="text-4xl font-black tracking-tight">
                     Comment comptez-vous <br/>
                     <span class="text-primary">utiliser la plateforme ?</span>

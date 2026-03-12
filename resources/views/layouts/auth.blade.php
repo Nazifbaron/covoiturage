@@ -94,45 +94,15 @@
         </div>
 
         {{-- ── HEADER ── --}}
-        <header class="flex items-center justify-between px-6 py-4 border-b border-slate-200 dark:border-primary/10 bg-background-light dark:bg-background-dark/80 backdrop-blur-md sticky top-0 z-50">
-            <div class="flex items-center gap-2">
-                <div class="text-primary">
-                    <svg class="size-8" fill="currentColor" viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg">
-                        <path d="M13.8261 30.5736C16.7203 29.8826 20.2244 29.4783 24 29.4783C27.7756 29.4783 31.2797 29.8826 34.1739 30.5736C36.9144 31.2278 39.9967 32.7669 41.3563 33.8352L24.8486 7.36089C24.4571 6.73303 23.5429 6.73303 23.1514 7.36089L6.64374 33.8352C8.00331 32.7669 11.0856 31.2278 13.8261 30.5736Z"></path>
-                    </svg>
-                </div>
-                <h2 class="text-xl font-extrabold tracking-tight">Covoiturage Benin</h2>
-            </div>
-            <div class="flex items-center gap-4">
-                {{-- Bouton dark/light mode --}}
-                <button id="themeToggle" class="p-2 rounded-lg bg-slate-200 dark:bg-primary/10 hover:bg-slate-300 dark:hover:bg-primary/20 transition-colors">
-                    <span class="material-symbols-outlined block">light_mode</span>
-                </button>
-
-                {{-- Slot optionnel dans le header (ex: indicateur d'étapes) --}}
-                @hasSection('header-extra')
-                    @yield('header-extra')
-                @else
-                    <div class="h-10 w-10 rounded-full bg-slate-200 dark:bg-primary/20 border border-slate-300 dark:border-primary/30 flex items-center justify-center">
-                        <span class="material-symbols-outlined text-slate-500 dark:text-primary/70">person</span>
-                    </div>
-                @endif
-            </div>
-        </header>
+       
 
         {{-- ── MAIN CONTENT ── --}}
         <main class="flex-1 flex overflow-hidden relative z-10">
             @yield('content')
         </main>
 
-        {{-- ── FOOTER ── --}}
-        <footer class="px-6 py-4 bg-background-light dark:bg-background-dark border-t border-slate-200 dark:border-primary/10 flex justify-between items-center text-xs text-slate-500">
-            <div>© 2026 Tous droits réservés.</div>
-            <div class="flex gap-4">
-                <a class="hover:text-primary transition-colors" href="#">Politique de confidentialité</a>
-                <a class="hover:text-primary transition-colors" href="#">Conditions d'utilisation</a>
-            </div>
-        </footer>
+
+
 
         {{-- ── SCRIPTS COMMUNS ── --}}
         <script>
