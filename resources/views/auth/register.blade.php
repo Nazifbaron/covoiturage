@@ -51,6 +51,7 @@
                     <div class="flex flex-col gap-2">
                         <x-input type="text" name="last_name" label="Nom" placeholder="Dossou" :required="true" />
                     </div>
+
                 </div>
                 <div class="flex flex-col gap-2">
                     <x-input type="email" name="email" label="Email Address" placeholder="toni.dossou@example.com" :required="true" />
