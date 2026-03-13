@@ -36,6 +36,8 @@ Route::middleware('auth')->group(function () {
         Route::get('/driver/requests', 'requests')->name('driver.requests');
         Route::post('/driver/requests/{pastrip}/accept', 'acceptRequest')->name('driver.accept');
         Route::get('/driver/chat/{pastrip}',        'chat')         ->name('driver.chat');
+         Route::post('/driver/vehicle',   'save')   ->name('vehicle.save');
+Route::delete('/driver/vehicle', 'destroy')->name('vehicle.destroy');
 
     });
 
@@ -51,6 +53,8 @@ Route::middleware('auth')->group(function () {
          Route::post('/read',      'markRead')    ->name('chat.read');
         Route::post('/typing',    'typingStart') ->name('chat.typing');
          Route::post('/typing/stop','typingStop') ->name('chat.typing.stop');
+
+
      });
 
 

@@ -217,6 +217,165 @@
         </form>
     </div>
 
+    {{-- cette section est uniquement visible pour les conducteurs, car les passagers n'ont pas besoin de gérer un véhicule. --}}
+
+        @if(auth()->user()->role === 'driver')
+    <div class="bg-white dark:bg-card-dark rounded-2xl border border-slate-100 dark:border-primary/10 shadow-sm p-5 space-y-5">
+        <div class="flex items-center justify-between">
+            <div>
+                <h2 class="font-black text-sm uppercase tracking-widest text-slate-400 dark:text-slate-500">
+                    Mon véhicule
+                </h2>
+                <p class="text-xs text-slate-400 mt-0.5">Requis pour publier des trajets.</p>
+            </div>
+            @if($vehicle)
+            <div class="flex items-center gap-1.5 px-3 py-1 rounded-full bg-primary/10 border border-primary/20 text-xs font-black text-primary">
+                <span class="material-symbols-outlined" style="font-size:14px">{{ $vehicle->type_icon }}</span>
+                {{ $vehicle->type_label }}
+            </div>
+            @endif
+        </div>
+
+        {{-- Affichage véhicule existant --}}
+        @if($vehicle)
+        <div class="flex items-center gap-4 p-4 rounded-xl bg-slate-50 dark:bg-white/5 border border-slate-100 dark:border-white/10">
+            <div class="w-12 h-12 rounded-xl bg-gradient-to-br from-primary/20 to-emerald-500/20
+                        border border-primary/20 flex items-center justify-center flex-shrink-0">
+                <span class="material-symbols-outlined text-primary text-2xl">{{ $vehicle->type_icon }}</span>
+            </div>
+            <div class="flex-1 min-w-0">
+                <p class="font-black text-slate-900 dark:text-white">{{ $vehicle->full_name }}</p>
+                <div class="flex items-center gap-3 mt-1 flex-wrap">
+                    <span class="flex items-center gap-1 text-xs text-slate-500 dark:text-slate-400 font-medium">
+                        <span class="material-symbols-outlined" style="font-size:13px">palette</span>
+                        {{ $vehicle->color }}
+                    </span>
+                    <span class="flex items-center gap-1 text-xs font-black text-slate-700 dark:text-slate-300
+                                 bg-slate-200 dark:bg-white/10 px-2 py-0.5 rounded-lg tracking-widest">
+                        {{ strtoupper($vehicle->plate) }}
+                    </span>
+                </div>
+            </div>
+        </div>
+        @endif
+
+        {{-- Formulaire ajout / modification --}}
+        <form method="POST" action="{{ route('vehicle.save') }}" class="space-y-4" id="vehicle-form">
+            @csrf
+
+            {{-- Type de véhicule --}}
+            <div>
+                <label class="text-xs font-bold text-slate-500 dark:text-slate-400 mb-2 block">Type de véhicule *</label>
+                <div class="grid grid-cols-3 gap-2">
+                    @foreach(\App\Models\Vehicle::$types as $key => $type)
+                    <label class="relative cursor-pointer">
+                        <input type="radio" name="type" value="{{ $key }}"
+                               {{ old('type', $vehicle?->type ?? 'voiture') === $key ? 'checked' : '' }}
+                               class="peer sr-only"/>
+                        <div class="flex flex-col items-center gap-2 p-3 rounded-xl border-2
+                                    border-slate-200 dark:border-white/10
+                                    bg-slate-50 dark:bg-white/5
+                                    peer-checked:border-primary peer-checked:bg-primary/5
+                                    dark:peer-checked:bg-primary/10
+                                    transition-all cursor-pointer hover:border-primary/50">
+                            <span class="material-symbols-outlined text-slate-400 peer-checked:text-primary text-2xl
+                                         dark:text-slate-500" style="font-size:28px">{{ $type['icon'] }}</span>
+                            <span class="text-xs font-bold text-slate-600 dark:text-slate-400
+                                         peer-checked:text-primary">{{ $type['label'] }}</span>
+                        </div>
+                        {{-- Check badge --}}
+                        <span class="absolute top-2 right-2 w-4 h-4 rounded-full bg-primary
+                                     flex items-center justify-center hidden peer-checked:flex">
+                            <span class="material-symbols-outlined text-background-dark" style="font-size:11px">check</span>
+                        </span>
+                    </label>
+                    @endforeach
+                </div>
+                @error('type') <p class="text-xs text-red-500 font-semibold mt-1">{{ $message }}</p> @enderror
+            </div>
+
+            {{-- Marque & Modèle --}}
+            <div class="grid grid-cols-2 gap-3">
+                <div>
+                    <label class="text-xs font-bold text-slate-500 dark:text-slate-400 mb-1.5 block">Marque *</label>
+                    <input type="text" name="brand" value="{{ old('brand', $vehicle?->brand) }}"
+                           placeholder="Ex: Toyota"
+                           class="w-full px-3 py-2.5 rounded-xl border border-slate-200 dark:border-white/10
+                                  bg-slate-50 dark:bg-white/5 text-slate-900 dark:text-white
+                                  text-sm font-semibold placeholder-slate-400
+                                  focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary transition-all"/>
+                    @error('brand') <p class="text-xs text-red-500 font-semibold mt-1">{{ $message }}</p> @enderror
+                </div>
+                <div>
+                    <label class="text-xs font-bold text-slate-500 dark:text-slate-400 mb-1.5 block">Modèle *</label>
+                    <input type="text" name="model" value="{{ old('model', $vehicle?->model) }}"
+                           placeholder="Ex: Corolla"
+                           class="w-full px-3 py-2.5 rounded-xl border border-slate-200 dark:border-white/10
+                                  bg-slate-50 dark:bg-white/5 text-slate-900 dark:text-white
+                                  text-sm font-semibold placeholder-slate-400
+                                  focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary transition-all"/>
+                    @error('model') <p class="text-xs text-red-500 font-semibold mt-1">{{ $message }}</p> @enderror
+                </div>
+            </div>
+
+            
+
+            {{-- Couleur & Immatriculation --}}
+            <div class="grid grid-cols-2 gap-3">
+                <div>
+                    <label class="text-xs font-bold text-slate-500 dark:text-slate-400 mb-1.5 block">Couleur *</label>
+                    <input type="text" name="color" value="{{ old('color', $vehicle?->color) }}"
+                           placeholder="Ex: Blanc"
+                           class="w-full px-3 py-2.5 rounded-xl border border-slate-200 dark:border-white/10
+                                  bg-slate-50 dark:bg-white/5 text-slate-900 dark:text-white
+                                  text-sm font-semibold placeholder-slate-400
+                                  focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary transition-all"/>
+                    @error('color') <p class="text-xs text-red-500 font-semibold mt-1">{{ $message }}</p> @enderror
+                </div>
+                <div>
+                    <label class="text-xs font-bold text-slate-500 dark:text-slate-400 mb-1.5 block">Immatriculation *</label>
+                    <input type="text" name="plate" value="{{ old('plate', $vehicle?->plate) }}"
+                           placeholder="Ex: BJ-1234-AB"
+                           class="w-full px-3 py-2.5 rounded-xl border border-slate-200 dark:border-white/10
+                                  bg-slate-50 dark:bg-white/5 text-slate-900 dark:text-white
+                                  text-sm font-semibold placeholder-slate-400 uppercase
+                                  focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary transition-all"/>
+                    @error('plate') <p class="text-xs text-red-500 font-semibold mt-1">{{ $message }}</p> @enderror
+                </div>
+            </div>
+
+            {{-- Actions --}}
+            <div class="flex items-center justify-between pt-1">
+                @if (session('status') === 'vehicle-saved')
+                    <span class="flex items-center gap-1.5 text-xs font-bold text-emerald-600 dark:text-emerald-400">
+                        <span class="material-symbols-outlined text-lg">check_circle</span>
+                        Véhicule enregistré
+                    </span>
+                @elseif($vehicle)
+                    <form method="POST" action="{{ route('vehicle.destroy') }}" onsubmit="return confirm('Supprimer ce véhicule ?')">
+                        @csrf @method('DELETE')
+                        <button type="submit"
+                                class="flex items-center gap-1.5 text-xs font-bold text-red-400 hover:text-red-500 transition-colors">
+                            <span class="material-symbols-outlined text-base">delete</span>
+                            Supprimer
+                        </button>
+                    </form>
+                @else
+                    <span></span>
+                @endif
+                <button type="submit"
+                        class="flex items-center gap-2 bg-primary hover:bg-primary/90 text-background-dark
+                               font-black px-5 py-2.5 rounded-xl transition-all shadow-md shadow-primary/20 text-sm">
+                    <span class="material-symbols-outlined text-lg">save</span>
+                    {{ $vehicle ? 'Mettre à jour' : 'Enregistrer' }}
+                </button>
+            </div>
+        </form>
+    </div>
+    @endif
+
+
+
     {{-- ── Zone de danger ── --}}
     <div class="bg-white dark:bg-card-dark rounded-2xl border border-red-100 dark:border-red-500/20 shadow-sm p-5 space-y-4 pb-8">
         <div>

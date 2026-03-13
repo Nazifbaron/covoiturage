@@ -5,6 +5,8 @@ use App\Models\Pastrips;
 use App\Models\User;
 use App\Models\ChatMessage;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Cache;
+use App\Models\Vehicle;
 
 
 use Illuminate\Http\Request;
@@ -13,7 +15,15 @@ class DriverController extends Controller
 {
     public function showCreateTips()
     {
-       return view('conducteur.createTrips');
+        $vehicle = Vehicle::where('driver_id', Auth::id())->first();
+
+        // Pas de véhicule → redirection vers profil avec message
+        if (!$vehicle) {
+            return redirect()->route('profile.edit')
+                ->with('warning', 'Veuillez d\'abord enregistrer votre véhicule avant de publier un trajet.');
+        }
+
+        return view('conducteur.createTrips', compact('vehicle'));
     }
 
     public function requests(Request $request)
@@ -194,4 +204,48 @@ class DriverController extends Controller
             'La course doit être acceptée pour accéder au chat.'
         );
     }
+
+    // Cette partie concerne les vehicules
+  public function save(Request $request)
+    {
+        abort_if(Auth::user()->role !== 'driver', 403);
+
+        $validated = $request->validate([
+            'type'  => ['required', 'in:moto,tricycle,voiture'],
+            'brand' => ['required', 'string', 'max:80'],
+            'model' => ['required', 'string', 'max:80'],
+            'color' => ['required', 'string', 'max:50'],
+            'plate' => ['required', 'string', 'max:20'],
+        ], [
+            'type.required'  => 'Le type de véhicule est obligatoire.',
+            'type.in'        => 'Type invalide (moto, tricycle ou voiture).',
+            'brand.required' => 'La marque est obligatoire.',
+            'model.required' => 'Le modèle est obligatoire.',
+            'color.required' => 'La couleur est obligatoire.',
+            'plate.required' => "L'immatriculation est obligatoire.",
+            'plate.max'      => "L'immatriculation ne peut pas dépasser 20 caractères.",
+        ]);
+
+        Vehicle::updateOrCreate(
+            ['driver_id' => Auth::id()],
+            $validated
+        );
+
+        return redirect()
+            ->route('profile.edit')
+            ->with('success', 'Véhicule enregistré avec succès.');
+    }
+
+    /**
+     * Supprimer le véhicule
+     */
+    public function destroy()
+    {
+        Vehicle::where('driver_id', Auth::id())->delete();
+
+        return redirect()
+            ->route('profile.edit')
+            ->with('success', 'Véhicule supprimé.');
+    }
+
 }
