@@ -28,6 +28,10 @@ class AuthenticatedSessionController extends Controller
 
         $request->session()->regenerate();
 
+         if (! Auth::user()->role) {
+            return redirect()->route('user.role.show');
+        }
+
         return redirect()->intended(route('dashboard', absolute: false));
     }
 
@@ -43,5 +47,28 @@ class AuthenticatedSessionController extends Controller
         $request->session()->regenerateToken();
 
         return redirect('/');
+    }
+
+      public function showRoleSelection(): View
+    {
+        // Si l'user a déjà un rôle, inutile de revenir ici
+        if (Auth::user()->role) {
+            return redirect()->route('dashboard');
+        }
+
+        return view('auth.choose-role');
+    }
+
+     public function storeRole(Request $request): RedirectResponse
+    {
+        $request->validate([
+            'role' => ['required', 'in:passenger,driver'],
+        ]);
+
+        $user = Auth::user();
+        $user->role = $request->role;
+        $user->save();
+
+        return redirect()->route('dashboard')->with('success', 'Bienvenue ! Votre compte est prêt.');
     }
 }

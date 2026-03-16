@@ -8,6 +8,9 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\View\View;
+use App\Models\Vehicle;
+
+use App\Models\User;
 
 class ProfileController extends Controller
 {
@@ -16,8 +19,13 @@ class ProfileController extends Controller
      */
     public function edit(Request $request): View
     {
+        $vehicle = $request->user()->role === 'driver'
+            ? Vehicle::where('driver_id', $request->user()->id)->first()
+            : null;
+
         return view('profile.edit', [
-            'user' => $request->user(),
+            'user'    => $request->user(),
+            'vehicle' => $vehicle,   // ← toujours défini, jamais undefined
         ]);
     }
 
@@ -34,8 +42,9 @@ class ProfileController extends Controller
 
         $request->user()->save();
 
-        return Redirect::route('profile.edit')->with('status', 'profile-updated');
+        return Redirect::route('profile.edit')->with('success', 'Profil mis à jour avec succès.');
     }
+
 
     /**
      * Delete the user's account.
