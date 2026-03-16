@@ -7,6 +7,7 @@ use App\Models\ChatMessage;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Cache;
 use App\Models\Vehicle;
+use App\Models\DriverTrips;
 
 
 use Illuminate\Http\Request;
@@ -26,6 +27,99 @@ class DriverController extends Controller
         return view('conducteur.createTrips', compact('vehicle'));
     }
 
+
+    public function storeTrip(Request $request)
+    {
+        // Re-vérifier côté serveur aussi
+        $vehicle = Vehicle::where('driver_id', Auth::id())->first();
+        abort_unless($vehicle, 422, 'Véhicule requis pour publier un trajet.');
+
+        $validated = $request->validate([
+            'departure_city'    => ['required', 'string', 'max:100'],
+            'arrival_city'      => ['required', 'string', 'max:100'],
+            'departure_address' => ['nullable', 'string', 'max:255'],
+            'arrival_address'   => ['nullable', 'string', 'max:255'],
+            'departure_lat'     => ['nullable', 'numeric', 'between:-90,90'],
+            'departure_lng'     => ['nullable', 'numeric', 'between:-180,180'],
+            'arrival_lat'       => ['nullable', 'numeric', 'between:-90,90'],
+            'arrival_lng'       => ['nullable', 'numeric', 'between:-180,180'],
+            'departure_date'    => ['required', 'date', 'after_or_equal:today'],
+            'departure_time'    => ['required', 'date_format:H:i'],
+            'seats_total'       => ['required', 'integer', 'min:1', 'max:7'],
+            'price_per_seat'    => ['required', 'integer', 'min:0'],
+            'luggage_allowed'   => ['nullable', 'boolean'],
+            'pets_allowed'      => ['nullable', 'boolean'],
+            'silent_ride'       => ['nullable', 'boolean'],
+            'female_only'       => ['nullable', 'boolean'],
+            'description'       => ['nullable', 'string', 'max:500'],
+        ], [
+            'departure_city.required'    => 'La ville de départ est obligatoire.',
+            'arrival_city.required'      => 'La ville d\'arrivée est obligatoire.',
+            'departure_date.required'    => 'La date de départ est obligatoire.',
+            'departure_date.after_or_equal' => 'La date doit être aujourd\'hui ou dans le futur.',
+            'departure_time.required'    => 'L\'heure de départ est obligatoire.',
+            'seats_total.required'       => 'Le nombre de places est obligatoire.',
+            'seats_total.min'            => 'Au moins 1 place requise.',
+            'seats_total.max'            => '7 places maximum.',
+            'price_per_seat.required'    => 'Le prix par siège est obligatoire.',
+            'price_per_seat.min'         => 'Le prix ne peut pas être négatif.',
+        ]);
+    // dd($validated);
+        DriverTrips::create([
+            'driver_id'         => Auth::id(),
+            'departure_city'    => $validated['departure_city'],
+            'arrival_city'      => $validated['arrival_city'],
+            'departure_address' => $validated['departure_address'] ?? null,
+            'arrival_address'   => $validated['arrival_address']   ?? null,
+            'departure_lat'     => $validated['departure_lat']     ?? null,
+            'departure_lng'     => $validated['departure_lng']     ?? null,
+            'arrival_lat'       => $validated['arrival_lat']       ?? null,
+            'arrival_lng'       => $validated['arrival_lng']       ?? null,
+            'departure_date'    => $validated['departure_date'],
+            'departure_time'    => $validated['departure_time'],
+            'seats_total'       => (int) $validated['seats_total'],
+            'seats_available'   => (int) $validated['seats_total'], // dispo = total au départ
+            'price_per_seat'    => (int) $validated['price_per_seat'],
+            'luggage_allowed'   => $request->boolean('luggage_allowed'),
+            'pets_allowed'      => $request->boolean('pets_allowed'),
+            'silent_ride'       => $request->boolean('silent_ride'),
+            'female_only'       => $request->boolean('female_only'),
+            'description'       => $validated['description'] ?? null,
+            'status'            => 'scheduled',
+        ]);
+
+        return redirect()->route('driver.my-trips')
+            ->with('success', 'Votre trajet a été publié ! Les passagers peuvent maintenant le trouver.');
+    }
+
+    public function myTrips()
+    {
+        $counts = [
+            'total'     => DriverTrips::where('driver_id', Auth::id())->count(),
+            'scheduled' => DriverTrips::where('driver_id', Auth::id())->where('status', 'scheduled')->count(),
+            'completed' => DriverTrips::where('driver_id', Auth::id())->where('status', 'completed')->count(),
+            'cancelled' => DriverTrips::where('driver_id', Auth::id())->where('status', 'cancelled')->count(),
+        ];
+
+        $trips = DriverTrips::where('driver_id', Auth::id())
+            ->orderBy('departure_date', 'desc')
+            ->orderBy('departure_time', 'desc')
+            ->paginate(10)
+            ->withQueryString();
+
+        return view('conducteur.mytrips', compact('trips', 'counts'));
+    }
+
+     public function cancelTrip(DriverTrips $trip)
+    {
+        abort_unless((int) $trip->driver_id === (int) Auth::id(), 403);
+        abort_if($trip->status === 'completed', 422, 'Impossible d\'annuler un trajet terminé.');
+
+        $trip->update(['status' => 'cancelled']);
+
+        return redirect()->route('driver.my-trips')
+            ->with('success', 'Trajet annulé.');
+    }
     public function requests(Request $request)
     {
         // Expirer automatiquement les demandes périmées

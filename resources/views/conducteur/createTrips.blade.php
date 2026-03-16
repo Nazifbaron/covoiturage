@@ -95,7 +95,7 @@
         </a>
     </div>
 
-    <form method="POST" action="" class="space-y-4" id="trip-form">
+    <form method="POST" action="{{ route('driver.trips.store') }}" class="space-y-4" id="trip-form">
         @csrf
 
         {{-- ── ITINÉRAIRE + CARTE ── --}}
@@ -314,7 +314,7 @@
 <script src="https://unpkg.com/leaflet-routing-machine@3.2.12/dist/leaflet-routing-machine.min.js"></script>
 <script>
 (function () {
-    // ── Carte ────────────────────────────────────────────────────
+    //  Carte
     const map = L.map('trip-map', { zoomControl: true, attributionControl: false })
         .setView([9.3077, 2.3158], 7);
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
@@ -329,7 +329,7 @@
     let markerDepart = null, markerArrivee = null, routeControl = null;
     let coords = { depart: null, arrivee: null };
 
-    // ── Autocomplétion ───────────────────────────────────────────
+    // Autocomplétion
     let debounceTimer = null;
 
     function setupAutocomplete(inputId, listId, spinnerId, hiddenCityId, latId, lngId, type) {
@@ -431,7 +431,7 @@
         });
     }
 
-    // ── Compteur de places ───────────────────────────────────────
+    //  Compteur de places
     window.changeSeat = function(delta) {
         const input   = document.getElementById('seats_total');
         const display = document.getElementById('seats-display');
