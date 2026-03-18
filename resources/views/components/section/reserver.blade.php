@@ -1,4 +1,4 @@
-<section id="reserver" class="relative min-h-[700px] flex items-center justify-center overflow-hidden">
+<section  class="relative min-h-[700px] flex items-center justify-center overflow-hidden">
                 <div class="absolute inset-0 z-0 overflow-hidden">
                     <div class="carousel-track h-full">
                         <div class="w-1/3 h-full relative">

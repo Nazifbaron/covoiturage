@@ -42,7 +42,7 @@
                bg-white dark:bg-white/5
                text-slate-900 dark:text-white
                placeholder:text-slate-400 dark:placeholder:text-slate-500
-               p-2
+               p-1
                shadow-sm
                hover:border-primary/50
                focus:border-primary focus:ring-2 focus:ring-primary/40
