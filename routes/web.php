@@ -12,6 +12,8 @@ Route::view('/contact','contact');
 Route::view('/about','about');
 Route::view('/result','resultat');
 Route::view('/detail','details');
+Route::view('/marche','marche');
+Route::view('/search','search');
 
 
 Route::get('/dashboard', function () {
