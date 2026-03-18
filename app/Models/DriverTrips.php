@@ -52,6 +52,18 @@ protected $table = 'driver_trips';
         return $this->belongsTo(User::class, 'driver_id');
     }
 
+     public function vehicle()
+    {
+        return $this->hasOneThrough(
+            \App\Models\Vehicle::class,
+            \App\Models\User::class,
+            'id',         // clé sur users
+            'driver_id',  // clé sur vehicles
+            'driver_id',  // clé locale sur driver_trips
+            'id'          // clé locale sur users
+        );
+    }
+
     // Vérifie si le trajet est complet
     public function isFull(): bool
     {

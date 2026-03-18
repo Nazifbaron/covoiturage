@@ -49,6 +49,8 @@ Route::middleware('auth')->group(function () {
         Route::post('/passenger/requests', 'storetrips')->name('passenger.storetrips');
         Route::get('/passenger/my-requests', 'showMyRequests')->name('passenger.my-requests');
         Route::get('/passenger/chat/{pastrip}', 'chat')->name('passenger.chat');
+        Route::get('/passenger/trips',        'availableTrips')->name('passenger.trips');
+        Route::get('/passenger/trips/search', 'searchTrips')   ->name('passenger.trips.search');
     });
 
     // Route lié aux chat entre conducteur et passager
