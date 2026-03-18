@@ -12,13 +12,11 @@ Route::view('/contact','contact');
 Route::view('/about','about');
 Route::view('/result','resultat');
 Route::view('/detail','details');
-Route::view('/marche','marche');
-Route::view('/search','search');
 
 
 Route::get('/dashboard', function () {
     return view('dashboard');
-})->middleware(['auth', 'verified', 'role:admin'])->name('dashboard');
+})->middleware(['auth', 'verified'])->name('dashboard');
 
 Route::middleware('auth')->group(function () {
 
