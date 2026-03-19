@@ -1,4 +1,4 @@
-<section id="marche" class="py-24 bg-white dark:bg-background-dark">
+<section  class="py-24 bg-white dark:bg-background-dark">
                 <div class="max-w-7xl mx-auto px-6">
                     <div class="text-center mb-16">
                         <h2 class="text-3xl md:text-4xl font-extrabold text-deep-blue dark:text-white mb-4">Comment ça marche</h2>

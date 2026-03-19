@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
-    <title>{{ config('app.name', 'Covoiturage') }}</title>
+    <title>{{ config('app.name', 'Laravel') }}</title>
 
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.bunny.net">
@@ -172,7 +172,7 @@
                 <div class="pt-3 pb-1 px-3">
                     <p class="text-xs font-black uppercase tracking-widest text-slate-400 dark:text-slate-600">Trajets</p>
                 </div>
-                <a href="{{ route('passenger.trips') }}" class="sidebar-link flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-semibold text-slate-700 dark:text-slate-300">
+                <a href="#" class="sidebar-link flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-semibold text-slate-700 dark:text-slate-300">
                     <span class="material-symbols-outlined text-xl">search</span>
                     Rechercher un trajet
                 </a>
@@ -183,10 +183,6 @@
                 <a href="{{ route('passenger.my-requests') }}" class="sidebar-link flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-semibold text-slate-700 dark:text-slate-300">
                     <span class="material-symbols-outlined text-xl">bookmark</span>
                     Mes réservations
-                </a>
-                  <a href="{{ route('passenger.trips') }}" class="sidebar-link flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-semibold text-slate-700 dark:text-slate-300 hover:bg-green-50 hover:text-green-600">
-                    <span class="material-symbols-outlined text-xl">directions_car</span>
-                    Trajets disponibles
                 </a>
                 <a href="#" class="sidebar-link flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-semibold text-slate-700 dark:text-slate-300">
                     <span class="material-symbols-outlined text-xl">history</span>
