@@ -6,8 +6,6 @@ use Illuminate\Foundation\Configuration\Middleware;
 use Spatie\Permission\Middleware\PermissionMiddleware;
 use Spatie\Permission\Middleware\RoleMiddleware;
 use Spatie\Permission\Middleware\RoleOrPermissionMiddleware;
-use App\Http\Middleware\IsAdmin;
-use App\Http\Middleware\Checkblocked;
 
 return Application::configure(basePath: dirname(__DIR__))
     ->withRouting(
@@ -19,9 +17,7 @@ return Application::configure(basePath: dirname(__DIR__))
          $middleware->alias([
             'role' => RoleMiddleware::class,
             'permission' => PermissionMiddleware::class,
-            'role_or_permission' => RoleOrPermissionMiddleware::class,
-            "is_admin" => IsAdmin::class,
-            "check_blocked" => Checkblocked::class,
+            'role_or_permission' => RoleOrPermissionMiddleware::class
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions) {

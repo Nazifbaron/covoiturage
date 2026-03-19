@@ -12,16 +12,14 @@ return new class extends Migration
    public function up(): void
 {
     Schema::table('users', function (Blueprint $table) {
-        $table->enum('role', ['passenger', 'driver', 'admin'])->nullable()->after('phone');
-        $table->boolean('is_blocked')->default(false)->after('role');
+        $table->enum('role', ['passenger', 'driver'])->nullable()->after('phone');
     });
-
 }
 
 public function down(): void
 {
     Schema::table('users', function (Blueprint $table) {
-        $table->dropColumn(['role', 'is_blocked']);
+        $table->dropColumn('role');
     });
 }
 };
