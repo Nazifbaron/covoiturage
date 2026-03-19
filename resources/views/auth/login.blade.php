@@ -14,7 +14,9 @@
             theme: {
                 extend: {
                     colors: {
-                        primary: "#13ec49",
+                        primary: "#401268",        // couleur principale (navbar, titres)
+                        secondary: "#c33c72",      // hover, éléments actifs
+                        accent: "#fe7644",
                         background: "#f8faf8"
                     },
                     fontFamily: {
@@ -71,6 +73,6 @@
 
             </div>
         </main>
-        
+
     </body>
 </html>

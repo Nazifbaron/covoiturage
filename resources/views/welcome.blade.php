@@ -1,6 +1,7 @@
 <x-layout>
     <x-section.reserver />
     <x-section.marche />
+    <x-section.avantage />
     <x-section.populaire />
     <x-section.proposer />
     <x-section.tmoignage />

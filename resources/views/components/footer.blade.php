@@ -3,10 +3,9 @@
                 <div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-12 mb-5">
                     <div class="col-span-2 lg:col-span-2">
                         <div class="flex items-center gap-2 mb-2">
-                            <div class="bg-primary p-1 rounded flex items-center justify-center">
-                                <span class="material-symbols-outlined text-background-dark text-sm font-bold">directions_car</span>
-                            </div>
-                            <h2 class="text-deep-blue dark:text-white text-lg font-bold tracking-tight">Covoiturage</h2>
+                            <div class="p-1 rounded flex items-center justify-center">
+                                <img src="{{ asset('images/logo.png')}}" alt="" class="w-10 h-10 object-contain">                            </div>
+                            <h2 class="text-deep-blue dark:text-white text-2lg font-bold tracking-tight">Covoiturage</h2>
                         </div>
                         <p class="text-slate-500 dark:text-slate-400 max-w-xs mb-3 text-sm">La plateforme leader pour des voyages abordables, durables et communautaires à travers l'Europe et au-delà.</p>
                         <div class="flex gap-4">

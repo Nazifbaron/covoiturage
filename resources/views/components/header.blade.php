@@ -1,8 +1,10 @@
-<header class="sticky top-0 z-[100] w-full border-b border-slate-200 dark:border-white/10 bg-white/70 dark:bg-background-dark/70 backdrop-blur-md">
-            <div class="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between relative">
-                <div class="flex items-center gap-2 shrink-0">
-                    <div class="bg-primary p-1.5 rounded-lg flex items-center justify-center">
-                        <span class="material-symbols-outlined text-background-dark font-bold">directions_car</span>
+<header class="sticky top-0 z-[100] w-full border-b border-slate-200 dark:border-white/10 bg-white/70 dark:bg-background-dark/70 backdrop-blur-md ">
+            <div class="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between relative ">
+                <div class="flex items-center gap-2 shrink-0 px-2">
+
+                    <div class="p-1.5 rounded-lg flex items-center justify-center">
+                        <!--<span class="material-symbols-outlined text-background-dark font-bold">directions_car</span>-->
+                        <img src="{{ asset('images/logo.png')}}" alt="" class="w-20 h-20 object-contain">
                     </div>
                     <h2 class="text-deep-blue dark:text-white text-2xl font-extrabold tracking-tight">Covoiturage</h2>
                 </div>
