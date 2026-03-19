@@ -5,6 +5,9 @@ use App\Http\Controllers\DriverController;
 use App\Http\Controllers\Auth\AuthenticatedSessionController;
 use App\Http\Controllers\PassengerController;
 use Illuminate\Support\Facades\Route;
+use App\Http\Middleware\IsAdmin;
+use App\Http\Controllers\AdminController;
+use App\Http\Middleware\Checkblocked;
 
 
 Route::view('/','welcome');
@@ -13,12 +16,24 @@ Route::view('/about','about');
 Route::view('/result','resultat');
 Route::view('/detail','details');
 
+// Route accessible même si bloqué (hors middleware auth)
+Route::get('/blocked', function () {
+    // Si pas connecté → login
+    if (!auth()->check()) {
+        return redirect()->route('login');
+    }
+    // Si pas bloqué → dashboard
+    if (!auth()->user()->is_blocked) {
+        return redirect()->route('dashboard');
+    }
+    return view('blocked');
+})->middleware('auth')->name('blocked');
 
 Route::get('/dashboard', function () {
     return view('dashboard');
 })->middleware(['auth', 'verified'])->name('dashboard');
 
-Route::middleware('auth')->group(function () {
+Route::middleware(['auth', Checkblocked::class])->group(function () {
 
      Route::controller(ProfileController::class)->group(function () {
         Route::get('/profile', 'edit')->name('profile.edit');
@@ -57,14 +72,39 @@ Route::middleware('auth')->group(function () {
 
       Route::controller(DriverController::class)->prefix('chat/{pastrip}')->group(function () {
         Route::get('/messages',   'pollMessages')->name('chat.poll');
+        Route::post('/send',       'sendMessage')->name('chat.send');
          Route::post('/read',      'markRead')    ->name('chat.read');
         Route::post('/typing',    'typingStart') ->name('chat.typing');
          Route::post('/typing/stop','typingStop') ->name('chat.typing.stop');
-
-
      });
 
 
 });
+
+
+Route::middleware(['auth', IsAdmin::class])->prefix('admin')->name('admin.')
+    ->group(function () {
+
+    Route::controller(AdminController::class)->group(function () {
+        // Dashboard
+        Route::get('/', 'dashboard')->name('dashboard');
+
+        // Utilisateurs
+        Route::get('/users', 'users')->name('users');
+        Route::patch('/users/{user}/block', 'blockUser')  ->name('users.block');
+        Route::delete('/users/{user}','deleteUser') ->name('users.delete');
+
+        // Trajets conducteurs
+        Route::get('/trips',  'trips') ->name('trips');
+        Route::patch('/trips/{trip}/cancel','cancelTrip')->name('trips.cancel');
+
+        // Réservations passagers
+        Route::get('/reservations','reservations')->name('reservations');
+
+        // Véhicules
+        Route::get('/vehicles','vehicles')->name('vehicles');
+        Route::delete('/vehicles/{vehicle}', 'deleteVehicle')->name('vehicles.delete');
+        });
+    });
 
 require __DIR__.'/auth.php';

@@ -28,7 +28,14 @@ class AuthenticatedSessionController extends Controller
 
         $request->session()->regenerate();
 
-         if (! Auth::user()->role) {
+          $user = Auth::user();
+
+        // ── Redirection selon le rôle ──────────────────────────
+        if ($user->role === 'admin') {
+            return redirect()->route('admin.dashboard');
+        }
+
+        if (!$user->role) {
             return redirect()->route('user.role.show');
         }
 
@@ -51,8 +58,20 @@ class AuthenticatedSessionController extends Controller
 
       public function showRoleSelection(): View
     {
-        // Si l'user a déjà un rôle, inutile de revenir ici
-        if (Auth::user()->role) {
+         // Si pas connecté → login
+        if (!Auth::check()) {
+            return redirect()->route('login');
+        }
+
+        $user = Auth::user();
+
+        // Admin → espace admin
+        if ($user->role === 'admin') {
+            return redirect()->route('admin.dashboard');
+        }
+
+        // Rôle déjà choisi → dashboard
+        if ($user->role) {
             return redirect()->route('dashboard');
         }
 
