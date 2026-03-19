@@ -130,8 +130,8 @@ class DriverController extends Controller
 
         $query = Pastrips::with('user')
             ->whereIn('status', ['pending', 'accepted'])
-            ->orderBy('requested_date', 'asc')
-            ->orderBy('requested_time', 'asc');
+            ->orderBy('requested_date', 'desc')
+            ->orderBy('requested_time', 'desc');
 
         // Filtre date
         switch ($request->get('date_filter', '')) {

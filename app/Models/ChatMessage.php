@@ -6,5 +6,28 @@ use Illuminate\Database\Eloquent\Model;
 
 class ChatMessage extends Model
 {
-    //
+    protected $fillable = [
+        'trip_id',
+        'sender_id',
+        'content',
+        'read_at',
+    ];
+
+    protected $casts = [
+        'sender_id' => 'integer',
+        'trip_id'   => 'integer',
+        'read_at'   => 'datetime',
+    ];
+
+    // Expéditeur du message
+    public function sender()
+    {
+        return $this->belongsTo(User::class, 'sender_id');
+    }
+
+    // Course liée au message
+    public function trip()
+    {
+        return $this->belongsTo(Pastrips::class, 'trip_id');
+    }
 }

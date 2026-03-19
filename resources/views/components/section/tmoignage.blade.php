@@ -106,11 +106,11 @@
                     <!-- Bottom Trust Stats -->
                     <div class="mt-10 bg-primary/15 rounded-3xl p-5 text-center">
                         <div class="text-center ">
-                            <h3 class="text-2xl font-bold text-deep-blue dark:text-white ">
+                            <h3 class="text-2xl font-bold text-deep-blue dark:text-white mb-4">
                                 Statistiques
                             </h3>
                         </div>
-                        <div class="grid md:grid-cols-3 gap-10 mb-3">
+                        <div class="grid md:grid-cols-3 gap-10">
 
                             <div class="mt-5 bg-primary/20 rounded-3xl p-5 text-center">
                                 <div class="text-3xl font-bold text-primary">+10 000</div>

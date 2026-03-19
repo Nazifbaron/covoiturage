@@ -26,6 +26,7 @@ class User extends Authenticatable
         'phone',
         'role',
         'password',
+        'is_blocked',
     ];
 
     /**
@@ -48,6 +49,25 @@ class User extends Authenticatable
         return [
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
+             'is_blocked'        => 'boolean',
         ];
     }
+
+    public function vehicle()
+{
+    return $this->hasOne(Vehicle::class, 'driver_id');
+}
+
+// Relation : trajets publiés par ce conducteur
+
+public function driverTrips()
+{
+    return $this->hasMany(DriverTrips::class, 'driver_id');
+}
+
+// Relation : demandes de trajet de ce passager
+public function passengerTrips()
+{
+    return $this->hasMany(Pastrips::class, 'user_id');
+}
 }
