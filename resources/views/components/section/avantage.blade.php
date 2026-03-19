@@ -50,8 +50,8 @@
 
           <!-- Image -->
           <img
-            src="https://cdn.prod.website-files.com/667e89466d9aba156d2b8bee/66b370bd8f975f013ce8be3d_2.avif"
-            class="relative w-52 transform group-hover:scale-110 transition duration-500"
+            src="{{ asset('images/passager1.png') }}"
+            class="relative w-56 transform group-hover:scale-110 transition duration-500"
             alt=""
           >
 
@@ -78,7 +78,7 @@
             <p class="mt-6 text-xl text-white font-medium leading-relaxed">
               Gagnez en moyenne
               <span class="text-pink-400 font-bold">
-                97€ par mois
+                100 000F CFA par mois
               </span>
               en partageant vos trajets 💸
             </p>
@@ -91,7 +91,7 @@
 
           <!-- Image -->
           <img
-            src="https://cdn.prod.website-files.com/667e89466d9aba156d2b8bee/66b37056098c73a67ed2cda5_Design%20sans%20titre%20(3).avif"
+            src="{{ asset('images/passager2.png') }}"
             class="relative w-56 transform group-hover:scale-110 transition duration-500"
             alt=""
           >

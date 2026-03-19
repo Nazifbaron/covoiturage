@@ -4,7 +4,7 @@
 
                     <div class="p-1.5 rounded-lg flex items-center justify-center">
                         <!--<span class="material-symbols-outlined text-background-dark font-bold">directions_car</span>-->
-                        <img src="{{ asset('images/logo.jpeg')}}" alt="" class="w-20 h-20 object-contain">
+                        <img src="{{ asset('images/logo.png')}}" alt="" class="w-20 h-20 object-contain">
                     </div>
 
                     <h2 class="text-deep-blue dark:text-white text-2xl font-extrabold tracking-tight">Covoiturage</h2>
