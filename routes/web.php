@@ -8,13 +8,22 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Middleware\IsAdmin;
 use App\Http\Controllers\AdminController;
 use App\Http\Middleware\Checkblocked;
+use App\Http\Controllers\MessagesController;
 
+
+// Route::view('/','welcome');
+// Route::view('/contact','contact');
+// Route::view('/about','about');
+// Route::view('/result','resultat');
+// Route::view('/detail','details');
 
 Route::view('/','welcome');
 Route::view('/contact','contact');
 Route::view('/about','about');
 Route::view('/result','resultat');
 Route::view('/detail','details');
+Route::view('/marche','marche');
+Route::view('/search','search');
 
 // Route accessible même si bloqué (hors middleware auth)
 Route::get('/blocked', function () {
@@ -31,7 +40,7 @@ Route::get('/blocked', function () {
 
 Route::get('/dashboard', function () {
     return view('dashboard');
-})->middleware(['auth', 'verified'])->name('dashboard');
+})->middleware(['auth', 'verified', 'vehicle_approval'])->name('dashboard');
 
 Route::middleware(['auth', Checkblocked::class])->group(function () {
 
@@ -46,18 +55,28 @@ Route::middleware(['auth', Checkblocked::class])->group(function () {
         Route::post('/choose-role', 'storeRole')->name('user.role.store');
     });
 
+    // Routes véhicule accessibles sans approbation (setup/pending)
     Route::controller(DriverController::class)->group(function () {
-        Route::get('/driver/create-tips', 'showCreateTips')->name('driver.create-tips');
-        Route::get('/driver/requests', 'requests')->name('driver.requests');
-        Route::post('/driver/requests/{pastrip}/accept', 'acceptRequest')->name('driver.accept');
-        Route::get('/driver/chat/{pastrip}','chat')->name('driver.chat');
-        Route::post('/driver/vehicle',   'save')   ->name('vehicle.save');
-        Route::delete('/driver/vehicle', 'destroy')->name('vehicle.destroy');
-
-         Route::post('/driver/trips', 'storeTrip')  ->name('driver.trips.store');
-        Route::get('/driver/mytrips', 'myTrips')    ->name('driver.my-trips');
-         Route::patch('/driver/trips/{trip}/cancel', 'cancelTrip')->name('driver.trips.cancel');
+        Route::get('/driver/vehicle/pending', 'pending')       ->name('driver.vehicle.pending');
+        Route::get('/driver/vehicle/setup',   'showVehicleSetup')->name('driver.vehicle.setup');
+        Route::post('/driver/vehicle/store',  'storeVehicle')  ->name('driver.vehicle.store');
     });
+
+    // Routes driver protégées — véhicule approuvé obligatoire
+    Route::controller(DriverController::class)
+        ->middleware('vehicle_approval')
+        ->group(function () {
+            Route::get('/driver/create-tips', 'showCreateTips')->name('driver.create-tips');
+            Route::get('/driver/requests', 'requests')->name('driver.requests');
+            Route::post('/driver/requests/{pastrip}/accept', 'acceptRequest')->name('driver.accept');
+            Route::get('/driver/chat/{pastrip}', 'chat')->name('driver.chat');
+            Route::post('/driver/vehicle',   'save')   ->name('vehicle.save');
+            Route::delete('/driver/vehicle', 'destroy')->name('vehicle.destroy');
+            Route::get('/driver/trips/create', 'showCreateTips')->name('driver.trips.create');
+            Route::post('/driver/trips', 'storeTrip')  ->name('driver.trips.store');
+            Route::get('/driver/mytrips', 'myTrips')    ->name('driver.my-trips');
+            Route::patch('/driver/trips/{trip}/cancel', 'cancelTrip')->name('driver.trips.cancel');
+        });
 
     Route::controller(PassengerController::class)->group(function () {
         Route::get('/passenger/create-request', 'showCreateRequest')->name('passenger.showtrips');
@@ -77,6 +96,17 @@ Route::middleware(['auth', Checkblocked::class])->group(function () {
         Route::post('/typing',    'typingStart') ->name('chat.typing');
          Route::post('/typing/stop','typingStop') ->name('chat.typing.stop');
      });
+
+     Route::controller(MessagesController::class)->group(function () {
+        Route::get('/messages', 'index')->name('messages.index');
+        Route::get('/messages/{tripId}/poll', 'poll')->name('messages.poll');
+        Route::post('/messages/{tripId}/send', 'send')->name('messages.send');
+        Route::post('/messages/{tripId}/read', 'markRead')->name('messages.read');
+        Route::post('/messages/{tripId}/typing', 'typingStart')->name('messages.typing');
+        Route::post('/messages/{tripId}/typing/stop', 'typingStop')->name('messages.typing.stop');
+        });
+
+
 
 
 });
@@ -103,6 +133,8 @@ Route::middleware(['auth', IsAdmin::class])->prefix('admin')->name('admin.')
 
         // Véhicules
         Route::get('/vehicles','vehicles')->name('vehicles');
+        Route::patch('/vehicles/{vehicle}/approve', 'approveVehicle')->name('vehicles.approve');
+        Route::patch('/vehicles/{vehicle}/reject',  'rejectVehicle') ->name('vehicles.reject');
         Route::delete('/vehicles/{vehicle}', 'deleteVehicle')->name('vehicles.delete');
         });
     });

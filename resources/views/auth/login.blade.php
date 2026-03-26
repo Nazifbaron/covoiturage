@@ -14,7 +14,7 @@
             theme: {
                 extend: {
                     colors: {
-                        primary: "#401268",        // couleur principale (navbar, titres)
+                        primary: "#fe7644",        // couleur principale (navbar, titres)
                         secondary: "#c33c72",      // hover, éléments actifs
                         accent: "#fe7644",
                         background: "#f8faf8"
@@ -39,7 +39,7 @@
             <div class="w-full max-w-[500px] bg-white rounded-3xl shadow-xl p-10 border border-gray-100">
                 <!-- TITLE -->
                 <div class="mb-8 text-center">
-                    <h1 class="text-3xl font-extrabold mb-2">Se connectez</h1>
+                    <h1 class="text-3xl font-extrabold mb-2">Se connecter</h1>
                 </div>
                 <!-- FORM -->
                 <form class="space-y-6" method="POST" action="{{ route('login') }}">
@@ -47,7 +47,15 @@
                     <!-- EMAIL -->
                     <div class="space-y-2">
                         <label class="text-sm font-medium">Email</label>
-                        <input type="email" name="email" required placeholder="email@exemple.com" class="w-full rounded-xl border border-gray-200 p-3 focus:border-primary focus:ring-2 focus:ring-primary/30 outline-none transition">
+                        <input type="email" name="email" value="{{ old('email') }}" required placeholder="email@exemple.com"
+                               class="w-full rounded-xl border p-3 focus:ring-2 outline-none transition
+                                      {{ $errors->has('email') ? 'border-red-400 focus:border-red-400 focus:ring-red-200' : 'border-gray-200 focus:border-primary focus:ring-primary/30' }}">
+                        @error('email')
+                            <p class="text-sm text-red-500 flex items-center gap-1">
+                                <span class="material-symbols-outlined text-base">error</span>
+                                {{ $message }}
+                            </p>
+                        @enderror
                     </div>
                     <!-- PASSWORD -->
                     <div class="space-y-2">
@@ -55,13 +63,15 @@
                             <label class="text-sm font-medium">Mot de passe</label>
                             <a class="text-sm font-bold text-primary hover:underline" href="{{ route('password.request') }}">Mot de passe oublié?</a>
                         </div>
-                        <input type="password" name="password" required placeholder="••••••••" class="w-full rounded-xl border border-gray-200 p-3 focus:border-primary focus:ring-2 focus:ring-primary/30 outline-none transition">
+                        <input type="password" name="password" required placeholder="••••••••"
+                               class="w-full rounded-xl border p-3 focus:ring-2 outline-none transition
+                                      {{ $errors->has('email') ? 'border-red-400 focus:border-red-400 focus:ring-red-200' : 'border-gray-200 focus:border-primary focus:ring-primary/30' }}">
                     </div>
                     <!-- BUTTON -->
                     <button type="submit"
                             class="w-full bg-primary text-black font-bold py-3 rounded-xl
                                 hover:shadow-lg hover:opacity-90 transition">
-                        Se Connectez
+                        Se connecter
                     </button>
 
                 </form>

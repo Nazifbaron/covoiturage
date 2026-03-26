@@ -8,6 +8,7 @@ use Spatie\Permission\Middleware\RoleMiddleware;
 use Spatie\Permission\Middleware\RoleOrPermissionMiddleware;
 use App\Http\Middleware\IsAdmin;
 use App\Http\Middleware\Checkblocked;
+use App\Http\Middleware\VehicleApprovalMiddleware;
 
 return Application::configure(basePath: dirname(__DIR__))
     ->withRouting(
@@ -22,6 +23,7 @@ return Application::configure(basePath: dirname(__DIR__))
             'role_or_permission' => RoleOrPermissionMiddleware::class,
             "is_admin" => IsAdmin::class,
             "check_blocked" => Checkblocked::class,
+            "vehicle_approval" => VehicleApprovalMiddleware::class,
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions) {

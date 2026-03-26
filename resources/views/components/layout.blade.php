@@ -12,10 +12,19 @@
                     darkMode: "class",
                     theme: {
                         extend: {
-                            colors: {
-                                "primary": "#10b981", // Emerald Green
-                                "background-light": "#f6f8f6",
-                                "background-dark": "#0a0f0b", // Darker charcoal
+                             colors: {
+                                primary: "#fe7644",        // couleur principale (navbar, titres)
+                                secondary: "#401268",      // hover, éléments actifs
+                                accent: "#c33c72",         // boutons importants (CTA)
+
+                                "background-light": "#f8f6fb",
+                                "background-dark": "#0f0b1a",
+
+                                "text-dark": "#1a1a1a",
+                                "text-light": "#f9fafb",
+
+                                "border-light": "#e5e7eb",
+                                "border-dark": "#2a2438",
                                 "deep-blue": "#0f172a",
                                 "charcoal": "#121212",
                             },

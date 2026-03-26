@@ -7,6 +7,9 @@ use App\Models\Pastrips;
 use App\Models\Vehicle;
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Mail;
+use App\Mail\VehicleApproved;
+use App\Mail\VehicleRejected;
 
 class AdminController extends Controller
 {
@@ -93,5 +96,100 @@ class AdminController extends Controller
         $user->delete();
 
         return redirect()->route('admin.users')->with('success', 'Utilisateur supprimé.');
+    }
+
+    public function vehicles(Request $request)
+    {
+        $query = Vehicle::with('driver')
+            ->orderBy('created_at', 'desc');
+
+        if ($request->filled('status')) {
+            $query->where('status', $request->status);
+        }
+        if ($request->filled('search')) {
+            $search = $request->search;
+            $query->where(function ($q) use ($search) {
+                $q->where('brand', 'LIKE', "%{$search}%")
+                  ->orWhere('model', 'LIKE', "%{$search}%")
+                  ->orWhere('plate', 'LIKE', "%{$search}%")
+                  ->orWhereHas('driver', fn($d) => $d
+                      ->where('first_name', 'LIKE', "%{$search}%")
+                      ->orWhere('last_name',  'LIKE', "%{$search}%")
+                  );
+            });
+        }
+
+        $vehicles = $query->paginate(15)->withQueryString();
+
+        return view('admin.vehicles', compact('vehicles'));
+    }
+
+    public function approveVehicle(Vehicle $vehicle)
+    {
+        $vehicle->update([
+            'status'           => 'approved',
+            'approved_at'      => now(),
+            'rejection_reason' => null,
+        ]);
+
+        try {
+            Mail::to($vehicle->driver->email)
+                ->send(new VehicleApproved($vehicle->load('driver')));
+        } catch (\Exception $e) {
+            \Log::error('Échec mail approbation véhicule : ' . $e->getMessage());
+        }
+
+        return redirect()->back()->with('success', "Véhicule de {$vehicle->driver->first_name} approuvé.");
+    }
+
+    public function rejectVehicle(Request $request, Vehicle $vehicle)
+    {
+        $request->validate([
+            'rejection_reason' => ['required', 'string', 'max:500'],
+        ], [
+            'rejection_reason.required' => 'Veuillez indiquer le motif du rejet.',
+        ]);
+
+        $vehicle->update([
+            'status'           => 'rejected',
+            'approved_at'      => null,
+            'rejection_reason' => $request->rejection_reason,
+        ]);
+
+        try {
+            Mail::to($vehicle->driver->email)
+                ->send(new VehicleRejected($vehicle->load('driver')));
+        } catch (\Exception $e) {
+            \Log::error('Échec mail rejet véhicule : ' . $e->getMessage());
+        }
+
+        return redirect()->back()->with('success', "Véhicule rejeté.");
+    }
+
+    public function deleteVehicle(Vehicle $vehicle)
+    {
+        $vehicle->delete();
+        return redirect()->route('admin.vehicles')->with('success', 'Véhicule supprimé.');
+    }
+
+    public function trips(Request $request)
+    {
+        $query = DriverTrips::with(['driver', 'driver.vehicle'])
+            ->orderBy('created_at', 'desc');
+
+        if ($request->filled('status')) {
+            $query->where('status', $request->status);
+        }
+        if ($request->filled('search')) {
+            $search = $request->search;
+            $query->where(function($q) use ($search) {
+                $q->where('departure_city', 'LIKE', "%{$search}%")
+                  ->orWhere('arrival_city',  'LIKE', "%{$search}%");
+            });
+        }
+
+        $trips = $query->paginate(15)->withQueryString();
+
+        return view('admin.trips', compact('trips'));
     }
 }

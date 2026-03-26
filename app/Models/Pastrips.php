@@ -58,4 +58,19 @@ class Pastrips extends Model
     {
         return $this->belongsTo(User::class, 'accepted_by');
     }
+
+     public function participants()
+    {
+        // Récupérer tous les utilisateurs qui ont envoyé des messages sur ce trip
+        return User::whereIn('id', function($query) {
+            $query->select('sender_id')
+                  ->from('chat_messages')
+                  ->where('trip_id', $this->id);
+        });
+    }
+        public function messages()
+    {
+        return $this->hasMany(ChatMessage::class, 'trip_id');
+    }
+
 }

@@ -114,7 +114,7 @@
                     {{-- Départ --}}
                     <div class="relative" id="departure-wrapper">
                         <input type="text" id="departure_input"
-                               placeholder="Ville de départ *" autocomplete="off"
+                               placeholder="Point de départ *" autocomplete="off"
                                value="{{ old('departure_city') }}"
                                class="w-full px-4 py-3 rounded-xl border border-slate-200 dark:border-white/10
                                       bg-slate-50 dark:bg-white/5 text-slate-900 dark:text-white
@@ -131,7 +131,7 @@
                     {{-- Arrivée --}}
                     <div class="relative" id="arrival-wrapper">
                         <input type="text" id="arrival_input"
-                               placeholder="Ville d'arrivée *" autocomplete="off"
+                               placeholder="Point d'arrivée *" autocomplete="off"
                                value="{{ old('arrival_city') }}"
                                class="w-full px-4 py-3 rounded-xl border border-slate-200 dark:border-white/10
                                       bg-slate-50 dark:bg-white/5 text-slate-900 dark:text-white
@@ -168,19 +168,20 @@
             </div>
 
             {{-- Adresses précises --}}
-            <div class="grid grid-cols-2 gap-2">
+            <div class="flex-1 space-y-2">
                 <input type="text" name="departure_address" value="{{ old('departure_address') }}"
-                       placeholder="Point de départ précis (opt.)"
+                       placeholder="Point de rendez-vous (opt.)"
                        class="w-full px-3 py-2.5 rounded-xl border border-slate-200 dark:border-white/10
                               bg-slate-50 dark:bg-white/5 text-slate-900 dark:text-white
                               text-sm font-medium placeholder-slate-400
                               focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary transition-all"/>
-                <input type="text" name="arrival_address" value="{{ old('arrival_address') }}"
+
+                {{-- <input type="text" name="arrival_address" value="{{ old('arrival_address') }}"
                        placeholder="Point d'arrivée précis (opt.)"
                        class="w-full px-3 py-2.5 rounded-xl border border-slate-200 dark:border-white/10
                               bg-slate-50 dark:bg-white/5 text-slate-900 dark:text-white
                               text-sm font-medium placeholder-slate-400
-                              focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary transition-all"/>
+                              focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary transition-all"/> --}}
             </div>
         </div>
 
@@ -234,25 +235,29 @@
 
                 {{-- Prix --}}
                 <div>
-                    <label class="text-xs font-bold text-slate-500 dark:text-slate-400 mb-1.5 block">Prix / siège *</label>
-                    <div class="relative">
-                        <input type="number" name="price_per_seat" value="{{ old('price_per_seat') }}"
-                               placeholder="Ex: 1500" min="0" step="50" required
-                               class="w-full pl-3 pr-16 py-2.5 rounded-xl border border-slate-200 dark:border-white/10
-                                      bg-slate-50 dark:bg-white/5 text-slate-900 dark:text-white
-                                      text-sm font-semibold placeholder-slate-400
-                                      focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary transition-all"/>
-                        <span class="absolute right-3 top-1/2 -translate-y-1/2 text-xs font-black
-                                     text-slate-500 dark:text-slate-400 bg-slate-200 dark:bg-white/10 px-1.5 py-0.5 rounded-lg">FCFA</span>
-                    </div>
-                    @error('price_per_seat') <p class="text-xs text-red-500 font-semibold mt-1">{{ $message }}</p> @enderror
-                </div>
+    <label class="text-xs font-bold text-slate-500 dark:text-slate-400 mb-1.5 block">Prix / siège *</label>
+    <div class="relative">
+        <input type="number" name="price_per_seat"
+               placeholder="Calculé automatiquement"
+               readonly
+               class="w-full pl-3 pr-16 py-2.5 rounded-xl border border-slate-200 dark:border-white/10
+                      bg-slate-100 dark:bg-white/10 text-slate-900 dark:text-white
+                      text-sm font-semibold placeholder-slate-400
+                      focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary transition-all cursor-not-allowed"/>
+        <span class="absolute right-3 top-1/2 -translate-y-1/2 text-xs font-black
+                     text-slate-500 dark:text-slate-400 bg-slate-200 dark:bg-white/10 px-1.5 py-0.5 rounded-lg">FCFA</span>
+    </div>
+    <p class="text-xs text-slate-400 mt-1.5 flex items-center gap-1">
+        <span class="material-symbols-outlined text-primary text-sm">auto_awesome</span>
+        Prix calculé automatiquement selon la distance et le nombre de places
+    </p>
+</div>
             </div>
         </div>
 
         {{-- ── OPTIONS ── --}}
         <div class="bg-white dark:bg-card-dark rounded-2xl border border-slate-100 dark:border-primary/10 shadow-sm p-5 space-y-3">
-            <h2 class="font-black text-sm uppercase tracking-widest text-slate-400 dark:text-slate-500">Options du trajet</h2>
+            {{-- <h2 class="font-black text-sm uppercase tracking-widest text-slate-400 dark:text-slate-500">Options du trajet</h2>
             <div class="grid grid-cols-2 gap-2">
                 @foreach([
                     ['name' => 'luggage_allowed', 'icon' => 'luggage',          'label' => 'Bagages acceptés',    'default' => true],
@@ -270,20 +275,34 @@
                     <span class="text-sm font-semibold text-slate-700 dark:text-slate-300 leading-tight">{{ $opt['label'] }}</span>
                 </label>
                 @endforeach
-            </div>
+            </div> --}}
 
-            {{-- Description --}}
+            {{-- Point Important --}}
             <div>
-                <label class="text-xs font-bold text-slate-500 dark:text-slate-400 mb-1.5 block">
-                    Description <span class="font-normal">(optionnel)</span>
+                <label class="text-xs font-bold text-slate-500 dark:text-slate-400 mb-2 block">
+                    Point Important <span class="font-normal">(optionnel)</span>
                 </label>
-                <textarea name="description" rows="2"
-                          placeholder="Ex: Je passe par la route Nationale 1. Ponctuel et non-fumeur."
-                          class="w-full px-3 py-2.5 rounded-xl border border-slate-200 dark:border-white/10
-                                 bg-slate-50 dark:bg-white/5 text-slate-900 dark:text-white
-                                 text-sm font-medium placeholder-slate-400
-                                 focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary
-                                 transition-all resize-none">{{ old('description') }}</textarea>
+                <div class="flex flex-wrap gap-2">
+                    @foreach([
+                        ['value' => 'Pas de bagages',       'icon' => 'no_luggage'],
+                        ['value' => 'Non-fumeur',            'icon' => 'smoke_free'],
+                        ['value' => 'Pas d\'animaux',        'icon' => 'pets'],
+                        ['value' => 'Ponctualité requise',   'icon' => 'schedule'],
+                        ['value' => 'Femmes uniquement',     'icon' => 'woman'],
+                        ['value' => 'Silence apprécié',      'icon' => 'hearing_disabled'],
+                    ] as $opt)
+                    @php $checked = collect(old('notes', []))->contains($opt['value']); @endphp
+                    <label class="note-tag flex items-center gap-1.5 px-3 py-1.5 rounded-full border-2 cursor-pointer select-none transition-all
+                                  {{ $checked
+                                      ? 'border-primary bg-primary/10 text-primary'
+                                      : 'border-slate-200 dark:border-white/10 text-slate-500 dark:text-slate-400 hover:border-primary/50' }}">
+                        <input type="checkbox" name="notes[]" value="{{ $opt['value'] }}"
+                               {{ $checked ? 'checked' : '' }} class="hidden">
+                        <span class="material-symbols-outlined" style="font-size:15px">{{ $opt['icon'] }}</span>
+                        <span class="text-xs font-semibold">{{ $opt['value'] }}</span>
+                    </label>
+                    @endforeach
+                </div>
             </div>
         </div>
 
@@ -313,6 +332,21 @@
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <script src="https://unpkg.com/leaflet-routing-machine@3.2.12/dist/leaflet-routing-machine.min.js"></script>
 <script>
+// ── Tags "Point Important" ─────────────────────────────────────────────
+document.querySelectorAll('.note-tag').forEach(label => {
+    label.addEventListener('click', () => {
+        const cb = label.querySelector('input[type="checkbox"]');
+        const active = cb.checked;
+        label.classList.toggle('border-primary',    !active);
+        label.classList.toggle('bg-primary/10',     !active);
+        label.classList.toggle('text-primary',      !active);
+        label.classList.toggle('border-slate-200',   active);
+        label.classList.toggle('dark:border-white/10', active);
+        label.classList.toggle('text-slate-500',     active);
+        label.classList.toggle('dark:text-slate-400', active);
+    });
+});
+
 (function () {
     //  Carte
     const map = L.map('trip-map', { zoomControl: true, attributionControl: false })
@@ -441,6 +475,278 @@
         display.textContent = val;
         display.nextElementSibling.textContent = 'place' + (val > 1 ? 's' : '');
     };
+
+    // Ajoutez ce script après votre code existant
+(function() {
+    // Configuration des prix par kilomètre selon le type de véhicule
+    const pricingConfig = {
+        'tricycle': { pricePerKm: 40 },      // 40 FCFA par km pour tricycle
+        'voiture': { pricePerKm: 50 },       // 50 FCFA par km pour voiture
+
+    };
+
+    // Fonction pour obtenir le type de véhicule
+    function getVehicleType() {
+        // Rechercher le nom du véhicule dans le texte affiché
+        const vehicleNameElement = document.querySelector('.font-black.text-slate-900.dark\\:text-white');
+        if (vehicleNameElement) {
+            const vehicleText = vehicleNameElement.textContent.toLowerCase();
+            if (vehicleText.includes('tricycle') || vehicleText.includes('tricycle')) {
+                return 'tricycle';
+            }
+            if (vehicleText.includes('voiture') || vehicleText.includes('car')) {
+                return 'voiture';
+            }
+        }
+
+        // Alternative: vérifier l'icône
+        const vehicleIcon = document.querySelector('.material-symbols-outlined.text-primary');
+        if (vehicleIcon) {
+            const iconType = vehicleIcon.textContent.toLowerCase();
+            if (iconType.includes('tricycle') || iconType.includes('pedal')) {
+                return 'tricycle';
+            }
+            if (iconType.includes('directions_car') || iconType.includes('electric_car') || iconType.includes('car')) {
+                return 'voiture';
+            }
+        }
+
+        return 'voiture'; // Par défaut
+    }
+
+    // Fonction pour calculer le prix
+    function calculatePrice(distanceKm, seats, vehicleType = 'voiture') {
+        if (!distanceKm || distanceKm <= 0) return 0;
+
+        const pricePerKm = pricingConfig[vehicleType]?.pricePerKm || pricingConfig.default.pricePerKm;
+        let basePrice = distanceKm * pricePerKm;
+
+        // Ajustement selon le nombre de sièges
+        if (vehicleType === 'tricycle') {
+            // Tricycle: généralement 3 places max
+            if (seats === 3) basePrice = basePrice * 0.9; // -10% pour 3 places
+            if (seats === 2) basePrice = basePrice * 0.95; // -5% pour 2 places
+            if (seats === 1) basePrice = basePrice * 1; // Prix normal pour 1 place
+        } else {
+            // Voiture: ajustements standards
+            if (seats >= 4) basePrice = basePrice * 0.95;    // -5% pour 4+ sièges
+            if (seats <= 2) basePrice = basePrice * 1.05;     // +5% pour 1-2 sièges
+        }
+
+        const finalPrice = Math.ceil(basePrice / 50) * 50; // Arrondi à 50 FCFA supérieur
+        return finalPrice;
+    }
+
+    // Fonction pour obtenir le nom du véhicule affiché
+    function getVehicleDisplayName() {
+        const vehicleNameElement = document.querySelector('.font-black.text-slate-900.dark\\:text-white');
+        if (vehicleNameElement) {
+            return vehicleNameElement.textContent.trim();
+        }
+        return 'Véhicule';
+    }
+
+    // Fonction pour mettre à jour l'affichage du prix
+    function updatePriceDisplay() {
+        const distanceElement = document.getElementById('route-distance');
+        const seatsElement = document.getElementById('seats_total');
+        const priceInput = document.querySelector('input[name="price_per_seat"]');
+
+        if (!distanceElement || !seatsElement || !priceInput) return;
+
+        const distanceText = distanceElement.textContent;
+        const distanceMatch = distanceText.match(/[\d\.]+/);
+
+        if (distanceMatch && distanceMatch[0] !== '—') {
+            const distanceKm = parseFloat(distanceMatch[0]);
+            const seats = parseInt(seatsElement.value) || 1;
+            const vehicleType = getVehicleType();
+
+            const calculatedPrice = calculatePrice(distanceKm, seats, vehicleType);
+
+            if (calculatedPrice > 0) {
+                priceInput.value = calculatedPrice;
+
+                // Mettre à jour le prix total
+                updateTotalPrice(calculatedPrice, seats);
+
+                // Afficher les informations de calcul
+                showPriceInfo(distanceKm, calculatedPrice, seats, vehicleType);
+            }
+        } else {
+            priceInput.value = '';
+            hidePriceInfo();
+        }
+    }
+
+    // Fonction pour afficher les informations de calcul
+    function showPriceInfo(distance, price, seats, vehicleType) {
+        let infoDiv = document.getElementById('price-info');
+        if (!infoDiv) {
+            infoDiv = document.createElement('div');
+            infoDiv.id = 'price-info';
+            infoDiv.className = 'text-xs text-slate-500 dark:text-slate-400 mt-2 p-2 rounded-lg bg-slate-50 dark:bg-white/5';
+            const priceField = document.querySelector('input[name="price_per_seat"]').parentElement;
+            priceField.appendChild(infoDiv);
+        }
+
+        const pricePerKm = pricingConfig[vehicleType]?.pricePerKm || pricingConfig.default.pricePerKm;
+        const vehicleDisplay = vehicleType === 'tricycle' ? 'Tricycle' : 'Voiture';
+
+        let multiplierText = '';
+        if (vehicleType === 'tricycle') {
+            if (seats === 3) multiplierText = ' (-10% plein)';
+            if (seats === 2) multiplierText = ' (-5% duo)';
+            if (seats === 1) multiplierText = ' (tarif normal)';
+        } else {
+            if (seats >= 4) multiplierText = ' (-5% groupe)';
+            if (seats <= 2) multiplierText = ' (+5% individuel)';
+        }
+
+        infoDiv.innerHTML = `
+            <div class="flex items-start gap-1.5">
+                <span class="material-symbols-outlined text-primary text-sm flex-shrink-0">calculate</span>
+                <div class="flex-1">
+                    <span class="font-medium block mb-0.5">${vehicleDisplay} · ${pricePerKm} FCFA/km</span>
+                    <span>${distance} km × ${pricePerKm} FCFA/km${multiplierText} = ${price} FCFA/place</span>
+                </div>
+            </div>
+        `;
+    }
+
+    function hidePriceInfo() {
+        const infoDiv = document.getElementById('price-info');
+        if (infoDiv) infoDiv.remove();
+    }
+
+    // Fonction pour mettre à jour le prix total
+    function updateTotalPrice(pricePerSeat, seats) {
+        let totalElement = document.getElementById('total-price-amount');
+        if (totalElement) {
+            const total = pricePerSeat * seats;
+            totalElement.textContent = total.toLocaleString() + ' FCFA';
+        }
+    }
+
+    // Ajouter l'affichage du prix total
+    function addTotalPriceDisplay() {
+        const priceSection = document.querySelector('.grid-cols-2.gap-4');
+        if (priceSection && !document.getElementById('total-price-display')) {
+            const totalDiv = document.createElement('div');
+            totalDiv.id = 'total-price-display';
+            totalDiv.className = 'col-span-2 mt-3 pt-3 border-t border-slate-200 dark:border-white/10';
+            totalDiv.innerHTML = `
+                <div class="flex justify-between items-center">
+                    <div class="flex items-center gap-1.5">
+                        <span class="material-symbols-outlined text-primary text-sm">payments</span>
+                        <span class="text-xs font-bold text-slate-500 dark:text-slate-400">Total du trajet</span>
+                    </div>
+                    <div class="text-right">
+                        <span class="text-xl font-black text-primary" id="total-price-amount">0 FCFA</span>
+                        <p class="text-[11px] text-slate-400">pour ${document.getElementById('seats_total')?.value || 0} place(s)</p>
+                    </div>
+                </div>
+            `;
+            priceSection.appendChild(totalDiv);
+        }
+    }
+
+    // Observer les changements pour recalculer automatiquement
+    function setupObservers() {
+        // Observer la distance
+        const distanceElement = document.getElementById('route-distance');
+        if (distanceElement) {
+            const observer = new MutationObserver(() => {
+                updatePriceDisplay();
+            });
+            observer.observe(distanceElement, {
+                childList: true,
+                characterData: true,
+                subtree: true
+            });
+        }
+
+        // Observer les changements de sièges
+        const seatsElement = document.getElementById('seats_total');
+        if (seatsElement) {
+            seatsElement.addEventListener('change', () => {
+                setTimeout(updatePriceDisplay, 100);
+                // Mettre à jour le texte du total
+                setTimeout(() => {
+                    const totalText = document.querySelector('#total-price-display p');
+                    if (totalText) {
+                        totalText.textContent = `pour ${seatsElement.value} place(s)`;
+                    }
+                }, 150);
+            });
+        }
+
+        // Observer les boutons +/- des sièges
+        const seatButtons = document.querySelectorAll('.seat-btn');
+        seatButtons.forEach(btn => {
+            btn.addEventListener('click', () => {
+                setTimeout(updatePriceDisplay, 150);
+                setTimeout(() => {
+                    const seatsElement = document.getElementById('seats_total');
+                    const totalText = document.querySelector('#total-price-display p');
+                    if (totalText && seatsElement) {
+                        totalText.textContent = `pour ${seatsElement.value} place(s)`;
+                    }
+                }, 200);
+            });
+        });
+    }
+
+    // Rendre le champ prix en lecture seule
+    function makePriceFieldReadonly() {
+        const priceInput = document.querySelector('input[name="price_per_seat"]');
+        if (priceInput) {
+            priceInput.readOnly = true;
+            priceInput.classList.add('bg-slate-100', 'dark:bg-white/10', 'cursor-not-allowed');
+            priceInput.style.opacity = '0.9';
+            priceInput.placeholder = 'Calcul automatique';
+
+            // Ajouter une icône de cadenas
+            const container = priceInput.parentElement;
+            if (!container.querySelector('.lock-icon')) {
+                const lockIcon = document.createElement('span');
+                lockIcon.className = 'absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 lock-icon';
+                lockIcon.innerHTML = '<span class="material-symbols-outlined text-sm">lock</span>';
+                lockIcon.title = 'Prix calculé automatiquement selon la distance';
+                container.style.position = 'relative';
+                container.appendChild(lockIcon);
+                priceInput.style.paddingRight = '35px';
+            }
+        }
+    }
+
+    // Initialiser tout
+    function initDynamicPricing() {
+        makePriceFieldReadonly();
+        addTotalPriceDisplay();
+
+        setTimeout(() => {
+            updatePriceDisplay();
+            setupObservers();
+        }, 500);
+
+        // Vérifier périodiquement jusqu'à ce que la distance soit chargée
+        const checkInterval = setInterval(() => {
+            const distanceElement = document.getElementById('route-distance');
+            if (distanceElement && distanceElement.textContent !== '—') {
+                updatePriceDisplay();
+                clearInterval(checkInterval);
+            }
+        }, 500);
+    }
+
+    // Démarrer quand la page est chargée
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', initDynamicPricing);
+    } else {
+        initDynamicPricing();
+    }
+})();
 
     // ── Validation submit ────────────────────────────────────────
     document.getElementById('trip-form').addEventListener('submit', e => {

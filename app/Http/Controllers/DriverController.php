@@ -11,6 +11,9 @@ use App\Models\DriverTrips;
 
 
 use Illuminate\Http\Request;
+use Illuminate\Validation\Rule;
+use Illuminate\Support\Facades\Mail;
+use App\Mail\NewVehicleSubmitted;
 
 class DriverController extends Controller
 {
@@ -300,6 +303,127 @@ class DriverController extends Controller
     }
 
     // Cette partie concerne les vehicules
+ public function showVehicleSetup()
+    {
+        $user = Auth::user();
+
+        // Vérifier si le conducteur a déjà un véhicule
+        if ($user->vehicle) {
+            if ($user->vehicle->status === 'pending') {
+                return redirect()->route('driver.vehicle.pending')
+                    ->with('info', 'Votre véhicule est en cours de vérification.');
+            }
+            if ($user->vehicle->status === 'approved') {
+                return redirect()->route('dashboard')
+                    ->with('info', 'Votre véhicule est déjà approuvé.');
+            }
+        }
+
+        return view('auth.vehicle-setup');
+    }
+
+      public function pending()
+    {
+        $user = Auth::user();
+        $vehicle = $user->vehicle;
+
+        if (!$vehicle) {
+            return redirect()->route('driver.vehicle.setup');
+        }
+
+        return view('auth.vehicle-pending', compact('vehicle'));
+    }
+
+public function storeVehicle(Request $request)
+    {
+        // ── 1. Validation ────────────────────────────────────────────────
+        $validated = $request->validate([
+            'type'              => ['required', Rule::in(['moto', 'tricycle', 'voiture'])],
+            'brand'             => ['required', 'string', 'max:80'],
+            'model'             => ['required', 'string', 'max:80'],
+            'color'             => ['required', 'string', 'max:50'],
+            'plate'             => ['required', 'string', 'max:20', 'unique:vehicles,plate'],
+            'insurance'         => ['required', 'file', 'mimes:pdf,jpg,jpeg,png', 'max:5120'],
+            'registration'      => ['required', 'file', 'mimes:pdf,jpg,jpeg,png', 'max:5120'],
+            'technical_control' => ['required', 'file', 'mimes:pdf,jpg,jpeg,png', 'max:5120'],
+            'driver_license'    => ['required', 'file', 'mimes:pdf,jpg,jpeg,png', 'max:5120'],
+        ], [
+            'type.required'              => 'Veuillez sélectionner un type de véhicule.',
+            'type.in'                    => 'Type de véhicule invalide.',
+            'brand.required'             => 'Veuillez entrer la marque du véhicule.',
+            'brand.max'                  => 'La marque ne doit pas dépasser 80 caractères.',
+            'model.required'             => 'Veuillez entrer le modèle du véhicule.',
+            'color.required'             => 'Veuillez entrer la couleur du véhicule.',
+            'plate.required'             => "Veuillez entrer l'immatriculation.",
+            'plate.unique'               => 'Cette immatriculation est déjà enregistrée.',
+            'insurance.required'         => "L'assurance véhicule est requise.",
+            'insurance.mimes'            => "L'assurance doit être un fichier PDF, JPG ou PNG.",
+            'insurance.max'              => "L'assurance ne doit pas dépasser 5 Mo.",
+            'registration.required'      => 'La carte grise est requise.',
+            'registration.mimes'         => 'La carte grise doit être un fichier PDF, JPG ou PNG.',
+            'registration.max'           => 'La carte grise ne doit pas dépasser 5 Mo.',
+            'technical_control.required' => 'Le contrôle technique est requis.',
+            'technical_control.mimes'    => 'Le contrôle technique doit être un fichier PDF, JPG ou PNG.',
+            'technical_control.max'      => 'Le contrôle technique ne doit pas dépasser 5 Mo.',
+            'driver_license.required'    => 'Le permis de conduire est requis.',
+            'driver_license.mimes'       => 'Le permis de conduire doit être un fichier PDF, JPG ou PNG.',
+            'driver_license.max'         => 'Le permis de conduire ne doit pas dépasser 5 Mo.',
+        ]);
+
+        // ── 2. Vérifier qu'un véhicule n'existe pas déjà (contrainte unique) ──
+        if (Auth::user()->vehicle) {
+            return back()->withErrors(['general' => 'Vous avez déjà un véhicule enregistré.']);
+        }
+
+        // ── 3. Stockage des fichiers ─────────────────────────────────────
+        $driverFolder = 'vehicles/driver_' . Auth::id();
+
+        $docs = ['insurance', 'registration', 'technical_control', 'driver_license'];
+        $paths = [];
+
+        foreach ($docs as $doc) {
+            $file        = $request->file($doc);
+            $path        = $file->store("{$driverFolder}/{$doc}", 'public');
+            $paths[$doc] = [
+                'path' => $path,
+                'name' => $file->getClientOriginalName(),
+            ];
+        }
+
+        // ── 4. Création du véhicule ──────────────────────────────────────
+        $vehicle = Vehicle::create([
+            'driver_id'              => Auth::id(),
+            'type'                   => $validated['type'],
+            'brand'                  => $validated['brand'],
+            'model'                  => $validated['model'],
+            'color'                  => $validated['color'],
+            'plate'                  => strtoupper($validated['plate']),
+            'status'                 => 'pending',
+
+            'insurance_path'         => $paths['insurance']['path'],
+            'insurance_name'         => $paths['insurance']['name'],
+            'registration_path'      => $paths['registration']['path'],
+            'registration_name'      => $paths['registration']['name'],
+            'technical_control_path' => $paths['technical_control']['path'],
+            'technical_control_name' => $paths['technical_control']['name'],
+            'driver_license_path'    => $paths['driver_license']['path'],
+            'driver_license_name'    => $paths['driver_license']['name'],
+        ]);
+
+        // ── 5. Notifier l'admin par e-mail ───────────────────────────────
+        try {
+            Mail::to(config('app.admin_email'))
+                ->send(new NewVehicleSubmitted($vehicle->load('driver')));
+        } catch (\Exception $e) {
+            \Log::error('Échec envoi mail admin véhicule : ' . $e->getMessage());
+        }
+
+        // ── 6. Redirection après succès ─────────────────────────────────
+        return redirect()->route('driver.vehicle.pending')
+            ->with('success', 'Véhicule enregistré avec succès. En attente de validation.');
+    }
+
+
   public function save(Request $request)
     {
         abort_if(Auth::user()->role !== 'driver', 403);

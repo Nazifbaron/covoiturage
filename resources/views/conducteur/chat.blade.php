@@ -359,5 +359,6 @@ window.addEventListener('beforeunload', () => {
     clearTimeout(typingTimeout);
     navigator.sendBeacon(URL_TYPING_STOP, new Blob([JSON.stringify({ _token: CSRF_TOKEN })], { type: 'application/json' }));
 });
+
 </script>
 @endpush
