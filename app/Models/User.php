@@ -53,10 +53,19 @@ class User extends Authenticatable
         ];
     }
 
+    // Premier véhicule approuvé (utilisé pour le middleware et la recherche de trajets)
     public function vehicle()
-{
-    return $this->hasOne(Vehicle::class, 'driver_id');
-}
+    {
+        return $this->hasOne(Vehicle::class, 'driver_id')
+                    ->where('status', 'approved')
+                    ->latest();
+    }
+
+    // Tous les véhicules du conducteur
+    public function vehicles()
+    {
+        return $this->hasMany(Vehicle::class, 'driver_id')->latest();
+    }
 
 // Relation : trajets publiés par ce conducteur
 

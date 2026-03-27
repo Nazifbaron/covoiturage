@@ -230,7 +230,7 @@
                           flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-semibold
                           text-slate-700 dark:text-slate-300">
                     <span class="material-symbols-outlined text-xl">add_circle</span>
-                    Proposer un trajet
+                    Demander un trajet
                 </a>
 
                 <a href="{{ route('passenger.my-requests') }}"
@@ -248,7 +248,7 @@
                     <span class="material-symbols-outlined text-xl">message</span>
                     Messages
                 </a>
-                
+
                 <div class="pt-3 pb-1 px-3">
                     <p class="text-xs font-black uppercase tracking-widest text-slate-400 dark:text-slate-600">Compte</p>
                 </div>
@@ -303,7 +303,7 @@
                     <p class="text-xs font-black uppercase tracking-widest text-slate-400 dark:text-slate-600">Finances</p>
                 </div>
 
-                <a href="#"
+                <a href="{{ route('driver.earnings') }}"
                    class="sidebar-link flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-semibold
                           text-slate-700 dark:text-slate-300">
                     <span class="material-symbols-outlined text-xl">payments</span>

@@ -19,13 +19,13 @@ class ProfileController extends Controller
      */
     public function edit(Request $request): View
     {
-        $vehicle = $request->user()->role === 'driver'
-            ? Vehicle::where('driver_id', $request->user()->id)->first()
-            : null;
+        $vehicles = $request->user()->role === 'driver'
+            ? $request->user()->vehicles()->latest()->get()
+            : collect();
 
         return view('profile.edit', [
-            'user'    => $request->user(),
-            'vehicle' => $vehicle,   // ← toujours défini, jamais undefined
+            'user'     => $request->user(),
+            'vehicles' => $vehicles,
         ]);
     }
 

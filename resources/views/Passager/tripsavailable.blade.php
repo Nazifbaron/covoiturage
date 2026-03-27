@@ -188,7 +188,7 @@
             </div>
 
             {{-- Bouton submit --}}
-            <button type="submit"
+            <button id="book-submit-btn" type="submit"
                     class="w-full flex items-center justify-center gap-2
                            bg-primary hover:bg-primary/90 text-background-dark
                            font-black py-3 rounded-xl transition-all shadow-lg shadow-primary/20 text-sm">
@@ -196,6 +196,28 @@
                 Confirmer la réservation
             </button>
         </form>
+
+        {{-- État succès (caché par défaut) --}}
+        <div id="book-success" class="hidden flex-col items-center gap-5 py-4 text-center">
+            <div class="w-16 h-16 rounded-full bg-green-100 dark:bg-green-900/30 flex items-center justify-center">
+                <span class="material-symbols-outlined text-green-500 text-4xl">check_circle</span>
+            </div>
+            <div>
+                <p class="font-black text-slate-900 dark:text-white text-lg">Réservation confirmée !</p>
+                <p class="text-sm text-slate-500 dark:text-slate-400 mt-1">Votre place a été réservée avec succès.</p>
+            </div>
+            <a id="book-chat-link" href="#"
+               class="w-full flex items-center justify-center gap-2
+                      bg-primary hover:bg-primary/90 text-background-dark
+                      font-black py-3 rounded-xl transition-all shadow-lg shadow-primary/20 text-sm">
+                <span class="material-symbols-outlined text-lg">pending</span>
+                Voir le statut de ma réservation
+            </a>
+            <button onclick="closeBookModal()"
+                    class="w-full text-sm font-semibold text-slate-500 dark:text-slate-400 py-2 hover:text-slate-700 dark:hover:text-white transition-colors">
+                Fermer
+            </button>
+        </div>
     </div>
 </div>
 
@@ -222,6 +244,47 @@ window.addEventListener('DOMContentLoaded', () => {
 
     document.getElementById('search-departure').addEventListener('input', onSearchInput);
     document.getElementById('search-arrival').addEventListener('input', onSearchInput);
+
+    // Soumission AJAX du formulaire de réservation
+    document.getElementById('book-form').addEventListener('submit', async function(e) {
+        e.preventDefault();
+
+        const btn = document.getElementById('book-submit-btn');
+        btn.disabled = true;
+        btn.innerHTML = '<span class="w-4 h-4 border-2 border-current border-t-transparent rounded-full animate-spin inline-block"></span> Réservation…';
+
+        const formData = new FormData(this);
+
+        try {
+            const res = await fetch(this.action, {
+                method: 'POST',
+                headers: {
+                    'X-CSRF-TOKEN': CSRF_TOKEN,
+                    'Accept': 'application/json',
+                },
+                body: formData,
+            });
+
+            const data = await res.json();
+
+            if (res.ok && data.success) {
+                document.getElementById('book-form').classList.add('hidden');
+                document.getElementById('book-chat-link').href = data.chat_url;
+                const successEl = document.getElementById('book-success');
+                successEl.classList.remove('hidden');
+                successEl.classList.add('flex');
+            } else {
+                const msg = data.message || 'Une erreur est survenue. Veuillez réessayer.';
+                alert(msg);
+                btn.disabled = false;
+                btn.innerHTML = '<span class="material-symbols-outlined text-lg">check_circle</span> Confirmer la réservation';
+            }
+        } catch (err) {
+            alert('Erreur réseau. Veuillez réessayer.');
+            btn.disabled = false;
+            btn.innerHTML = '<span class="material-symbols-outlined text-lg">check_circle</span> Confirmer la réservation';
+        }
+    });
 });
 
 function onSearchInput() {
@@ -508,9 +571,20 @@ function openBookModal(trip) {
 function closeBookModal() {
     const modal    = document.getElementById('bookModal');
     const modalBox = document.getElementById('bookModalBox');
+    modal.classList.remove('opacity-100');
     modal.classList.add('opacity-0');
     modalBox.classList.add('translate-y-4');
     setTimeout(() => modal.classList.add('pointer-events-none'), 200);
+
+    // Réinitialiser l'état du modal pour la prochaine réservation
+    const form = document.getElementById('book-form');
+    const successEl = document.getElementById('book-success');
+    const btn = document.getElementById('book-submit-btn');
+    form.classList.remove('hidden');
+    successEl.classList.add('hidden');
+    successEl.classList.remove('flex');
+    btn.disabled = false;
+    btn.innerHTML = '<span class="material-symbols-outlined text-lg">check_circle</span> Confirmer la réservation';
 }
 
 document.getElementById('bookModalOverlay').addEventListener('click', closeBookModal);

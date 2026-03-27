@@ -11,6 +11,7 @@ protected $table = 'driver_trips';
 
     protected $fillable = [
         'driver_id',
+        'vehicle_id',
         'departure_city',
         'arrival_city',
         'departure_address',
@@ -52,16 +53,10 @@ protected $table = 'driver_trips';
         return $this->belongsTo(User::class, 'driver_id');
     }
 
-     public function vehicle()
+    // Véhicule choisi par le conducteur pour ce trajet
+    public function vehicle()
     {
-        return $this->hasOneThrough(
-            \App\Models\Vehicle::class,
-            \App\Models\User::class,
-            'id',         // clé sur users
-            'driver_id',  // clé sur vehicles
-            'driver_id',  // clé locale sur driver_trips
-            'id'          // clé locale sur users
-        );
+        return $this->belongsTo(\App\Models\Vehicle::class, 'vehicle_id');
     }
 
     // Vérifie si le trajet est complet

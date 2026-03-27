@@ -13,21 +13,24 @@ use App\Models\DriverTrips;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
 use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\DB;
+use Carbon\Carbon;
 use App\Mail\NewVehicleSubmitted;
 
 class DriverController extends Controller
 {
     public function showCreateTips()
     {
-        $vehicle = Vehicle::where('driver_id', Auth::id())->first();
+        $vehicles = Vehicle::where('driver_id', Auth::id())
+                            ->where('status', 'approved')
+                            ->get();
 
-        // Pas de véhicule → redirection vers profil avec message
-        if (!$vehicle) {
+        if ($vehicles->isEmpty()) {
             return redirect()->route('profile.edit')
-                ->with('warning', 'Veuillez d\'abord enregistrer votre véhicule avant de publier un trajet.');
+                ->with('warning', 'Vous devez avoir au moins un véhicule approuvé pour publier un trajet.');
         }
 
-        return view('conducteur.createTrips', compact('vehicle'));
+        return view('conducteur.createTrips', compact('vehicles'));
     }
 
 
@@ -38,6 +41,7 @@ class DriverController extends Controller
         abort_unless($vehicle, 422, 'Véhicule requis pour publier un trajet.');
 
         $validated = $request->validate([
+            'vehicle_id'        => ['required', 'integer', 'exists:vehicles,id'],
             'departure_city'    => ['required', 'string', 'max:100'],
             'arrival_city'      => ['required', 'string', 'max:100'],
             'departure_address' => ['nullable', 'string', 'max:255'],
@@ -66,10 +70,19 @@ class DriverController extends Controller
             'seats_total.max'            => '7 places maximum.',
             'price_per_seat.required'    => 'Le prix par siège est obligatoire.',
             'price_per_seat.min'         => 'Le prix ne peut pas être négatif.',
+            'vehicle_id.required'        => 'Veuillez sélectionner un véhicule.',
+            'vehicle_id.exists'          => 'Véhicule invalide.',
         ]);
-    // dd($validated);
+
+        // Vérifier que le véhicule appartient bien au conducteur et est approuvé
+        $vehicle = Vehicle::where('id', $validated['vehicle_id'])
+                          ->where('driver_id', Auth::id())
+                          ->where('status', 'approved')
+                          ->firstOrFail();
+
         DriverTrips::create([
             'driver_id'         => Auth::id(),
+            'vehicle_id'        => $vehicle->id,
             'departure_city'    => $validated['departure_city'],
             'arrival_city'      => $validated['arrival_city'],
             'departure_address' => $validated['departure_address'] ?? null,
@@ -160,10 +173,32 @@ class DriverController extends Controller
         abort_if($pastrip->status !== 'pending', 422, 'Cette demande n\'est plus disponible.');
         abort_if(Auth::user()->role !== 'driver', 403);
 
+        // Si la demande est liée à un trajet spécifique, vérifier qu'il appartient au conducteur connecté
+        if ($pastrip->driver_trip_id) {
+            $driverTrip = DriverTrips::find($pastrip->driver_trip_id);
+            abort_unless(
+                $driverTrip && (int) $driverTrip->driver_id === (int) Auth::id(),
+                403,
+                'Cette demande est liée à un trajet qui ne vous appartient pas.'
+            );
+        }
+
         $pastrip->update([
             'status'      => 'accepted',
             'accepted_by' => Auth::id(),
         ]);
+
+        // Décrémenter les places disponibles sur le trajet conducteur lié
+        if ($pastrip->driver_trip_id) {
+            $driverTrip = $driverTrip ?? DriverTrips::find($pastrip->driver_trip_id);
+            if ($driverTrip) {
+                $newSeats = max(0, $driverTrip->seats_available - $pastrip->passengers);
+                // Un trajet complet reste 'scheduled' : complet ≠ terminé
+                $driverTrip->update([
+                    'seats_available' => $newSeats,
+                ]);
+            }
+        }
 
         return redirect()
             ->route('driver.chat', $pastrip->id)
@@ -302,41 +337,104 @@ class DriverController extends Controller
         );
     }
 
-    // Cette partie concerne les vehicules
- public function showVehicleSetup()
-    {
-        $user = Auth::user();
+    // ── Gains ──────────────────────────────────────────────────────────────
 
-        // Vérifier si le conducteur a déjà un véhicule
-        if ($user->vehicle) {
-            if ($user->vehicle->status === 'pending') {
-                return redirect()->route('driver.vehicle.pending')
-                    ->with('info', 'Votre véhicule est en cours de vérification.');
-            }
-            if ($user->vehicle->status === 'approved') {
-                return redirect()->route('dashboard')
-                    ->with('info', 'Votre véhicule est déjà approuvé.');
-            }
+    public function earnings(Request $request)
+    {
+        $driverId = Auth::id();
+
+        // Tous les trajets du conducteur (hors annulés) avec au moins 1 place vendue
+        $allTrips = DriverTrips::where('driver_id', $driverId)
+            ->where('status', '!=', 'cancelled')
+            ->get();
+
+        // Calcul : gain = price_per_seat × places vendues (seats_total - seats_available)
+        $earning = fn(DriverTrips $t) => $t->price_per_seat * ($t->seats_total - $t->seats_available);
+
+        $totalEarnings    = $allTrips->sum($earning);
+        $totalPassengers  = $allTrips->sum(fn($t) => $t->seats_total - $t->seats_available);
+        $totalTrips       = $allTrips->count();
+
+        $thisMonth = $allTrips
+            ->filter(fn($t) => $t->departure_date->isCurrentMonth())
+            ->sum($earning);
+
+        $lastMonth = $allTrips
+            ->filter(fn($t) => $t->departure_date->month === now()->subMonth()->month
+                             && $t->departure_date->year  === now()->subMonth()->year)
+            ->sum($earning);
+
+        // Évolution vs mois dernier (%)
+        $evolution = $lastMonth > 0
+            ? round((($thisMonth - $lastMonth) / $lastMonth) * 100)
+            : ($thisMonth > 0 ? 100 : 0);
+
+        // Répartition mensuelle sur les 6 derniers mois
+        $monthly = collect(range(5, 0))->map(function ($monthsAgo) use ($allTrips, $earning) {
+            $ref = now()->subMonths($monthsAgo);
+            $gains = $allTrips
+                ->filter(fn($t) => $t->departure_date->month === (int) $ref->month
+                                 && $t->departure_date->year  === (int) $ref->year)
+                ->sum($earning);
+            return [
+                'label'  => $ref->locale('fr')->isoFormat('MMM YY'),
+                'amount' => $gains,
+            ];
+        });
+
+        // Trajets avec gains > 0, triés par date décroissante (paginés)
+        $trips = DriverTrips::where('driver_id', $driverId)
+            ->where('status', '!=', 'cancelled')
+            ->whereColumn('seats_available', '<', 'seats_total')
+            ->orderBy('departure_date', 'desc')
+            ->orderBy('departure_time', 'desc')
+            ->paginate(10)
+            ->withQueryString();
+
+        // Meilleur trajet
+        $bestTrip = $allTrips->sortByDesc($earning)->first();
+
+        return view('conducteur.earnings', compact(
+            'totalEarnings', 'totalPassengers', 'totalTrips',
+            'thisMonth', 'lastMonth', 'evolution',
+            'monthly', 'trips', 'bestTrip'
+        ));
+    }
+
+    // ── Véhicules ──────────────────────────────────────────────────────────
+
+    public function showVehicleSetup()
+    {
+        $count = Auth::user()->vehicles()->count();
+
+        if ($count >= 3) {
+            return redirect()->route('profile.edit')
+                ->with('warning', 'Vous avez atteint la limite de 3 véhicules.');
         }
 
         return view('auth.vehicle-setup');
     }
 
-      public function pending()
+    public function pending()
     {
         $user = Auth::user();
-        $vehicle = $user->vehicle;
+        $pendingVehicle = $user->vehicles()->where('status', 'pending')->latest()->first();
 
-        if (!$vehicle) {
+        if (!$pendingVehicle) {
             return redirect()->route('driver.vehicle.setup');
         }
 
-        return view('auth.vehicle-pending', compact('vehicle'));
+        return view('auth.vehicle-pending', ['vehicle' => $pendingVehicle]);
     }
 
-public function storeVehicle(Request $request)
+    public function storeVehicle(Request $request)
     {
-        // ── 1. Validation ────────────────────────────────────────────────
+        // ── 1. Limite 3 véhicules ──────────────────────────────────────────
+        if (Auth::user()->vehicles()->count() >= 3) {
+            return back()->withErrors(['general' => 'Vous avez atteint la limite de 3 véhicules.']);
+        }
+
+        // ── 2. Validation ─────────────────────────────────────────────────
         $validated = $request->validate([
             'type'              => ['required', Rule::in(['moto', 'tricycle', 'voiture'])],
             'brand'             => ['required', 'string', 'max:80'],
@@ -370,27 +468,18 @@ public function storeVehicle(Request $request)
             'driver_license.max'         => 'Le permis de conduire ne doit pas dépasser 5 Mo.',
         ]);
 
-        // ── 2. Vérifier qu'un véhicule n'existe pas déjà (contrainte unique) ──
-        if (Auth::user()->vehicle) {
-            return back()->withErrors(['general' => 'Vous avez déjà un véhicule enregistré.']);
-        }
-
-        // ── 3. Stockage des fichiers ─────────────────────────────────────
+        // ── 3. Stockage des fichiers ──────────────────────────────────────
         $driverFolder = 'vehicles/driver_' . Auth::id();
-
-        $docs = ['insurance', 'registration', 'technical_control', 'driver_license'];
+        $docs  = ['insurance', 'registration', 'technical_control', 'driver_license'];
         $paths = [];
 
         foreach ($docs as $doc) {
             $file        = $request->file($doc);
             $path        = $file->store("{$driverFolder}/{$doc}", 'public');
-            $paths[$doc] = [
-                'path' => $path,
-                'name' => $file->getClientOriginalName(),
-            ];
+            $paths[$doc] = ['path' => $path, 'name' => $file->getClientOriginalName()];
         }
 
-        // ── 4. Création du véhicule ──────────────────────────────────────
+        // ── 4. Création ───────────────────────────────────────────────────
         $vehicle = Vehicle::create([
             'driver_id'              => Auth::id(),
             'type'                   => $validated['type'],
@@ -399,7 +488,6 @@ public function storeVehicle(Request $request)
             'color'                  => $validated['color'],
             'plate'                  => strtoupper($validated['plate']),
             'status'                 => 'pending',
-
             'insurance_path'         => $paths['insurance']['path'],
             'insurance_name'         => $paths['insurance']['name'],
             'registration_path'      => $paths['registration']['path'],
@@ -410,7 +498,7 @@ public function storeVehicle(Request $request)
             'driver_license_name'    => $paths['driver_license']['name'],
         ]);
 
-        // ── 5. Notifier l'admin par e-mail ───────────────────────────────
+        // ── 5. Notifier l'admin ───────────────────────────────────────────
         try {
             Mail::to(config('app.admin_email'))
                 ->send(new NewVehicleSubmitted($vehicle->load('driver')));
@@ -418,51 +506,18 @@ public function storeVehicle(Request $request)
             \Log::error('Échec envoi mail admin véhicule : ' . $e->getMessage());
         }
 
-        // ── 6. Redirection après succès ─────────────────────────────────
-        return redirect()->route('driver.vehicle.pending')
-            ->with('success', 'Véhicule enregistré avec succès. En attente de validation.');
+        return redirect()->route('profile.edit')
+            ->with('success', 'Véhicule soumis avec succès. Il sera visible dès validation par l\'administrateur.');
     }
 
-
-  public function save(Request $request)
+    public function destroy(Vehicle $vehicle)
     {
-        abort_if(Auth::user()->role !== 'driver', 403);
+        abort_unless((int) $vehicle->driver_id === (int) Auth::id(), 403);
+        abort_if($vehicle->status === 'approved', 422, 'Un véhicule approuvé ne peut pas être supprimé.');
 
-        $validated = $request->validate([
-            'type'  => ['required', 'in:moto,tricycle,voiture'],
-            'brand' => ['required', 'string', 'max:80'],
-            'model' => ['required', 'string', 'max:80'],
-            'color' => ['required', 'string', 'max:50'],
-            'plate' => ['required', 'string', 'max:20'],
-        ], [
-            'type.required'  => 'Le type de véhicule est obligatoire.',
-            'type.in'        => 'Type invalide (moto, tricycle ou voiture).',
-            'brand.required' => 'La marque est obligatoire.',
-            'model.required' => 'Le modèle est obligatoire.',
-            'color.required' => 'La couleur est obligatoire.',
-            'plate.required' => "L'immatriculation est obligatoire.",
-            'plate.max'      => "L'immatriculation ne peut pas dépasser 20 caractères.",
-        ]);
+        $vehicle->delete();
 
-        Vehicle::updateOrCreate(
-            ['driver_id' => Auth::id()],
-            $validated
-        );
-
-        return redirect()
-            ->route('profile.edit')
-            ->with('success', 'Véhicule enregistré avec succès.');
-    }
-
-    /**
-     * Supprimer le véhicule
-     */
-    public function destroy()
-    {
-        Vehicle::where('driver_id', Auth::id())->delete();
-
-        return redirect()
-            ->route('profile.edit')
+        return redirect()->route('profile.edit')
             ->with('success', 'Véhicule supprimé.');
     }
 

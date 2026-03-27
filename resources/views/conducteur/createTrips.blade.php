@@ -70,29 +70,76 @@
         </div>
     </div>
 
-    {{-- ── Véhicule associé ── --}}
-    <div class="flex items-center gap-4 p-4 rounded-2xl
-                bg-primary/5 border border-primary/20
-                dark:bg-primary/10 dark:border-primary/20">
-        <div class="w-11 h-11 rounded-xl bg-primary/15 border border-primary/20
-                    flex items-center justify-center flex-shrink-0">
-            <span class="material-symbols-outlined text-primary text-2xl">{{ $vehicle->type_icon }}</span>
+    {{-- ── Sélection du véhicule ── --}}
+    <div class="bg-white dark:bg-card-dark rounded-2xl border border-slate-100 dark:border-primary/10 shadow-sm p-5 space-y-3">
+        <div class="flex items-center justify-between">
+            <h2 class="font-black text-sm uppercase tracking-widest text-slate-400 dark:text-slate-500">Véhicule</h2>
+            <a href="{{ route('profile.edit') }}"
+               class="text-xs font-bold text-slate-400 hover:text-primary transition-colors flex items-center gap-1">
+                <span class="material-symbols-outlined text-base">manage_accounts</span>
+                Gérer
+            </a>
         </div>
-        <div class="flex-1 min-w-0">
-            <p class="text-xs font-black text-primary uppercase tracking-wider">Véhicule enregistré</p>
-            <p class="font-black text-slate-900 dark:text-white text-sm mt-0.5">
-                {{ $vehicle->full_name }}
-                <span class="font-semibold text-slate-400 ml-1">· {{ $vehicle->color }}</span>
-            </p>
-        </div>
-        <span class="flex-shrink-0 text-xs font-black text-slate-600 dark:text-slate-300
-                     bg-slate-200 dark:bg-white/10 px-2.5 py-1 rounded-lg tracking-widest">
-            {{ strtoupper($vehicle->plate) }}
-        </span>
-        <a href="{{ route('profile.edit') }}"
-           class="flex-shrink-0 text-xs font-bold text-slate-400 hover:text-primary transition-colors">
-            <span class="material-symbols-outlined text-base">edit</span>
-        </a>
+
+        @error('vehicle_id')
+            <p class="text-xs text-red-500 font-semibold">{{ $message }}</p>
+        @enderror
+
+        @if($vehicles->count() === 1)
+            {{-- Un seul véhicule : affichage info + champ caché --}}
+            @php $v = $vehicles->first(); @endphp
+            <input type="hidden" name="vehicle_id" value="{{ $v->id }}"/>
+            <div class="flex items-center gap-3 p-3 rounded-xl bg-primary/5 border border-primary/20">
+                <div class="w-10 h-10 rounded-xl bg-primary/15 border border-primary/20
+                            flex items-center justify-center flex-shrink-0">
+                    <span class="material-symbols-outlined text-primary text-xl">{{ $v->type_icon }}</span>
+                </div>
+                <div class="flex-1 min-w-0">
+                    <p class="font-black text-slate-900 dark:text-white text-sm">{{ $v->full_name }}</p>
+                    <p class="text-xs text-slate-500 dark:text-slate-400 font-medium">{{ $v->color }}</p>
+                </div>
+                <span class="text-xs font-black text-slate-600 dark:text-slate-300
+                             bg-slate-200 dark:bg-white/10 px-2.5 py-1 rounded-lg tracking-widest flex-shrink-0">
+                    {{ strtoupper($v->plate) }}
+                </span>
+            </div>
+        @else
+            {{-- Plusieurs véhicules : sélecteur en cartes radio --}}
+            <div class="grid grid-cols-1 gap-2">
+                @foreach($vehicles as $v)
+                <label class="relative cursor-pointer">
+                    <input type="radio" name="vehicle_id" value="{{ $v->id }}"
+                           {{ old('vehicle_id', $vehicles->first()->id) == $v->id ? 'checked' : '' }}
+                           class="peer sr-only"/>
+                    <div class="flex items-center gap-3 p-3 rounded-xl border-2
+                                border-slate-200 dark:border-white/10
+                                bg-slate-50 dark:bg-white/5
+                                peer-checked:border-primary peer-checked:bg-primary/5
+                                dark:peer-checked:bg-primary/10
+                                transition-all cursor-pointer hover:border-primary/40">
+                        <div class="w-10 h-10 rounded-xl bg-white dark:bg-white/10 border border-slate-200 dark:border-white/10
+                                    flex items-center justify-center flex-shrink-0">
+                            <span class="material-symbols-outlined text-slate-400 peer-checked:text-primary text-xl
+                                         [.peer:checked~div_&]:text-primary">{{ $v->type_icon }}</span>
+                        </div>
+                        <div class="flex-1 min-w-0">
+                            <p class="font-black text-slate-900 dark:text-white text-sm">{{ $v->full_name }}</p>
+                            <p class="text-xs text-slate-500 dark:text-slate-400 font-medium">{{ $v->color }} · {{ $v->type_label }}</p>
+                        </div>
+                        <span class="text-xs font-black text-slate-600 dark:text-slate-300
+                                     bg-slate-200 dark:bg-white/10 px-2.5 py-1 rounded-lg tracking-widest flex-shrink-0">
+                            {{ strtoupper($v->plate) }}
+                        </span>
+                        {{-- Check badge --}}
+                        <span class="hidden peer-checked:flex w-5 h-5 rounded-full bg-primary
+                                     items-center justify-center flex-shrink-0">
+                            <span class="material-symbols-outlined text-background-dark" style="font-size:12px">check</span>
+                        </span>
+                    </div>
+                </label>
+                @endforeach
+            </div>
+        @endif
     </div>
 
     <form method="POST" action="{{ route('driver.trips.store') }}" class="space-y-4" id="trip-form">

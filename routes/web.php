@@ -70,12 +70,12 @@ Route::middleware(['auth', Checkblocked::class])->group(function () {
             Route::get('/driver/requests', 'requests')->name('driver.requests');
             Route::post('/driver/requests/{pastrip}/accept', 'acceptRequest')->name('driver.accept');
             Route::get('/driver/chat/{pastrip}', 'chat')->name('driver.chat');
-            Route::post('/driver/vehicle',   'save')   ->name('vehicle.save');
-            Route::delete('/driver/vehicle', 'destroy')->name('vehicle.destroy');
+            Route::delete('/driver/vehicle/{vehicle}', 'destroy')->name('vehicle.destroy');
             Route::get('/driver/trips/create', 'showCreateTips')->name('driver.trips.create');
             Route::post('/driver/trips', 'storeTrip')  ->name('driver.trips.store');
             Route::get('/driver/mytrips', 'myTrips')    ->name('driver.my-trips');
             Route::patch('/driver/trips/{trip}/cancel', 'cancelTrip')->name('driver.trips.cancel');
+            Route::get('/driver/earnings', 'earnings')->name('driver.earnings');
         });
 
     Route::controller(PassengerController::class)->group(function () {
@@ -83,6 +83,7 @@ Route::middleware(['auth', Checkblocked::class])->group(function () {
         Route::post('/passenger/requests', 'storetrips')->name('passenger.storetrips');
         Route::get('/passenger/my-requests', 'showMyRequests')->name('passenger.my-requests');
         Route::get('/passenger/chat/{pastrip}', 'chat')->name('passenger.chat');
+        Route::patch('/passenger/requests/{pastrip}/cancel', 'cancelRequest')->name('passenger.requests.cancel');
         Route::get('/passenger/trips',        'availableTrips')->name('passenger.trips');
         Route::get('/passenger/trips/search', 'searchTrips')   ->name('passenger.trips.search');
     });

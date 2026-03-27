@@ -86,7 +86,7 @@
                     {{-- Départ --}}
                     <div class="relative" id="departure-wrapper">
                         <input type="text" id="departure_input"
-                               placeholder="Ville de départ *"
+                               placeholder="Point de départ *"
                                autocomplete="off"
                                class="w-full px-4 py-3 rounded-xl border border-slate-200 dark:border-white/10
                                       bg-slate-50 dark:bg-white/5 text-slate-900 dark:text-white
@@ -104,7 +104,7 @@
                     {{-- Arrivée --}}
                     <div class="relative" id="arrival-wrapper">
                         <input type="text" id="arrival_input"
-                               placeholder="Ville d'arrivée *"
+                               placeholder="Point d'arrivée *"
                                autocomplete="off"
                                class="w-full px-4 py-3 rounded-xl border border-slate-200 dark:border-white/10
                                       bg-slate-50 dark:bg-white/5 text-slate-900 dark:text-white

@@ -56,6 +56,7 @@ class PassengerController extends Controller
     public function storetrips(Request $request)
     {
         $validated = $request->validate([
+            'driver_trip_id'    => ['nullable', 'integer', 'exists:driver_trips,id'],
             'departure_city'    => ['required', 'string', 'max:100'],
             'arrival_city'      => ['required', 'string', 'max:100'],
             'departure_address' => ['nullable', 'string', 'max:255'],
@@ -96,9 +97,10 @@ class PassengerController extends Controller
         ]);
 
         $expiresAt = now()->addHours((int) $validated['expires_in_hours']);
-    // dd($validated, $expiresAt);
-        Pastrips::create([
+
+        $pastrip = Pastrips::create([
             'user_id'           => Auth::id(),
+            'driver_trip_id'    => $validated['driver_trip_id'] ?? null,
             'departure_city'    => $validated['departure_city'],
             'arrival_city'      => $validated['arrival_city'],
             'departure_address' => $validated['departure_address'] ?? null,
@@ -124,6 +126,13 @@ class PassengerController extends Controller
             'expires_at'        => $expiresAt,
             'status'            => 'pending',
         ]);
+
+        if ($request->expectsJson()) {
+            return response()->json([
+                'success'  => true,
+                'chat_url' => route('passenger.chat', $pastrip->id),
+            ]);
+        }
 
         return redirect()->route('dashboard')
             ->with('success', 'Votre demande de trajet a été publiée ! Les conducteurs aux alentours seront notifiés.');
@@ -216,10 +225,27 @@ class PassengerController extends Controller
         }
     }
 
+    public function cancelRequest(Pastrips $pastrip)
+    {
+        abort_unless($pastrip->user_id === Auth::id(), 403);
+        abort_if($pastrip->status !== 'pending', 422, 'Seules les demandes en attente peuvent être annulées.');
+
+        $pastrip->update(['status' => 'cancelled']);
+
+        return redirect()->route('passenger.my-requests')
+            ->with('success', 'Votre demande a été annulée.');
+    }
+
      public function chat(Pastrips $pastrip)
     {
         // Seul le passager propriétaire peut accéder
         abort_unless($pastrip->user_id === Auth::id(), 403);
+
+        // En attente de confirmation du conducteur → vue d'attente
+        if ($pastrip->status === 'pending') {
+            return view('Passager.pending', ['trip' => $pastrip]);
+        }
+
         abort_if($pastrip->status !== 'accepted', 403, 'La course doit être acceptée.');
 
         $driver = User::findOrFail($pastrip->accepted_by);

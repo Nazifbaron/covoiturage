@@ -3,6 +3,7 @@
 namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use App\Models\DriverTrips;
 
 use Illuminate\Database\Eloquent\Model;
 
@@ -10,6 +11,7 @@ class Pastrips extends Model
 {
     protected $fillable = [
         'user_id',
+        'driver_trip_id',
         'departure_city',
         'arrival_city',
         'departure_address',
@@ -57,6 +59,12 @@ class Pastrips extends Model
     public function driver()
     {
         return $this->belongsTo(User::class, 'accepted_by');
+    }
+
+    // Trajet conducteur lié à cette réservation
+    public function driverTrip()
+    {
+        return $this->belongsTo(DriverTrips::class, 'driver_trip_id');
     }
 
      public function participants()

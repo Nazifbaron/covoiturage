@@ -28,45 +28,39 @@ class VehicleApprovalMiddleware
             return $next($request);
         }
 
-        // Vérifier si l'utilisateur a un véhicule
-        $vehicle = $user->vehicle;
+        $setupRoutes = ['driver.vehicle.setup', 'driver.vehicle.store', 'driver.vehicle.pending'];
 
-        // Pas de véhicule enregistré
-        if (!$vehicle) {
-            // Si la route actuelle est déjà celle d'enregistrement, laisser passer
-            if ($request->route()->getName() === 'driver.vehicle.setup' ||
-                $request->route()->getName() === 'driver.vehicle.store') {
+        $vehicles = $user->vehicles;
+
+        // Aucun véhicule enregistré
+        if ($vehicles->isEmpty()) {
+            if (in_array($request->route()->getName(), $setupRoutes)) {
                 return $next($request);
             }
-
             return redirect()->route('driver.vehicle.setup')
-                ->with('warning', 'Vous devez d\'abord enregistrer votre véhicule pour accéder au tableau de bord.');
+                ->with('warning', 'Vous devez d\'abord enregistrer un véhicule pour accéder au tableau de bord.');
         }
 
-        // Véhicule en attente d'approbation
-        if ($vehicle->status === 'pending') {
-            // Si la route est celle de la page d'attente, laisser passer
+        // Au moins un véhicule approuvé → accès autorisé
+        if ($vehicles->where('status', 'approved')->isNotEmpty()) {
+            return $next($request);
+        }
+
+        // Au moins un en attente (mais aucun approuvé)
+        if ($vehicles->where('status', 'pending')->isNotEmpty()) {
             if ($request->route()->getName() === 'driver.vehicle.pending') {
                 return $next($request);
             }
-
             return redirect()->route('driver.vehicle.pending')
                 ->with('info', 'Votre véhicule est en cours de vérification par nos administrateurs.');
         }
 
-        // Véhicule rejeté
-        if ($vehicle->status === 'rejected') {
-            // Si la route est celle de modification, laisser passer
-            if ($request->route()->getName() === 'driver.vehicle.setup' ||
-                $request->route()->getName() === 'driver.vehicle.store') {
-                return $next($request);
-            }
-
-            return redirect()->route('driver.vehicle.setup')
-                ->with('error', 'Votre véhicule a été rejeté. Raison: ' . ($vehicle->rejection_reason ?? 'Veuillez soumettre à nouveau vos documents.'));
+        // Tous rejetés
+        if (in_array($request->route()->getName(), $setupRoutes)) {
+            return $next($request);
         }
-
-        // Véhicule approuvé - tout est bon, laisser passer
-        return $next($request);
+        $rejected = $vehicles->firstWhere('status', 'rejected');
+        return redirect()->route('driver.vehicle.setup')
+            ->with('error', 'Votre véhicule a été rejeté. ' . ($rejected?->rejection_reason ? 'Raison : ' . $rejected->rejection_reason : 'Veuillez en soumettre un nouveau.'));
     }
 }

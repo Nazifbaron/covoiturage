@@ -82,19 +82,15 @@ class MessagesController extends Controller
         $userId = Auth::id();
         $after = $request->get('after', 0);
 
-        // Vérifier que l'utilisateur a accès à ce trip
-        $hasAccess = ChatMessage::where('trip_id', $tripId)
-            ->where('sender_id', $userId)
-            ->exists();
+        // Vérifier que l'utilisateur est bien participant (passager ou conducteur acceptant)
+        $trip = Pastrips::where('id', $tripId)
+            ->where(function ($q) use ($userId) {
+                $q->where('user_id', $userId)
+                  ->orWhere('accepted_by', $userId);
+            })
+            ->first();
 
-        if (!$hasAccess) {
-            // Vérifier si l'utilisateur est destinataire d'un message
-            $hasAccess = ChatMessage::where('trip_id', $tripId)
-                ->where('sender_id', '!=', $userId)
-                ->exists();
-        }
-
-        if (!$hasAccess) {
+        if (!$trip) {
             return response()->json(['error' => 'Unauthorized'], 403);
         }
 
@@ -124,22 +120,16 @@ class MessagesController extends Controller
     {
         $userId = Auth::id();
 
-        // Vérifier que l'utilisateur peut envoyer un message sur ce trip
-        // Soit il a déjà envoyé des messages, soit il est lié au trip
-        $canSend = ChatMessage::where('trip_id', $tripId)
-            ->where('sender_id', $userId)
-            ->exists();
+        // Vérifier que l'utilisateur est participant ET que la course est acceptée
+        $trip = Pastrips::where('id', $tripId)
+            ->where('status', 'accepted')
+            ->where(function ($q) use ($userId) {
+                $q->where('user_id', $userId)
+                  ->orWhere('accepted_by', $userId);
+            })
+            ->first();
 
-        if (!$canSend) {
-            // Vérifier si le trip existe
-            $trip = Pastrips::find($tripId);
-            if (!$trip) {
-                return response()->json(['error' => 'Trip not found'], 404);
-            }
-            $canSend = true; // Premier message, autorisé
-        }
-
-        if (!$canSend) {
+        if (!$trip) {
             return response()->json(['error' => 'Unauthorized'], 403);
         }
 
