@@ -16,6 +16,7 @@ use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\DB;
 use Carbon\Carbon;
 use App\Mail\NewVehicleSubmitted;
+use App\Notifications\TripRequestAccepted;
 
 class DriverController extends Controller
 {
@@ -198,6 +199,13 @@ class DriverController extends Controller
                     'seats_available' => $newSeats,
                 ]);
             }
+        }
+
+        // Notifier le passager
+        try {
+            $pastrip->user->notify(new TripRequestAccepted($pastrip));
+        } catch (\Exception $e) {
+            \Log::warning('Notification TripRequestAccepted échouée : ' . $e->getMessage());
         }
 
         return redirect()

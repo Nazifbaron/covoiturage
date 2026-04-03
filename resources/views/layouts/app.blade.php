@@ -6,6 +6,7 @@
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
     <title>{{ config('app.name', 'Covoiturage') }}</title>
+    <link rel="icon" type="image/svg+xml" href="{{ asset('favicon.svg') }}">
 
     <link rel="preconnect" href="https://fonts.bunny.net">
     <link href="https://fonts.bunny.net/css?family=figtree:400,500,600&display=swap" rel="stylesheet"/>
@@ -19,21 +20,19 @@
             theme: {
                 extend: {
                     colors: {
-                        // ── Palette logo ──────────────────────────────
-                        // Violet principal (logo icon)
-                        "primary":       "#6C2BD9",
-                        "primary-light": "#8B5CF6",
-                        "primary-dark":  "#4C1D95",
+                        // ── Palette logo (vert + teal) ─────────────────
+                        "primary":       "#16a34a",   // vert-600
+                        "primary-light": "#22c55e",   // vert-500
+                        "primary-dark":  "#15803d",   // vert-700
 
-                        // Orange-rouge (route + texte logo)
-                        "accent":        "#E8470A",
-                        "accent-light":  "#F97316",
+                        "accent":        "#0891b2",   // cyan-600 (teal du logo)
+                        "accent-light":  "#06b6d4",   // cyan-500
 
                         // Fonds
-                        "background-light": "#F8F7FF",   // blanc teinté violet très léger
-                        "background-dark":  "#0F0A1E",   // quasi-noir violet foncé
-                        "sidebar-dark":     "#150D2E",   // violet très foncé
-                        "card-dark":        "#1E1040",   // violet foncé carte
+                        "background-light": "#f0fdf4",   // vert très clair
+                        "background-dark":  "#052e16",   // vert quasi-noir
+                        "sidebar-dark":     "#071f0e",   // vert très foncé
+                        "card-dark":        "#0a3018",   // vert foncé carte
                     },
                     fontFamily: {
                         "display": ["Plus Jakarta Sans", "sans-serif"]
@@ -85,23 +84,23 @@
             transition: all 0.2s ease;
         }
         .sidebar-link.active {
-            background: rgba(108, 43, 217, 0.12);
-            color: #6C2BD9;
+            background: rgba(22, 163, 74, 0.12);
+            color: #16a34a;
         }
         .dark .sidebar-link.active {
-            background: rgba(139, 92, 246, 0.15);
-            color: #A78BFA;
+            background: rgba(34, 197, 94, 0.15);
+            color: #4ade80;
         }
         .sidebar-link.active::before {
             content: '';
             position: absolute;
             left: 0; top: 20%; bottom: 20%;
             width: 3px;
-            background: linear-gradient(to bottom, #6C2BD9, #E8470A);
+            background: linear-gradient(to bottom, #16a34a, #0891b2);
             border-radius: 0 4px 4px 0;
         }
         .sidebar-link:hover:not(.active) {
-            background: rgba(108, 43, 217, 0.06);
+            background: rgba(22, 163, 74, 0.06);
         }
         .dark .sidebar-link:hover:not(.active) {
             background: rgba(255,255,255,0.05);
@@ -111,7 +110,7 @@
         #sidebar-overlay {
             display: none;
             position: fixed; inset: 0;
-            background: rgba(15, 10, 30, 0.6);
+            background: rgba(5, 46, 22, 0.65);
             z-index: 40;
         }
         #sidebar-overlay.show { display: block; }
@@ -120,13 +119,13 @@
         ::-webkit-scrollbar { width: 4px; }
         ::-webkit-scrollbar-track { background: transparent; }
         ::-webkit-scrollbar-thumb {
-            background: rgba(108, 43, 217, 0.25);
+            background: rgba(22, 163, 74, 0.3);
             border-radius: 4px;
         }
 
         /* Gradient logo text */
         .logo-gradient {
-            background: linear-gradient(135deg, #6C2BD9 0%, #E8470A 100%);
+            background: linear-gradient(135deg, #15803d 0%, #0891b2 100%);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
@@ -152,26 +151,39 @@
            class="fixed lg:relative z-50 lg:z-auto
                   w-64 h-full flex-shrink-0
                   bg-white dark:bg-sidebar-dark
-                  border-r border-violet-100 dark:border-violet-900/30
+                  border-r border-green-100 dark:border-green-900/30
                   flex flex-col
                   -translate-x-full lg:translate-x-0 transition-transform duration-300">
 
         {{-- Logo --}}
-        <div class="flex items-center gap-3 px-5 py-4 border-b border-violet-100 dark:border-violet-900/30">
-            <img src="{{ asset('images/logo.png') }}"
-                 alt="Logo Covoiturage"
-                 class="w-9 h-9 rounded-xl object-contain flex-shrink-0
-                        ring-2 ring-violet-200 dark:ring-violet-800">
-            <span class="font-black text-base tracking-tight logo-gradient">
-                Covoiturage Bénin
-            </span>
+        <div class="flex items-center gap-3 px-4 py-4 border-b border-green-100 dark:border-green-900/30
+                    bg-gradient-to-r from-green-50 to-cyan-50 dark:from-green-950/60 dark:to-cyan-950/40">
+            <div class="w-12 h-12 rounded-2xl bg-white shadow-md shadow-green-200/60 dark:shadow-green-900/40
+                        ring-2 ring-green-300 dark:ring-green-700 flex-shrink-0 overflow-hidden p-0.5">
+                <img src="{{ asset('images/logoC.jpeg') }}"
+                     alt="Logo Covoiturage"
+                     class="w-full h-full object-contain rounded-xl">
+            </div>
+            <div>
+                <span class="font-black text-base tracking-tight logo-gradient block leading-none">
+                    Covoiturage
+                </span>
+                <span class="text-[10px] font-semibold text-green-600/70 dark:text-green-400/60 tracking-wider uppercase">
+                    Bénin
+                </span>
+            </div>
         </div>
 
         {{-- User info --}}
-        <div class="px-4 py-3 border-b border-violet-100 dark:border-violet-900/30">
+        <div class="px-4 py-3 border-b border-green-100 dark:border-green-900/30">
             <div class="flex items-center gap-3 p-2.5 rounded-xl
-                        bg-violet-50 dark:bg-violet-900/20
-                        border border-violet-100 dark:border-violet-800/30">
+                        bg-green-50 dark:bg-green-900/20
+                        border border-green-100 dark:border-green-800/30">
+                @if(Auth::user()->avatar)
+                <img src="{{ asset('storage/' . Auth::user()->avatar) }}"
+                     alt="Avatar"
+                     class="w-9 h-9 rounded-full object-cover flex-shrink-0 shadow-md ring-2 ring-primary/20">
+                @else
                 <div class="w-9 h-9 rounded-full
                             bg-gradient-to-br from-primary to-accent
                             flex items-center justify-center flex-shrink-0 shadow-md">
@@ -179,19 +191,20 @@
                         {{ strtoupper(substr(Auth::user()->first_name ?? '?', 0, 1)) }}
                     </span>
                 </div>
+                @endif
                 <div class="min-w-0">
                     <p class="font-bold text-sm truncate text-slate-900 dark:text-white">
                         {{ Auth::user()->first_name }} {{ Auth::user()->last_name }}
                     </p>
                     @if(Auth::user()->role === 'driver')
                     <span class="inline-flex items-center gap-1 text-xs font-semibold px-2 py-0.5 rounded-full
-                                 bg-violet-100 text-violet-700 dark:bg-violet-800/40 dark:text-violet-300">
+                                 bg-green-100 text-green-700 dark:bg-green-800/40 dark:text-green-300">
                         <span class="material-symbols-outlined" style="font-size:11px">directions_car</span>
                         Conducteur
                     </span>
                     @else
                     <span class="inline-flex items-center gap-1 text-xs font-semibold px-2 py-0.5 rounded-full
-                                 bg-orange-100 text-orange-700 dark:bg-orange-800/30 dark:text-orange-300">
+                                 bg-cyan-100 text-cyan-700 dark:bg-cyan-800/30 dark:text-cyan-300">
                         <span class="material-symbols-outlined" style="font-size:11px">airline_seat_recline_normal</span>
                         Passager
                     </span>
@@ -311,7 +324,7 @@
                 </a>
             @endif
 
-            <div class="pt-3 pb-1 px-3">
+            {{-- <div class="pt-3 pb-1 px-3">
                 <p class="text-xs font-black uppercase tracking-widest text-slate-400 dark:text-slate-600">Paramètres</p>
             </div>
 
@@ -321,11 +334,11 @@
                       text-slate-700 dark:text-slate-300">
                 <span class="material-symbols-outlined text-xl">manage_accounts</span>
                 Mon profil
-            </a>
+            </a> --}}
         </nav>
 
         {{-- Logout --}}
-        <div class="px-3 py-4 border-t border-violet-100 dark:border-violet-900/30">
+        <div class="px-3 py-4 border-t border-green-100 dark:border-green-900/30">
             <form method="POST" action="{{ route('logout') }}">
                 @csrf
                 <button type="submit"
@@ -350,10 +363,10 @@
         <header class="flex-shrink-0 flex items-center justify-between
                        px-4 lg:px-6 py-3
                        bg-white dark:bg-sidebar-dark
-                       border-b border-violet-100 dark:border-violet-900/30 z-30">
+                       border-b border-green-100 dark:border-green-900/30 z-30">
 
             <button onclick="openSidebar()"
-                    class="lg:hidden p-2 rounded-lg hover:bg-violet-50 dark:hover:bg-white/10 transition-colors">
+                    class="lg:hidden p-2 rounded-lg hover:bg-green-50 dark:hover:bg-white/10 transition-colors">
                 <span class="material-symbols-outlined text-slate-600 dark:text-slate-300">menu</span>
             </button>
 
@@ -365,29 +378,75 @@
                 {{-- Theme toggle --}}
                 <button id="themeToggle"
                         class="p-2 rounded-lg bg-slate-100 dark:bg-white/10
-                               hover:bg-violet-100 dark:hover:bg-violet-900/30 transition-colors">
+                               hover:bg-green-100 dark:hover:bg-green-900/30 transition-colors">
                     <span class="material-symbols-outlined text-xl text-slate-600 dark:text-slate-300">light_mode</span>
                 </button>
 
                 {{-- Notifications --}}
-                <button class="relative p-2 rounded-lg bg-slate-100 dark:bg-white/10
-                               hover:bg-violet-100 dark:hover:bg-violet-900/30 transition-colors">
-                    <span class="material-symbols-outlined text-xl text-slate-600 dark:text-slate-300">notifications</span>
-                    <span class="absolute top-1.5 right-1.5 w-2 h-2 rounded-full
-                                 bg-gradient-to-br from-primary to-accent"></span>
-                </button>
+                <div class="relative" id="notifWrapper">
+                    <button id="notifBtn"
+                            class="relative p-2 rounded-lg bg-slate-100 dark:bg-white/10
+                                   hover:bg-green-100 dark:hover:bg-green-900/30 transition-colors">
+                        <span class="material-symbols-outlined text-xl text-slate-600 dark:text-slate-300">notifications</span>
+                        <span id="notifBadge"
+                              class="absolute top-1 right-1 min-w-[16px] h-4 px-0.5 rounded-full hidden
+                                     bg-gradient-to-br from-primary to-accent
+                                     text-white text-[10px] font-black flex items-center justify-center"></span>
+                    </button>
+
+                    {{-- Dropdown --}}
+                    <div id="notifDropdown"
+                         class="hidden absolute right-0 mt-2 w-80 z-50
+                                bg-white dark:bg-card-dark
+                                border border-green-100 dark:border-green-900/30
+                                rounded-2xl shadow-xl shadow-green-100/50 dark:shadow-black/30
+                                overflow-hidden">
+
+                        {{-- Header --}}
+                        <div class="flex items-center justify-between px-4 py-3
+                                    border-b border-slate-100 dark:border-white/10">
+                            <p class="font-black text-sm text-slate-900 dark:text-white">Notifications</p>
+                            <button id="notifMarkAll"
+                                    class="text-xs font-semibold text-primary hover:underline">
+                                Tout marquer lu
+                            </button>
+                        </div>
+
+                        {{-- Liste --}}
+                        <div id="notifList" class="max-h-80 overflow-y-auto divide-y divide-slate-50 dark:divide-white/5">
+                            <p id="notifEmpty" class="text-center py-10 text-sm text-slate-400 hidden">
+                                Aucune notification
+                            </p>
+                        </div>
+
+                        {{-- Footer --}}
+                        <div class="px-4 py-2.5 border-t border-slate-100 dark:border-white/10 text-center">
+                            <a href="{{ route('notifications.index') }}"
+                               class="text-xs font-semibold text-primary hover:underline">
+                                Voir toutes les notifications
+                            </a>
+                        </div>
+                    </div>
+                </div>
 
                 {{-- Avatar --}}
                 <a href="{{ route('profile.edit') }}"
-                   class="w-9 h-9 rounded-full
-                          bg-gradient-to-br from-primary to-accent
-                          flex items-center justify-center
-                          shadow-md shadow-violet-200 dark:shadow-violet-900/30
-                          ring-2 ring-violet-200 dark:ring-violet-800/50
-                          hover:ring-4 transition-all">
-                    <span class="text-white font-black text-sm">
-                        {{ strtoupper(substr(Auth::user()?->first_name ?? '?', 0, 1)) }}
-                    </span>
+                   class="block w-9 h-9 rounded-full overflow-hidden
+                          shadow-md shadow-green-200 dark:shadow-green-900/30
+                          ring-2 ring-green-300 dark:ring-green-700/50
+                          hover:ring-4 transition-all flex-shrink-0">
+                    @if(Auth::user()?->avatar)
+                        <img src="{{ asset('storage/' . Auth::user()->avatar) }}"
+                             alt="Avatar"
+                             class="w-full h-full object-cover">
+                    @else
+                        <div class="w-full h-full bg-gradient-to-br from-primary to-accent
+                                    flex items-center justify-center">
+                            <span class="text-white font-black text-sm">
+                                {{ strtoupper(substr(Auth::user()?->first_name ?? '?', 0, 1)) }}
+                            </span>
+                        </div>
+                    @endif
                 </a>
             </div>
         </header>
@@ -415,6 +474,113 @@
         document.documentElement.classList.add('dark');
         themeToggle.querySelector('.material-symbols-outlined').textContent = 'dark_mode';
     }
+
+    // ── Notifications ─────────────────────────────────────────────────────
+    (function () {
+        const btn      = document.getElementById('notifBtn');
+        const dropdown = document.getElementById('notifDropdown');
+        const badge    = document.getElementById('notifBadge');
+        const list     = document.getElementById('notifList');
+        const empty    = document.getElementById('notifEmpty');
+        const markAll  = document.getElementById('notifMarkAll');
+
+        let loaded = false;
+
+        const iconColor = {
+            check_circle      : 'text-emerald-500',
+            hail              : 'text-green-500',
+            verified          : 'text-emerald-500',
+            cancel            : 'text-red-400',
+            notifications     : 'text-slate-400',
+        };
+
+        function renderNotif(n) {
+            const d    = n.data;
+            const icon = d.icon || 'notifications';
+            const color= iconColor[icon] || 'text-slate-400';
+            const url  = "{{ route('notifications.read', '__ID__') }}".replace('__ID__', n.id);
+            return `
+            <a href="${url}"
+               class="flex items-start gap-3 px-4 py-3 hover:bg-slate-50 dark:hover:bg-white/5 transition-colors
+                      ${n.read ? 'opacity-60' : ''}">
+                <span class="material-symbols-outlined ${color} mt-0.5" style="font-size:20px">${icon}</span>
+                <div class="flex-1 min-w-0">
+                    <p class="text-xs font-black text-slate-900 dark:text-white leading-snug">${d.title}</p>
+                    <p class="text-xs text-slate-500 dark:text-slate-400 mt-0.5 leading-snug line-clamp-2">${d.body}</p>
+                    <p class="text-[10px] text-slate-400 mt-1">${n.created_at}</p>
+                </div>
+                ${!n.read ? '<span class="w-2 h-2 rounded-full bg-primary mt-1.5 flex-shrink-0"></span>' : ''}
+            </a>`;
+        }
+
+        function fetchNotifs() {
+            fetch("{{ route('notifications.index') }}", {
+                headers: { 'X-Requested-With': 'XMLHttpRequest' }
+            })
+            .then(r => r.json())
+            .then(data => {
+                // Badge
+                const count = data.unread_count;
+                if (count > 0) {
+                    badge.textContent = count > 99 ? '99+' : count;
+                    badge.classList.remove('hidden');
+                    badge.classList.add('flex');
+                } else {
+                    badge.classList.add('hidden');
+                    badge.classList.remove('flex');
+                }
+
+                // Liste
+                const items = data.notifications;
+                // Retirer les anciennes entrées (garder header/empty)
+                list.querySelectorAll('a').forEach(el => el.remove());
+
+                if (items.length === 0) {
+                    empty.classList.remove('hidden');
+                } else {
+                    empty.classList.add('hidden');
+                    items.forEach(n => {
+                        list.insertAdjacentHTML('beforeend', renderNotif(n));
+                    });
+                }
+                loaded = true;
+            })
+            .catch(() => {});
+        }
+
+        // Ouvrir/fermer
+        btn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            const isHidden = dropdown.classList.contains('hidden');
+            dropdown.classList.toggle('hidden');
+            if (isHidden && !loaded) fetchNotifs();
+        });
+
+        // Fermer en cliquant dehors
+        document.addEventListener('click', (e) => {
+            if (!document.getElementById('notifWrapper').contains(e.target)) {
+                dropdown.classList.add('hidden');
+            }
+        });
+
+        // Marquer tout lu
+        markAll.addEventListener('click', () => {
+            fetch("{{ route('notifications.read-all') }}", {
+                method: 'POST',
+                headers: {
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
+                    'X-Requested-With': 'XMLHttpRequest',
+                }
+            }).then(() => {
+                loaded = false;
+                fetchNotifs();
+            });
+        });
+
+        // Rafraîchir toutes les 30 secondes
+        fetchNotifs();
+        setInterval(fetchNotifs, 30000);
+    })();
 
     function openSidebar() {
         document.getElementById('sidebar').classList.remove('-translate-x-full');

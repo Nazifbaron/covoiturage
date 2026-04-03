@@ -9,6 +9,7 @@ use App\Http\Middleware\IsAdmin;
 use App\Http\Controllers\AdminController;
 use App\Http\Middleware\Checkblocked;
 use App\Http\Controllers\MessagesController;
+use App\Http\Controllers\NotificationController;
 
 
 // Route::view('/','welcome');
@@ -47,6 +48,7 @@ Route::middleware(['auth', Checkblocked::class])->group(function () {
      Route::controller(ProfileController::class)->group(function () {
         Route::get('/profile', 'edit')->name('profile.edit');
         Route::patch('/profile', 'update')->name('profile.update');
+        Route::post('/profile/avatar', 'updateAvatar')->name('profile.avatar.update');
         Route::delete('/profile', 'destroy')->name('profile.destroy');
     });
 
@@ -97,6 +99,12 @@ Route::middleware(['auth', Checkblocked::class])->group(function () {
         Route::post('/typing',    'typingStart') ->name('chat.typing');
          Route::post('/typing/stop','typingStop') ->name('chat.typing.stop');
      });
+
+    Route::controller(NotificationController::class)->group(function () {
+        Route::get('/notifications',          'index')      ->name('notifications.index');
+        Route::get('/notifications/{id}/read','markRead')   ->name('notifications.read');
+        Route::post('/notifications/read-all','markAllRead')->name('notifications.read-all');
+    });
 
      Route::controller(MessagesController::class)->group(function () {
         Route::get('/messages', 'index')->name('messages.index');

@@ -22,6 +22,7 @@ class User extends Authenticatable
     protected $fillable = [
         'first_name',
         'last_name',
+        'avatar',
         'email',
         'phone',
         'role',
@@ -48,9 +49,16 @@ class User extends Authenticatable
     {
         return [
             'email_verified_at' => 'datetime',
-            'password' => 'hashed',
-             'is_blocked'        => 'boolean',
+            'password'          => 'hashed',
+            'is_blocked'        => 'boolean',
         ];
+    }
+
+    public function getAvatarUrlAttribute(): string
+    {
+        return $this->avatar
+            ? asset('storage/' . $this->avatar)
+            : '';
     }
 
     // Premier véhicule approuvé (utilisé pour le middleware et la recherche de trajets)

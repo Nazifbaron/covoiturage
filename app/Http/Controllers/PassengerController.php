@@ -6,6 +6,7 @@ use Illuminate\Support\Facades\Auth;
 use App\Models\User;
 use App\Models\ChatMessage;
 use App\Models\DriverTrips;
+use App\Notifications\NewTripRequest;
 
 
 
@@ -126,6 +127,18 @@ class PassengerController extends Controller
             'expires_at'        => $expiresAt,
             'status'            => 'pending',
         ]);
+
+        // Notifier le conducteur si la demande est liée à un trajet spécifique
+        if ($pastrip->driver_trip_id) {
+            $driverTrip = DriverTrips::find($pastrip->driver_trip_id);
+            if ($driverTrip?->driver) {
+                try {
+                    $driverTrip->driver->notify(new NewTripRequest($pastrip->load('user')));
+                } catch (\Exception $e) {
+                    \Log::warning('Notification NewTripRequest échouée : ' . $e->getMessage());
+                }
+            }
+        }
 
         if ($request->expectsJson()) {
             return response()->json([

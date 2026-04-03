@@ -71,7 +71,11 @@
     </div>
 
     {{-- ── Sélection du véhicule ── --}}
-    <div class="bg-white dark:bg-card-dark rounded-2xl border border-slate-100 dark:border-primary/10 shadow-sm p-5 space-y-3">
+
+    <form method="POST" action="{{ route('driver.trips.store') }}" class="space-y-4" id="trip-form">
+        @csrf
+
+          <div class="bg-white dark:bg-card-dark rounded-2xl border border-slate-100 dark:border-primary/10 shadow-sm p-5 space-y-3">
         <div class="flex items-center justify-between">
             <h2 class="font-black text-sm uppercase tracking-widest text-slate-400 dark:text-slate-500">Véhicule</h2>
             <a href="{{ route('profile.edit') }}"
@@ -141,9 +145,6 @@
             </div>
         @endif
     </div>
-
-    <form method="POST" action="{{ route('driver.trips.store') }}" class="space-y-4" id="trip-form">
-        @csrf
 
         {{-- ── ITINÉRAIRE + CARTE ── --}}
         <div class="bg-white dark:bg-card-dark rounded-2xl border border-slate-100 dark:border-primary/10 shadow-sm p-5 space-y-4">

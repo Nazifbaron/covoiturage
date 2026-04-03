@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>Admin — {{ config('app.name') }}</title>
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg">
 
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200"/>
@@ -139,11 +140,17 @@
         {{-- Info admin --}}
         <div class="px-4 py-4 border-b border-gray-100">
             <div class="flex items-center gap-3">
+                @if(Auth::user()->avatar)
+                <img src="{{ asset('storage/' . Auth::user()->avatar) }}"
+                     alt="Avatar"
+                     class="w-9 h-9 rounded-full object-cover flex-shrink-0">
+                @else
                 <div class="w-9 h-9 rounded-full bg-gray-900 flex items-center justify-center flex-shrink-0">
                     <span class="text-white text-sm font-bold">
                         {{ strtoupper(substr(Auth::user()->first_name ?? 'A', 0, 1)) }}
                     </span>
                 </div>
+                @endif
                 <div class="min-w-0">
                     <p class="text-sm font-semibold text-gray-900 truncate">
                         {{ Auth::user()->first_name }} {{ Auth::user()->last_name }}
@@ -187,6 +194,7 @@
                     <span class="material-symbols-outlined" style="font-size:20px">two_wheeler</span>
                     <span>Véhicules</span>
                 </a>
+
             </div>
         </nav>
 

@@ -10,6 +10,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Mail;
 use App\Mail\VehicleApproved;
 use App\Mail\VehicleRejected;
+use App\Notifications\VehicleStatusChanged;
 
 class AdminController extends Controller
 {
@@ -139,6 +140,12 @@ class AdminController extends Controller
             \Log::error('Échec mail approbation véhicule : ' . $e->getMessage());
         }
 
+        try {
+            $vehicle->driver->notify(new VehicleStatusChanged($vehicle, 'approved'));
+        } catch (\Exception $e) {
+            \Log::warning('Notification VehicleStatusChanged échouée : ' . $e->getMessage());
+        }
+
         return redirect()->back()->with('success', "Véhicule de {$vehicle->driver->first_name} approuvé.");
     }
 
@@ -161,6 +168,12 @@ class AdminController extends Controller
                 ->send(new VehicleRejected($vehicle->load('driver')));
         } catch (\Exception $e) {
             \Log::error('Échec mail rejet véhicule : ' . $e->getMessage());
+        }
+
+        try {
+            $vehicle->driver->notify(new VehicleStatusChanged($vehicle->load('driver'), 'rejected'));
+        } catch (\Exception $e) {
+            \Log::warning('Notification VehicleStatusChanged échouée : ' . $e->getMessage());
         }
 
         return redirect()->back()->with('success', "Véhicule rejeté.");
@@ -192,4 +205,5 @@ class AdminController extends Controller
 
         return view('admin.trips', compact('trips'));
     }
+
 }

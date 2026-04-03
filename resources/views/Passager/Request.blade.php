@@ -138,7 +138,7 @@
                                 @if($trip->budget_max)
                                 <span class="flex items-center gap-1 text-xs font-bold text-emerald-600 dark:text-emerald-400">
                                     <span class="material-symbols-outlined" style="font-size:14px">payments</span>
-                                    max {{ number_format($trip->budget_max, 0, ',', '\u{202F}') }} FCFA
+                                    {{ number_format($trip->budget_max, 0, ',', ' ') }} FCFA / pers.
                                 </span>
                                 @endif
                             </div>

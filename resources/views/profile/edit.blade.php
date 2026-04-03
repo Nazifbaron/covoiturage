@@ -19,14 +19,32 @@
     {{-- ── Avatar + nom ── --}}
     <div class="bg-white dark:bg-card-dark rounded-2xl border border-slate-100 dark:border-primary/10 shadow-sm p-6">
         <div class="flex items-center gap-5">
-            <div class="w-16 h-16 rounded-2xl bg-gradient-to-br from-primary to-emerald-600
-                        flex items-center justify-center flex-shrink-0 shadow-lg shadow-primary/20">
-                <span class="text-2xl font-black text-background-dark">
-                    {{ strtoupper(substr($user->name, 0, 1)) }}
-                </span>
+            {{-- Photo de profil --}}
+            <div class="relative flex-shrink-0 group">
+                @if($user->avatar)
+                    <img src="{{ asset('storage/' . $user->avatar) }}"
+                         alt="Photo de profil"
+                         id="avatarPreview"
+                         class="w-20 h-20 rounded-2xl object-cover shadow-lg ring-2 ring-primary/20">
+                @else
+                    <div id="avatarFallback"
+                         class="w-20 h-20 rounded-2xl bg-gradient-to-br from-primary to-emerald-600
+                                flex items-center justify-center shadow-lg shadow-primary/20">
+                        <span class="text-3xl font-black text-background-dark">
+                            {{ strtoupper(substr($user->first_name ?? 'U', 0, 1)) }}
+                        </span>
+                    </div>
+                    <img id="avatarPreview" class="w-20 h-20 rounded-2xl object-cover shadow-lg ring-2 ring-primary/20 hidden" alt="Aperçu">
+                @endif
+                {{-- Overlay bouton changer --}}
+                <label for="avatarInput"
+                       class="absolute inset-0 rounded-2xl bg-black/40 opacity-0 group-hover:opacity-100
+                              transition-opacity flex items-center justify-center cursor-pointer">
+                    <span class="material-symbols-outlined text-white text-2xl">photo_camera</span>
+                </label>
             </div>
-            <div>
-                <p class="text-xl font-black text-slate-900 dark:text-white">{{ $user->name }}</p>
+            <div class="flex-1 min-w-0">
+                <p class="text-xl font-black text-slate-900 dark:text-white">{{ $user->first_name }} {{ $user->last_name }}</p>
                 <p class="text-sm text-slate-500 dark:text-slate-400">{{ $user->email }}</p>
                 <span class="inline-flex items-center gap-1 mt-1.5 px-2.5 py-0.5 rounded-full text-xs font-bold
                              bg-primary/10 text-primary">
@@ -35,8 +53,26 @@
                     </span>
                     {{ auth()->user()->role === 'driver' ? 'Conducteur' : 'Passager' }}
                 </span>
+                <p class="text-xs text-slate-400 mt-2">Survolez la photo pour la modifier</p>
             </div>
         </div>
+
+        {{-- Formulaire upload avatar (caché, soumis auto) --}}
+        <form id="avatarForm" method="POST" action="{{ route('profile.avatar.update') }}" enctype="multipart/form-data" class="hidden">
+            @csrf
+            <input type="file" id="avatarInput" name="avatar" accept="image/jpeg,image/jpg,image/png,image/webp">
+        </form>
+
+        @error('avatar')
+        <p class="text-xs text-red-500 font-semibold mt-3">{{ $message }}</p>
+        @enderror
+
+        @if(session('success') && session('success') === 'Photo de profil mise à jour.')
+        <div class="flex items-center gap-2 mt-3 p-3 rounded-xl bg-emerald-50 dark:bg-emerald-500/10 border border-emerald-200 dark:border-emerald-500/20">
+            <span class="material-symbols-outlined text-emerald-500 text-lg">check_circle</span>
+            <p class="text-xs font-bold text-emerald-700 dark:text-emerald-400">Photo de profil mise à jour.</p>
+        </div>
+        @endif
     </div>
 
     {{-- ── Informations du profil ── --}}
@@ -428,6 +464,30 @@
 
 @push('scripts')
 <script>
+    // Avatar — aperçu + soumission automatique
+    const avatarInput = document.getElementById('avatarInput');
+    const avatarForm  = document.getElementById('avatarForm');
+    const avatarPreview = document.getElementById('avatarPreview');
+    const avatarFallback = document.getElementById('avatarFallback');
+
+    if (avatarInput) {
+        avatarInput.addEventListener('change', function () {
+            const file = this.files[0];
+            if (!file) return;
+            // Aperçu immédiat
+            const reader = new FileReader();
+            reader.onload = e => {
+                avatarPreview.src = e.target.result;
+                avatarPreview.classList.remove('hidden');
+                if (avatarFallback) avatarFallback.classList.add('hidden');
+            };
+            reader.readAsDataURL(file);
+            // Soumission auto
+            avatarForm.submit();
+        });
+    }
+
+    // Modal suppression compte
     const modal    = document.getElementById('deleteModal');
     const modalBox = document.getElementById('deleteModalBox');
     const overlay  = document.getElementById('deleteModalOverlay');

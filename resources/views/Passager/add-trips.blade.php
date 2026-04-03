@@ -141,20 +141,21 @@
                 </div>
             </div>
 
+
             {{-- Adresses précises --}}
-            <div class="grid grid-cols-2 gap-2">
+            <div class="relative">
                 <input type="text" name="departure_address" value="{{ old('departure_address') }}"
-                       placeholder="Point départ (opt.)"
+                       placeholder="Point de rendez-vous (opt.)"
                        class="w-full px-3 py-2.5 rounded-xl border border-slate-200 dark:border-white/10
                               bg-slate-50 dark:bg-white/5 text-slate-900 dark:text-white
                               text-sm font-medium placeholder-slate-400
                               focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary transition-all"/>
-                <input type="text" name="arrival_address" value="{{ old('arrival_address') }}"
+                {{-- <input type="text" name="arrival_address" value="{{ old('arrival_address') }}"
                        placeholder="Point arrivée (opt.)"
                        class="w-full px-3 py-2.5 rounded-xl border border-slate-200 dark:border-white/10
                               bg-slate-50 dark:bg-white/5 text-slate-900 dark:text-white
                               text-sm font-medium placeholder-slate-400
-                              focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary transition-all"/>
+                              focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary transition-all"/> --}}
             </div>
         </div>
 
@@ -194,20 +195,19 @@
                         <option value="60"  {{ old('flexibility','30') == '60'  ? 'selected' : '' }}>± 1 heure</option>
                         <option value="120" {{ old('flexibility','30') == '120' ? 'selected' : '' }}>± 2 heures</option>
                     </select>
-                    <span class="absolute right-3 top-1/2 -translate-y-1/2 material-symbols-outlined text-slate-400 text-xl pointer-events-none">expand_more</span>
                 </div>
             </div>
         </div>
 
-        {{-- ── PASSAGERS & BUDGET ── --}}
+        {{-- ── PASSAGERS ── --}}
         <div class="bg-white dark:bg-card-dark rounded-2xl border border-slate-100 dark:border-primary/10 shadow-sm p-5 space-y-4">
-            <h2 class="font-black text-sm uppercase tracking-widest text-slate-400 dark:text-slate-500">Qui & Combien ?</h2>
+            <h2 class="font-black text-sm uppercase tracking-widest text-slate-400 dark:text-slate-500">Passagers</h2>
             <div class="grid grid-cols-2 gap-3">
                 <div>
-                    <label class="text-xs font-bold text-slate-500 dark:text-slate-400 mb-1.5 block">Passagers *</label>
+                    <label class="text-xs font-bold text-slate-500 dark:text-slate-400 mb-1.5 block">Nombre de passagers *</label>
                     <div class="relative">
                         <span class="absolute left-3 top-1/2 -translate-y-1/2 material-symbols-outlined text-slate-400 text-xl">group</span>
-                        <select name="passengers"
+                        <select name="passengers" id="passengers_select"
                                 class="w-full pl-10 pr-10 py-2.5 rounded-xl border border-slate-200 dark:border-white/10
                                        bg-slate-50 dark:bg-white/5 text-slate-900 dark:text-white
                                        text-sm font-semibold focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary
@@ -217,58 +217,38 @@
                                     {{ $n }} passager{{ $n > 1 ? 's' : '' }}
                                 </option>
                             @endforeach
+
                         </select>
+                        {{-- <span class="absolute right-3 top-1/2 -translate-y-1/2 material-symbols-outlined text-slate-400 text-xl pointer-events-none">expand_more</span> --}}
                     </div>
                 </div>
+
+                {{-- Prix estimé automatiquement --}}
                 <div>
-                    <label class="text-xs font-bold text-slate-500 dark:text-slate-400 mb-1.5 block">Budget max / pers. (opt.)</label>
-                    <div class="relative">
-                        <input type="number" name="budget_max" value="{{ old('budget_max') }}"
-                               placeholder="Ex: 2000" min="0" step="50"
-                               class="w-full pl-3 pr-16 py-2.5 rounded-xl border border-slate-200 dark:border-white/10
-                                      bg-slate-50 dark:bg-white/5 text-slate-900 dark:text-white
-                                      text-sm font-semibold placeholder-slate-400
-                                      focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary transition-all"/>
-                        <span class="absolute right-3 top-1/2 -translate-y-1/2 text-xs font-black
-                                     text-slate-500 dark:text-slate-400 bg-slate-200 dark:bg-white/10 px-1.5 py-0.5 rounded-lg">FCFA</span>
+                    <label class="text-xs font-bold text-slate-500 dark:text-slate-400 mb-1.5 block">Prix estimé / pers.</label>
+                    <div id="price-display"
+                         class="w-full px-4 py-2.5 rounded-xl border border-slate-200 dark:border-white/10
+                                bg-slate-100 dark:bg-white/5 text-slate-500 dark:text-slate-400
+                                text-sm font-semibold flex items-center gap-2">
+                        <span class="material-symbols-outlined text-slate-400" style="font-size:18px">payments</span>
+                        <span id="price-value">— FCFA</span>
                     </div>
+                    <p class="text-[11px] text-slate-400 mt-1">Calculé selon la distance</p>
+                    <input type="hidden" name="budget_max" id="budget_max_hidden" value="{{ old('budget_max') }}"/>
                 </div>
             </div>
         </div>
 
-        {{-- ── PRÉFÉRENCES ── --}}
+        {{-- ── MESSAGE ── --}}
         <div class="bg-white dark:bg-card-dark rounded-2xl border border-slate-100 dark:border-primary/10 shadow-sm p-5 space-y-3">
-            <h2 class="font-black text-sm uppercase tracking-widest text-slate-400 dark:text-slate-500">Préférences</h2>
-            <div class="grid grid-cols-2 gap-2">
-                @foreach([
-                    ['name' => 'need_luggage_space', 'icon' => 'luggage',          'label' => "J'ai des bagages"],
-                    ['name' => 'female_driver_only', 'icon' => 'woman',            'label' => 'Conductrice svp'],
-                    ['name' => 'pets_with_me',       'icon' => 'pets',             'label' => "J'ai un animal"],
-                    ['name' => 'silent_ride',        'icon' => 'hearing_disabled', 'label' => 'Trajet silencieux'],
-                ] as $pref)
-                <label class="flex items-center gap-2.5 p-3 rounded-xl border border-slate-200 dark:border-white/10
-                              bg-slate-50 dark:bg-white/5 cursor-pointer
-                              hover:bg-slate-100 dark:hover:bg-white/10 transition-colors select-none">
-                    <input type="checkbox" name="{{ $pref['name'] }}" value="1"
-                           {{ old($pref['name']) ? 'checked' : '' }}
-                           class="w-4 h-4 rounded accent-primary cursor-pointer flex-shrink-0"/>
-                    <span class="material-symbols-outlined text-slate-500 dark:text-slate-400" style="font-size:18px">{{ $pref['icon'] }}</span>
-                    <span class="text-sm font-semibold text-slate-700 dark:text-slate-300 leading-tight">{{ $pref['label'] }}</span>
-                </label>
-                @endforeach
-            </div>
-            <div>
-                <label class="text-xs font-bold text-slate-500 dark:text-slate-400 mb-1.5 block">
-                    Message pour les conducteurs <span class="font-normal">(optionnel)</span>
-                </label>
-                <textarea name="message" rows="2"
-                          placeholder="Ex: Je serai devant la pharmacie avec 2 valises."
-                          class="w-full px-3 py-2.5 rounded-xl border border-slate-200 dark:border-white/10
-                                 bg-slate-50 dark:bg-white/5 text-slate-900 dark:text-white
-                                 text-sm font-medium placeholder-slate-400
-                                 focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary
-                                 transition-all resize-none">{{ old('message') }}</textarea>
-            </div>
+            <h2 class="font-black text-sm uppercase tracking-widest text-slate-400 dark:text-slate-500">Message <span class="font-normal normal-case tracking-normal text-slate-400 text-xs">(optionnel)</span></h2>
+            <textarea name="message" rows="2"
+                      placeholder="Ex: Je serai devant la pharmacie au carrefour..."
+                      class="w-full px-3 py-2.5 rounded-xl border border-slate-200 dark:border-white/10
+                             bg-slate-50 dark:bg-white/5 text-slate-900 dark:text-white
+                             text-sm font-medium placeholder-slate-400
+                             focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary
+                             transition-all resize-none">{{ old('message') }}</textarea>
         </div>
 
         {{-- ── DURÉE DE VALIDITÉ ── --}}
@@ -286,7 +266,7 @@
                     <option value="6"  {{ old('expires_in_hours','3') == '6'  ? 'selected' : '' }}>Visible pendant 6 heures</option>
                     <option value="24" {{ old('expires_in_hours','3') == '24' ? 'selected' : '' }}>Visible pendant 24 heures</option>
                 </select>
-                <span class="absolute right-3 top-1/2 -translate-y-1/2 material-symbols-outlined text-slate-400 text-xl pointer-events-none">expand_more</span>
+                {{-- <span class="absolute right-3 top-1/2 -translate-y-1/2 material-symbols-outlined text-slate-400 text-xl pointer-events-none">expand_more</span> --}}
             </div>
             <p class="text-xs text-slate-400">Votre demande disparaîtra automatiquement après ce délai.</p>
         </div>
@@ -440,10 +420,11 @@
             fitSelectedRoutes: true,
         }).addTo(map);
 
-        // Afficher distance + durée
+        // Afficher distance + durée + prix estimé
         routeControl.on('routesfound', e => {
             const r    = e.routes[0].summary;
-            const dist = (r.totalDistance / 1000).toFixed(1) + ' km';
+            const km   = r.totalDistance / 1000;
+            const dist = km.toFixed(1) + ' km';
             const mins = Math.round(r.totalTime / 60);
             const dur  = mins >= 60
                 ? Math.floor(mins / 60) + 'h' + (mins % 60 ? (mins % 60) + 'min' : '')
@@ -454,8 +435,31 @@
             const info = document.getElementById('route-info');
             info.classList.remove('opacity-0', 'pointer-events-none');
             info.classList.add('opacity-100');
+
+            // Prix estimé : 100 FCFA/km, arrondi à la centaine
+            const price = Math.max(200, Math.round((km * 100) / 100) * 100);
+            document.getElementById('price-value').textContent =
+                price.toLocaleString('fr-FR') + ' FCFA';
+            document.getElementById('budget_max_hidden').value = price;
+            updateTotalPrice(price);
         });
     }
+
+    // ── Prix estimé : recalcul si nb passagers change ────────────────────
+    let currentPricePerPerson = 0;
+
+    function updateTotalPrice(pricePerPerson) {
+        currentPricePerPerson = pricePerPerson;
+        const nb = parseInt(document.getElementById('passengers_select').value) || 1;
+        const total = pricePerPerson * nb;
+        document.getElementById('price-value').textContent =
+            pricePerPerson.toLocaleString('fr-FR') + ' FCFA / pers.'
+            + (nb > 1 ? ' · Total ' + total.toLocaleString('fr-FR') + ' FCFA' : '');
+    }
+
+    document.getElementById('passengers_select').addEventListener('change', () => {
+        if (currentPricePerPerson > 0) updateTotalPrice(currentPricePerPerson);
+    });
 
     // ── Validation avant submit ───────────────────────────────────────────
     document.querySelector('form').addEventListener('submit', e => {

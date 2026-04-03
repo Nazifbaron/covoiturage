@@ -15,8 +15,15 @@ class MessagesController extends Controller
     {
         $userId = Auth::id();
 
-        // Tous les trip_id où l'utilisateur a participé
-        $tripIds = ChatMessage::where('sender_id', $userId)
+        // Tous les trip_id où l'utilisateur a participé (conducteur ou passager)
+        $tripIds = Pastrips::where(function ($q) use ($userId) {
+                $q->where('user_id', $userId)
+                  ->orWhere('accepted_by', $userId);
+            })
+            ->pluck('id');
+
+        // si la table pastrips contient des trajets, on peut aussi filtrer sur messages existants pour éviter les chemins sans conversation
+        $tripIds = ChatMessage::whereIn('trip_id', $tripIds)
             ->distinct()
             ->pluck('trip_id');
 
@@ -37,11 +44,13 @@ class MessagesController extends Controller
                 ->whereNull('read_at')
                 ->count();
 
-            $otherUserId = ChatMessage::where('trip_id', $tripId)
-                ->where('sender_id', '!=', $userId)
-                ->value('sender_id');
+            // Déterminer l'interlocuteur même si l'utilisateur a écrit seul pour l'instant
+            if ($trip->user_id === $userId) {
+                $participant = $trip->accepted_by ? User::find($trip->accepted_by) : null;
+            } else {
+                $participant = User::find($trip->user_id);
+            }
 
-            $participant = $otherUserId ? User::find($otherUserId) : null;
             if (!$participant) continue;
 
             $conversations->push((object)[
