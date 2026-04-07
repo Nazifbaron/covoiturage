@@ -19,32 +19,14 @@
     {{-- ── Avatar + nom ── --}}
     <div class="bg-white dark:bg-card-dark rounded-2xl border border-slate-100 dark:border-primary/10 shadow-sm p-6">
         <div class="flex items-center gap-5">
-            {{-- Photo de profil --}}
-            <div class="relative flex-shrink-0 group">
-                @if($user->avatar)
-                    <img src="{{ asset('storage/' . $user->avatar) }}"
-                         alt="Photo de profil"
-                         id="avatarPreview"
-                         class="w-20 h-20 rounded-2xl object-cover shadow-lg ring-2 ring-primary/20">
-                @else
-                    <div id="avatarFallback"
-                         class="w-20 h-20 rounded-2xl bg-gradient-to-br from-primary to-emerald-600
-                                flex items-center justify-center shadow-lg shadow-primary/20">
-                        <span class="text-3xl font-black text-background-dark">
-                            {{ strtoupper(substr($user->first_name ?? 'U', 0, 1)) }}
-                        </span>
-                    </div>
-                    <img id="avatarPreview" class="w-20 h-20 rounded-2xl object-cover shadow-lg ring-2 ring-primary/20 hidden" alt="Aperçu">
-                @endif
-                {{-- Overlay bouton changer --}}
-                <label for="avatarInput"
-                       class="absolute inset-0 rounded-2xl bg-black/40 opacity-0 group-hover:opacity-100
-                              transition-opacity flex items-center justify-center cursor-pointer">
-                    <span class="material-symbols-outlined text-white text-2xl">photo_camera</span>
-                </label>
+            <div class="w-16 h-16 rounded-2xl bg-gradient-to-br from-primary to-emerald-600
+                        flex items-center justify-center flex-shrink-0 shadow-lg shadow-primary/20">
+                <span class="text-2xl font-black text-background-dark">
+                    {{ strtoupper(substr($user->name, 0, 1)) }}
+                </span>
             </div>
-            <div class="flex-1 min-w-0">
-                <p class="text-xl font-black text-slate-900 dark:text-white">{{ $user->first_name }} {{ $user->last_name }}</p>
+            <div>
+                <p class="text-xl font-black text-slate-900 dark:text-white">{{ $user->name }}</p>
                 <p class="text-sm text-slate-500 dark:text-slate-400">{{ $user->email }}</p>
                 <span class="inline-flex items-center gap-1 mt-1.5 px-2.5 py-0.5 rounded-full text-xs font-bold
                              bg-primary/10 text-primary">
@@ -53,26 +35,8 @@
                     </span>
                     {{ auth()->user()->role === 'driver' ? 'Conducteur' : 'Passager' }}
                 </span>
-                <p class="text-xs text-slate-400 mt-2">Survolez la photo pour la modifier</p>
             </div>
         </div>
-
-        {{-- Formulaire upload avatar (caché, soumis auto) --}}
-        <form id="avatarForm" method="POST" action="{{ route('profile.avatar.update') }}" enctype="multipart/form-data" class="hidden">
-            @csrf
-            <input type="file" id="avatarInput" name="avatar" accept="image/jpeg,image/jpg,image/png,image/webp">
-        </form>
-
-        @error('avatar')
-        <p class="text-xs text-red-500 font-semibold mt-3">{{ $message }}</p>
-        @enderror
-
-        @if(session('success') && session('success') === 'Photo de profil mise à jour.')
-        <div class="flex items-center gap-2 mt-3 p-3 rounded-xl bg-emerald-50 dark:bg-emerald-500/10 border border-emerald-200 dark:border-emerald-500/20">
-            <span class="material-symbols-outlined text-emerald-500 text-lg">check_circle</span>
-            <p class="text-xs font-bold text-emerald-700 dark:text-emerald-400">Photo de profil mise à jour.</p>
-        </div>
-        @endif
     </div>
 
     {{-- ── Informations du profil ── --}}
@@ -253,122 +217,160 @@
         </form>
     </div>
 
-    {{-- ── Véhicules (conducteurs uniquement) ── --}}
-    @if(auth()->user()->role === 'driver')
-    <div class="bg-white dark:bg-card-dark rounded-2xl border border-slate-100 dark:border-primary/10 shadow-sm p-5 space-y-4">
+    {{-- cette section est uniquement visible pour les conducteurs, car les passagers n'ont pas besoin de gérer un véhicule. --}}
 
-        {{-- En-tête --}}
+        @if(auth()->user()->role === 'driver')
+    <div class="bg-white dark:bg-card-dark rounded-2xl border border-slate-100 dark:border-primary/10 shadow-sm p-5 space-y-5">
         <div class="flex items-center justify-between">
             <div>
                 <h2 class="font-black text-sm uppercase tracking-widest text-slate-400 dark:text-slate-500">
-                    Mes véhicules
+                    Mon véhicule
                 </h2>
-                <p class="text-xs text-slate-400 mt-0.5">
-                    {{ $vehicles->count() }}/3 véhicule{{ $vehicles->count() > 1 ? 's' : '' }} enregistré{{ $vehicles->count() > 1 ? 's' : '' }}
-                </p>
+                <p class="text-xs text-slate-400 mt-0.5">Requis pour publier des trajets.</p>
             </div>
-            @if($vehicles->count() < 3)
-            <a href="{{ route('driver.vehicle.setup') }}"
-               class="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl
-                      bg-primary hover:bg-primary/90 text-background-dark
-                      font-black text-xs transition-all shadow-md shadow-primary/20">
-                <span class="material-symbols-outlined text-base">add</span>
-                Ajouter un véhicule
-            </a>
+            @if($vehicle)
+            <div class="flex items-center gap-1.5 px-3 py-1 rounded-full bg-primary/10 border border-primary/20 text-xs font-black text-primary">
+                <span class="material-symbols-outlined" style="font-size:14px">{{ $vehicle->type_icon }}</span>
+                {{ $vehicle->type_label }}
+            </div>
             @endif
         </div>
 
-        {{-- Flash messages --}}
-        @if(session('success'))
-        <div class="flex items-center gap-2 p-3 rounded-xl bg-emerald-50 dark:bg-emerald-500/10 border border-emerald-200 dark:border-emerald-500/20">
-            <span class="material-symbols-outlined text-emerald-500 text-lg">check_circle</span>
-            <p class="text-xs font-bold text-emerald-700 dark:text-emerald-400">{{ session('success') }}</p>
-        </div>
-        @endif
-        @if(session('warning'))
-        <div class="flex items-center gap-2 p-3 rounded-xl bg-orange-50 dark:bg-orange-500/10 border border-orange-200 dark:border-orange-500/20">
-            <span class="material-symbols-outlined text-orange-500 text-lg">warning</span>
-            <p class="text-xs font-bold text-orange-700 dark:text-orange-400">{{ session('warning') }}</p>
-        </div>
-        @endif
-
-        {{-- Liste des véhicules --}}
-        @if($vehicles->isEmpty())
-        <div class="flex flex-col items-center justify-center py-8 text-center">
-            <span class="material-symbols-outlined text-slate-300 dark:text-slate-600 text-5xl mb-3">directions_car</span>
-            <p class="font-black text-slate-500 dark:text-slate-400 text-sm">Aucun véhicule enregistré</p>
-            <p class="text-xs text-slate-400 mt-1">Ajoutez un véhicule pour publier des trajets.</p>
-        </div>
-        @else
-        <div class="space-y-3">
-            @foreach($vehicles as $v)
-            @php
-                $statusMap = [
-                    'pending'  => ['label' => 'En attente',  'bg' => 'bg-orange-50 dark:bg-orange-500/10',  'border' => 'border-orange-200 dark:border-orange-500/20', 'text' => 'text-orange-600 dark:text-orange-400',   'dot' => 'bg-orange-400 animate-pulse', 'icon' => 'directions_car'],
-                    'approved' => ['label' => 'Approuvé',    'bg' => 'bg-emerald-50 dark:bg-emerald-500/10','border' => 'border-emerald-200 dark:border-emerald-500/20','text' => 'text-emerald-600 dark:text-emerald-400', 'dot' => 'bg-emerald-400',              'icon' => 'verified'],
-                    'rejected' => ['label' => 'Rejeté',      'bg' => 'bg-red-50 dark:bg-red-500/10',        'border' => 'border-red-200 dark:border-red-500/20',        'text' => 'text-red-500 dark:text-red-400',         'dot' => 'bg-red-400',                  'icon' => 'cancel'],
-                ];
-                $st = $statusMap[$v->status] ?? $statusMap['pending'];
-            @endphp
-            <div class="rounded-xl border {{ $st['border'] }} {{ $st['bg'] }} p-4">
-                <div class="flex items-center gap-3">
-                    {{-- Icône véhicule --}}
-                    <div class="w-10 h-10 rounded-xl bg-white dark:bg-white/10 border border-slate-200 dark:border-white/10
-                                flex items-center justify-center flex-shrink-0 shadow-sm">
-                        <span class="material-symbols-outlined text-primary text-xl">{{ $v->type_icon }}</span>
-                    </div>
-
-                    {{-- Infos --}}
-                    <div class="flex-1 min-w-0">
-                        <div class="flex items-center gap-2 flex-wrap">
-                            <p class="font-black text-slate-900 dark:text-white text-sm">{{ $v->full_name }}</p>
-                            <span class="flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-black {{ $st['text'] }}">
-                                <span class="w-1.5 h-1.5 rounded-full {{ $st['dot'] }}"></span>
-                                {{ $st['label'] }}
-                            </span>
-                        </div>
-                        <div class="flex items-center gap-3 mt-1 flex-wrap">
-                            <span class="text-xs text-slate-500 dark:text-slate-400 font-medium">{{ $v->color }}</span>
-                            <span class="text-xs font-black text-slate-700 dark:text-slate-300
-                                         bg-slate-200 dark:bg-white/10 px-2 py-0.5 rounded-lg tracking-widest">
-                                {{ strtoupper($v->plate) }}
-                            </span>
-                            <span class="text-xs text-slate-400 font-medium">{{ $v->type_label }}</span>
-                        </div>
-                        @if($v->status === 'rejected' && $v->rejection_reason)
-                        <p class="mt-1.5 text-xs text-red-500 dark:text-red-400 font-semibold">
-                            Motif : {{ $v->rejection_reason }}
-                        </p>
-                        @endif
-                    </div>
-
-                    {{-- Actions --}}
-                    @if($v->status !== 'approved')
-                    <form method="POST" action="{{ route('vehicle.destroy', $v->id) }}"
-                          onsubmit="return confirm('Supprimer ce véhicule définitivement ?')">
-                        @csrf @method('DELETE')
-                        <button type="submit"
-                                class="w-8 h-8 rounded-xl border border-red-200 dark:border-red-500/30
-                                       flex items-center justify-center
-                                       text-red-400 hover:bg-red-50 dark:hover:bg-red-500/10
-                                       transition-colors flex-shrink-0">
-                            <span class="material-symbols-outlined text-base">delete</span>
-                        </button>
-                    </form>
-                    @endif
+        {{-- Affichage véhicule existant --}}
+        @if($vehicle)
+        <div class="flex items-center gap-4 p-4 rounded-xl bg-slate-50 dark:bg-white/5 border border-slate-100 dark:border-white/10">
+            <div class="w-12 h-12 rounded-xl bg-gradient-to-br from-primary/20 to-emerald-500/20
+                        border border-primary/20 flex items-center justify-center flex-shrink-0">
+                <span class="material-symbols-outlined text-primary text-2xl">{{ $vehicle->type_icon }}</span>
+            </div>
+            <div class="flex-1 min-w-0">
+                <p class="font-black text-slate-900 dark:text-white">{{ $vehicle->full_name }}</p>
+                <div class="flex items-center gap-3 mt-1 flex-wrap">
+                    <span class="flex items-center gap-1 text-xs text-slate-500 dark:text-slate-400 font-medium">
+                        <span class="material-symbols-outlined" style="font-size:13px">palette</span>
+                        {{ $vehicle->color }}
+                    </span>
+                    <span class="flex items-center gap-1 text-xs font-black text-slate-700 dark:text-slate-300
+                                 bg-slate-200 dark:bg-white/10 px-2 py-0.5 rounded-lg tracking-widest">
+                        {{ strtoupper($vehicle->plate) }}
+                    </span>
                 </div>
             </div>
-            @endforeach
         </div>
         @endif
 
-        {{-- Limite atteinte --}}
-        @if($vehicles->count() >= 3)
-        <p class="text-xs text-slate-400 text-center pt-1">
-            Limite de 3 véhicules atteinte.
-        </p>
-        @endif
+        {{-- Formulaire ajout / modification --}}
+        <form method="POST" action="{{ route('vehicle.save') }}" class="space-y-4" id="vehicle-form">
+            @csrf
 
+            {{-- Type de véhicule --}}
+            <div>
+                <label class="text-xs font-bold text-slate-500 dark:text-slate-400 mb-2 block">Type de véhicule *</label>
+                <div class="grid grid-cols-3 gap-2">
+                    @foreach(\App\Models\Vehicle::$types as $key => $type)
+                    <label class="relative cursor-pointer">
+                        <input type="radio" name="type" value="{{ $key }}"
+                               {{ old('type', $vehicle?->type ?? 'voiture') === $key ? 'checked' : '' }}
+                               class="peer sr-only"/>
+                        <div class="flex flex-col items-center gap-2 p-3 rounded-xl border-2
+                                    border-slate-200 dark:border-white/10
+                                    bg-slate-50 dark:bg-white/5
+                                    peer-checked:border-primary peer-checked:bg-primary/5
+                                    dark:peer-checked:bg-primary/10
+                                    transition-all cursor-pointer hover:border-primary/50">
+                            <span class="material-symbols-outlined text-slate-400 peer-checked:text-primary text-2xl
+                                         dark:text-slate-500" style="font-size:28px">{{ $type['icon'] }}</span>
+                            <span class="text-xs font-bold text-slate-600 dark:text-slate-400
+                                         peer-checked:text-primary">{{ $type['label'] }}</span>
+                        </div>
+                        {{-- Check badge --}}
+                        <span class="absolute top-2 right-2 w-4 h-4 rounded-full bg-primary
+                                     flex items-center justify-center hidden peer-checked:flex">
+                            <span class="material-symbols-outlined text-background-dark" style="font-size:11px">check</span>
+                        </span>
+                    </label>
+                    @endforeach
+                </div>
+                @error('type') <p class="text-xs text-red-500 font-semibold mt-1">{{ $message }}</p> @enderror
+            </div>
+
+            {{-- Marque & Modèle --}}
+            <div class="grid grid-cols-2 gap-3">
+                <div>
+                    <label class="text-xs font-bold text-slate-500 dark:text-slate-400 mb-1.5 block">Marque *</label>
+                    <input type="text" name="brand" value="{{ old('brand', $vehicle?->brand) }}"
+                           placeholder="Ex: Toyota"
+                           class="w-full px-3 py-2.5 rounded-xl border border-slate-200 dark:border-white/10
+                                  bg-slate-50 dark:bg-white/5 text-slate-900 dark:text-white
+                                  text-sm font-semibold placeholder-slate-400
+                                  focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary transition-all"/>
+                    @error('brand') <p class="text-xs text-red-500 font-semibold mt-1">{{ $message }}</p> @enderror
+                </div>
+                <div>
+                    <label class="text-xs font-bold text-slate-500 dark:text-slate-400 mb-1.5 block">Modèle *</label>
+                    <input type="text" name="model" value="{{ old('model', $vehicle?->model) }}"
+                           placeholder="Ex: Corolla"
+                           class="w-full px-3 py-2.5 rounded-xl border border-slate-200 dark:border-white/10
+                                  bg-slate-50 dark:bg-white/5 text-slate-900 dark:text-white
+                                  text-sm font-semibold placeholder-slate-400
+                                  focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary transition-all"/>
+                    @error('model') <p class="text-xs text-red-500 font-semibold mt-1">{{ $message }}</p> @enderror
+                </div>
+            </div>
+
+            
+
+            {{-- Couleur & Immatriculation --}}
+            <div class="grid grid-cols-2 gap-3">
+                <div>
+                    <label class="text-xs font-bold text-slate-500 dark:text-slate-400 mb-1.5 block">Couleur *</label>
+                    <input type="text" name="color" value="{{ old('color', $vehicle?->color) }}"
+                           placeholder="Ex: Blanc"
+                           class="w-full px-3 py-2.5 rounded-xl border border-slate-200 dark:border-white/10
+                                  bg-slate-50 dark:bg-white/5 text-slate-900 dark:text-white
+                                  text-sm font-semibold placeholder-slate-400
+                                  focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary transition-all"/>
+                    @error('color') <p class="text-xs text-red-500 font-semibold mt-1">{{ $message }}</p> @enderror
+                </div>
+                <div>
+                    <label class="text-xs font-bold text-slate-500 dark:text-slate-400 mb-1.5 block">Immatriculation *</label>
+                    <input type="text" name="plate" value="{{ old('plate', $vehicle?->plate) }}"
+                           placeholder="Ex: BJ-1234-AB"
+                           class="w-full px-3 py-2.5 rounded-xl border border-slate-200 dark:border-white/10
+                                  bg-slate-50 dark:bg-white/5 text-slate-900 dark:text-white
+                                  text-sm font-semibold placeholder-slate-400 uppercase
+                                  focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary transition-all"/>
+                    @error('plate') <p class="text-xs text-red-500 font-semibold mt-1">{{ $message }}</p> @enderror
+                </div>
+            </div>
+
+            {{-- Actions --}}
+            <div class="flex items-center justify-between pt-1">
+                @if (session('status') === 'vehicle-saved')
+                    <span class="flex items-center gap-1.5 text-xs font-bold text-emerald-600 dark:text-emerald-400">
+                        <span class="material-symbols-outlined text-lg">check_circle</span>
+                        Véhicule enregistré
+                    </span>
+                @elseif($vehicle)
+                    <form method="POST" action="{{ route('vehicle.destroy') }}" onsubmit="return confirm('Supprimer ce véhicule ?')">
+                        @csrf @method('DELETE')
+                        <button type="submit"
+                                class="flex items-center gap-1.5 text-xs font-bold text-red-400 hover:text-red-500 transition-colors">
+                            <span class="material-symbols-outlined text-base">delete</span>
+                            Supprimer
+                        </button>
+                    </form>
+                @else
+                    <span></span>
+                @endif
+                <button type="submit"
+                        class="flex items-center gap-2 bg-primary hover:bg-primary/90 text-background-dark
+                               font-black px-5 py-2.5 rounded-xl transition-all shadow-md shadow-primary/20 text-sm">
+                    <span class="material-symbols-outlined text-lg">save</span>
+                    {{ $vehicle ? 'Mettre à jour' : 'Enregistrer' }}
+                </button>
+            </div>
+        </form>
     </div>
     @endif
 
@@ -464,30 +466,6 @@
 
 @push('scripts')
 <script>
-    // Avatar — aperçu + soumission automatique
-    const avatarInput = document.getElementById('avatarInput');
-    const avatarForm  = document.getElementById('avatarForm');
-    const avatarPreview = document.getElementById('avatarPreview');
-    const avatarFallback = document.getElementById('avatarFallback');
-
-    if (avatarInput) {
-        avatarInput.addEventListener('change', function () {
-            const file = this.files[0];
-            if (!file) return;
-            // Aperçu immédiat
-            const reader = new FileReader();
-            reader.onload = e => {
-                avatarPreview.src = e.target.result;
-                avatarPreview.classList.remove('hidden');
-                if (avatarFallback) avatarFallback.classList.add('hidden');
-            };
-            reader.readAsDataURL(file);
-            // Soumission auto
-            avatarForm.submit();
-        });
-    }
-
-    // Modal suppression compte
     const modal    = document.getElementById('deleteModal');
     const modalBox = document.getElementById('deleteModalBox');
     const overlay  = document.getElementById('deleteModalOverlay');

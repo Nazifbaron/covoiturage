@@ -12,10 +12,10 @@
                     darkMode: "class",
                     theme: {
                         extend: {
-                             colors: {
-                                primary: "#fe7644",        // couleur principale (navbar, titres)
-                                secondary: "#401268",      // hover, éléments actifs
-                                accent: "#c33c72",         // boutons importants (CTA)
+                            colors: {
+                                primary: " #61BE2E",        // couleur principale (navbar, titres)
+                                secondary: "#045373",      // hover, éléments actifs
+                                others: "#135bec",         // boutons importants (CTA)
 
                                 "background-light": "#f8f6fb",
                                 "background-dark": "#0f0b1a",
@@ -77,8 +77,8 @@
                 .dot-3 { animation: dot3 15s infinite; }
         </style>
     </head>
-    <body class="bg-background-light dark:bg-background-dark text-slate-900 dark:text-slate-100 px-2">
-        <x-header></x-header>
+    <body class="bg-background-light dark:bg-background-dark text-slate-900 dark:text-slate-100 ">
+
         @if(session('error'))
         <div class="bg-red-500 text-white p-3 rounded mb-4">
             {{ session('error') }}

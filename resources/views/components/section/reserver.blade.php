@@ -1,9 +1,9 @@
-<section id="reserver" class="relative min-h-[700px] flex items-center justify-center overflow-hidden">
+<section  class="relative min-h-[700px] flex items-center justify-center overflow-hidden">
                 <div class="absolute inset-0 z-0 overflow-hidden">
                     <div class="carousel-track h-full">
                         <div class="w-1/3 h-full relative">
                             <div class="absolute inset-0 bg-gradient-to-b from-black/60 via-black/40 to-black/70 z-10"></div>
-                            <img alt="Diverse friends in car" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDixtjMIdazC3WKIJXJIPUt7fdceA64LRT9InOMQ8ig8uSM0BO5bDxu2J0H5SxLLXB90pSm7a9hSNlDxRCqeuRcJiCfmw5jGJ1fDloGAVbxVKbuFAaCivT7dooBh9UtaA4JhdvW3RPWEU1O75uEDUFvGChV6gqutFX2ZacqvRHm77fgvH-p3ygBWLWQU7MJ8S5-buETrlHwwVbncJ5ZYkVkbvk5TFMDuAWApvEY_r3IoOiHaxklLWf86o_arsbW4P_FPH6A5Yrdb9qG"/>
+                            <img alt="Diverse friends in car" class="w-full h-full object-cover" src="{{ asset('images/carousel/44.jpg') }}"/>
                         </div>
                         <div class="w-1/3 h-full relative">
                             <div class="absolute inset-0 bg-gradient-to-b from-black/60 via-black/40 to-black/70 z-10"></div>
@@ -11,7 +11,7 @@
                         </div>
                         <div class="w-1/3 h-full relative">
                             <div class="absolute inset-0 bg-gradient-to-b from-black/60 via-black/40 to-black/70 z-10"></div>
-                            <img alt="Friendly handshake" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAY24EbjPtNOzbDxbW3Hk4B-uXepWGnEYjt9lQTCVX6zmZUzImBIAUslt27wZuvdIaldZ6zk6-iryxo7v36gD_BOdH_Si-nRNuvK6b-j1dZC22EDZeVcVx7ZQN-geZS1djYHtZdJLhv60wa9G4omg24kUDwArzhnqSgZQ0T7cKSwvYXQXkHo6jRVtNgbL9FdWlTvsVKPGfTNGhOrH3HqQRIUBgsFXK_TTiM1NgcryKT4BmEGa4RDlF728w7UdCxfsKYEWXtfEe8aZTl"/>
+                            <img alt="Friendly handshake" class="w-full h-full object-cover" src="{{ asset('images/carousel/co.jpg') }}"/>
                         </div>
                     </div>
                 </div>
@@ -37,11 +37,11 @@
                         <div class="flex-1 grid grid-cols-1 md:grid-cols-4 gap-2">
                             <div class="relative flex items-center group">
                                 <span class="material-symbols-outlined absolute left-4 text-slate-400 group-focus-within:text-primary text-[16px]">location_on</span>
-                                <input class="w-full pl-12 pr-4 py-5 bg-slate-50 dark:bg-slate-800/50 border-none rounded-xl focus:ring-2 focus:ring-primary/50 text-slate-900 dark:text-white font-medium" placeholder="Ville de départ" type="text"/>
+                                <input class="w-full pl-12 pr-4 py-5 bg-slate-50 dark:bg-slate-800/50 border-none rounded-xl focus:ring-2 focus:ring-primary/50 text-slate-900 dark:text-white font-medium" placeholder="Départ" type="text"/>
                             </div>
                             <div class="relative flex items-center group">
                                 <span class="material-symbols-outlined absolute left-4 text-slate-400 group-focus-within:text-primary text-[20px]">near_me</span>
-                                <input class="w-full pl-12 pr-4 py-5 bg-slate-50 dark:bg-slate-800/50 border-none rounded-xl focus:ring-2 focus:ring-primary/50 text-slate-900 dark:text-white font-medium" placeholder="Ville de destination" type="text"/>
+                                <input class="w-full pl-12 pr-4 py-5 bg-slate-50 dark:bg-slate-800/50 border-none rounded-xl focus:ring-2 focus:ring-primary/50 text-slate-900 dark:text-white font-medium" placeholder="Destination" type="text"/>
                             </div>
                             <div class="relative flex items-center group">
                                 <span class="material-symbols-outlined absolute left-4 text-slate-400 group-focus-within:text-primary text-[20px]">calendar_month</span>

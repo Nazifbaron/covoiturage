@@ -11,7 +11,7 @@
                     </div>
                     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
                         <div class="bg-white dark:bg-charcoal rounded-2xl overflow-hidden shadow-sm hover:shadow-xl transition-all border border-slate-100 dark:border-white/5">
-                            <div class="h-48 bg-cover bg-center" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuCjUuMpCAW7ILQQ7pLjwz7sUWcC6T1OQko-rJ1iifX-O0bPacpow7DDD8VlKY-qKIpXSch6ZepJ4W1hwpLTSCxFytm3loC22vmNwGBNnRkK5f1V7LRZvFxvUOBOJZdIbmxZ9gxFsxCRKsF1_sLagS7BN7FVjAkvuITSPfeQxl1Hj4pZdKhEWSmspgftJ2Qff_KZRsu9Jy04_BEsyN83IXCpRawnCVqsIvfkAPF3uUH1fL46i3HhHiXayrA9Cd2wyuYPsdirF4lJ3i1Z')"></div>
+                            <div class="h-48 bg-cover bg-center" style="background-image: url('{{ asset('images/itinéraire/etoile.jpg') }}')"></div>
                                 <div class="p-6">
                                     <div class="flex justify-between items-center mb-4">
                                         <h3 class="text-xl font-bold text-deep-blue dark:text-white">Cotonou → Calavi</h3>
@@ -25,7 +25,7 @@
                                 </div>
                             </div>
                             <div class="bg-white dark:bg-charcoal rounded-2xl overflow-hidden shadow-sm hover:shadow-xl transition-all border border-slate-100 dark:border-white/5">
-                                <div class="h-48 bg-cover bg-center" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuBQIewMafR5A059NoOAcWEr2CGPY_MH5x3uByDPY8rQWAzmjBy7wqR8VO0KrMgHkkCDwLXM1Vn3NlNyXLKXpafqPuHaCRIiRAqPB7eVzuq99i1oEDn2wzzJrxXdwsJmKAug7BWT1i9ZSdiMFarjRZ8OzCnOfKBcm5lkq_xsX4lko8xGTadMsV1tpMmJOQmJs2whRDNcVn2KDBnz7ruCK9648kZIoUU8oMc-YNQBHHRK-30K1FHtV42ts9TJD2LN1nmQMyiwlthGoVl9')"></div>
+                                <div class="h-48 bg-cover bg-center" style="background-image: url('{{ asset('images/itinéraire/calavi.jpg') }}"></div>
                                 <div class="p-6">
                                     <div class="flex justify-between items-center mb-4">
                                         <h3 class="text-xl font-bold text-deep-blue dark:text-white">Cocotome → Pahou</h3>
@@ -39,7 +39,7 @@
                                 </div>
                             </div>
                             <div class="bg-white dark:bg-charcoal rounded-2xl overflow-hidden shadow-sm hover:shadow-xl transition-all border border-slate-100 dark:border-white/5">
-                                <div class="h-48 bg-cover bg-center" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuBGtf4t7N_Z4AD0bwJO5_hRZxSqzjm-kTY6E3wKf4abbioMP3zs28GaHJh4Xi-GM4MlRTIK24aUJyQW2OTxe8fJvn1OP421M6nZoobzTD9xWy_O2KpFhKpGzCjyKKZ8DYFzODzPqPQ_pc4JjZm_hQfM56VTCkB9awZ6LhYFxu_HAM2oLzYTLt90Nbvl4cRN_I_456tBQ5WbKd_S85-5h2JKQj5nHvXl565bbACGvFkGb0mI1jdbdc2YbVC8HisZhuFGnrKx2PZdlWHT')"></div>
+                                <div class="h-48 bg-cover bg-center" style="background-image: url('{{ asset('images/itinéraire/porto.jpg') }}')"></div>
                                 <div class="p-6">
                                     <div class="flex justify-between items-center mb-4">
                                         <h3 class="text-xl font-bold text-deep-blue dark:text-white">Cotonou → Porto-Novo</h3>

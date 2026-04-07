@@ -1,16 +1,50 @@
- <section class="relative bg-slate-50 dark:bg-background-dark py-24 overflow-hidden">
-
+ <section class="relative bg-slate-50 dark:bg-background-dark overflow-hidden">
                 <!-- Background accents -->
                 <div class="absolute top-0 right-0 w-80 h-80 bg-green-500/10 rounded-full blur-3xl"></div>
                 <div class="absolute bottom-0 left-0 w-80 h-80 bg-primary/10 rounded-full blur-3xl"></div>
 
-                <div class="max-w-7xl mx-auto px-6">
+                <div class="relative w-full h-[320px] md:h-[380px] overflow-hidden">
+
+                    <!-- Image de fond -->
+                    <img
+                        src="{{ asset('images/location/img-banner-contacts.jpg') }}"
+                        alt="Contact covoiturage Bénin"
+                        class="absolute inset-0 w-full h-full object-cover"
+                    >
+
+                    <!-- Overlay sombre -->
+                    <div class="absolute inset-0 bg-black/50"></div>
+
+                    <!-- Contenu -->
+                    <div class="relative max-w-7xl mx-auto h-full flex items-center px-6 md:px-10">
+
+                        <div class="text-white max-w-xl">
+
+                            <h1 class="text-3xl md:text-4xl font-bold mb-4">
+                                Contactez-nous
+                            </h1>
+
+                            <p class="text-sm md:text-base text-gray-200 leading-relaxed border-l-4 border-primary pl-4">
+                                Une question concernant votre trajet ? Besoin d’aide pour utiliser notre
+                                plateforme de covoiturage au Bénin ? Notre équipe est disponible pour
+                                vous accompagner et améliorer votre expérience de déplacement.
+                            </p>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+                <div class="max-w-7xl mx-auto p-6 pt-8">
+
                     <div class="grid lg:grid-cols-2 gap-16 items-center">
+
                         <!-- LEFT CONTENT -->
                         <div>
 
                             <h2 class="text-4xl font-bold text-deep-blue dark:text-white mb-6">
-                                Nous sommes présents dans <span class="text-primary">12+ villes</span> au Bénin
+                                Nous sommes présents dans les <span class="text-primary">12 Départements</span> au Bénin
                             </h2>
 
                             <p class="text-slate-600 dark:text-slate-400 mb-10 leading-relaxed">
@@ -70,7 +104,7 @@
 
                             <div class="relative rounded-3xl overflow-hidden shadow-2xl">
                                 <img
-                                    src="{{ asset('images/location/img-location-map.png') }}"
+                                    src="{{ asset('images/location/rMobility1.jpg') }}"
                                     alt="Carte des zones couvertes"
                                     class="w-full object-cover"
                                 >
@@ -103,8 +137,8 @@
 
                     </div>
                 </div>
-            </section>
-<section class="bg-slate-50 py-24">
+</section>
+<section class="bg-slate-50 py-10">
     <div class="max-w-5xl mx-auto px-6">
         <div class="bg-white rounded-3xl shadow-xl border border-slate-200 p-10 md:p-14">
 

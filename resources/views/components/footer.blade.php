@@ -42,7 +42,7 @@
                     </div>
 
                 </div>
-                <div class="border-t border-slate-200 dark:border-white/5 pt-6 text-center text-xs text-slate-500 dark:text-slate-400">
+                <div class="border-t border-slate-200 dark:border-white/5 pt-3 text-center text-xs text-slate-500 dark:text-slate-400">
                     © 2026 Roulez ensemble, protégez pour toujours.
                 </div>
 

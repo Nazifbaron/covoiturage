@@ -1,358 +1,228 @@
-@extends('layouts.app')
+<!DOCTYPE html>
 
-@section('content')
-<div class="space-y-6">
-
-    {{-- BANNIÈRE --}}
-    <div class="relative overflow-hidden rounded-2xl p-6
-                bg-gradient-to-br from-[#1a0a3e] via-[#2d1270] to-[#1a0a3e]
-                flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-        <div class="absolute top-0 right-0 w-72 h-72 rounded-full bg-violet-500/10 -translate-y-1/2 translate-x-1/3 pointer-events-none"></div>
-        <div class="absolute bottom-0 left-1/3 w-40 h-40 rounded-full bg-orange-500/10 translate-y-1/2 pointer-events-none"></div>
-        <div class="relative z-10">
-            <p class="text-xs font-bold text-violet-300/70 uppercase tracking-widest mb-1">
-                {{ now()->locale('fr')->isoFormat('dddd D MMMM YYYY') }}
-            </p>
-            <h2 class="text-2xl font-black text-white">Bonjour, {{ Auth::user()->first_name }} 👋</h2>
-            <p class="text-violet-200/60 text-sm mt-1">
-                @if(Auth::user()->role === 'driver') Gérez vos trajets et suivez vos gains en temps réel.
-                @else Trouvez votre prochain trajet ou consultez vos réservations. @endif
-            </p>
-        </div>
-        @if(Auth::user()->role === 'driver')
-            <a href="{{ route('driver.trips.create') }}"
-               class="relative z-10 flex-shrink-0 inline-flex items-center gap-2
-                      bg-gradient-to-r from-[#6C2BD9] to-[#8B5CF6] hover:opacity-90
-                      text-white font-black px-5 py-3 rounded-xl transition-all shadow-lg shadow-violet-900/50 text-sm">
-                <span class="material-symbols-outlined text-xl">add_circle</span>Publier un trajet
-            </a>
-        @else
-            <div class="relative z-10 flex flex-col sm:flex-row gap-2 flex-shrink-0">
-                <a href="{{ route('passenger.trips') }}"
-                   class="inline-flex items-center gap-2 bg-white/10 hover:bg-white/20 text-white border border-white/20 font-bold px-5 py-3 rounded-xl text-sm">
-                    <span class="material-symbols-outlined text-xl">search</span>Rechercher
-                </a>
-                <a href="{{ route('passenger.showtrips') }}"
-                   class="inline-flex items-center gap-2 bg-gradient-to-r from-[#E8470A] to-[#F97316] hover:opacity-90
-                          text-white font-black px-5 py-3 rounded-xl shadow-lg shadow-orange-900/40 text-sm">
-                    <span class="material-symbols-outlined text-xl">hail</span>Demander un trajet
-                </a>
-            </div>
-        @endif
-    </div>
-
-    {{-- STATS --}}
-    <div class="grid grid-cols-2 lg:grid-cols-4 gap-4">
-        @if(Auth::user()->role === 'driver')
-            @foreach([
-                ['icon'=>'payments',        'value'=>'54 500', 'unit'=>'FCFA', 'label'=>'Gains ce mois',       'from'=>'from-[#6C2BD9]', 'to'=>'to-[#8B5CF6]', 'badge'=>'+12%'],
-                ['icon'=>'directions_car',  'value'=>'8',      'unit'=>'',     'label'=>'Trajets publiés',     'from'=>'from-blue-500',  'to'=>'to-indigo-600', 'badge'=>''],
-                ['icon'=>'pending_actions', 'value'=>'3',      'unit'=>'',     'label'=>'Demandes en attente', 'from'=>'from-[#E8470A]', 'to'=>'to-[#F97316]', 'badge'=>'3'],
-                ['icon'=>'star',            'value'=>'4.8',    'unit'=>'/ 5',  'label'=>'Note moyenne',        'from'=>'from-[#4C1D95]', 'to'=>'to-[#6C2BD9]', 'badge'=>''],
-            ] as $s)
-            <div class="relative overflow-hidden rounded-2xl p-5 bg-gradient-to-br {{ $s['from'] }} {{ $s['to'] }} shadow-lg hover:-translate-y-1 transition-all duration-200">
-                <div class="absolute top-0 right-0 w-24 h-24 rounded-full bg-white/10 -translate-y-1/3 translate-x-1/3"></div>
-                <div class="flex items-start justify-between mb-3">
-                    <div class="w-10 h-10 rounded-xl bg-white/20 flex items-center justify-center">
-                        <span class="material-symbols-outlined text-white">{{ $s['icon'] }}</span>
-                    </div>
-                    @if($s['badge']) <span class="text-xs font-bold text-white bg-white/20 px-2 py-0.5 rounded-full">{{ $s['badge'] }}</span> @endif
-                </div>
-                <p class="text-xl font-black text-white">{{ $s['value'] }} @if($s['unit'])<span class="text-sm font-semibold text-white/70">{{ $s['unit'] }}</span>@endif</p>
-                <p class="text-xs text-white/70 mt-1 font-medium">{{ $s['label'] }}</p>
-            </div>
-            @endforeach
-        @else
-            @foreach([
-                ['icon'=>'bookmark',  'value'=>'4',      'unit'=>'',     'label'=>'Réservations actives', 'from'=>'from-[#6C2BD9]', 'to'=>'to-[#8B5CF6]', 'badge'=>''],
-                ['icon'=>'history',   'value'=>'23',     'unit'=>'',     'label'=>'Trajets effectués',    'from'=>'from-blue-500',  'to'=>'to-indigo-600', 'badge'=>''],
-                ['icon'=>'savings',   'value'=>'12 800', 'unit'=>'FCFA', 'label'=>'Économies ce mois',    'from'=>'from-[#E8470A]', 'to'=>'to-[#F97316]', 'badge'=>'-34%'],
-                ['icon'=>'hail',      'value'=>'1',      'unit'=>'',     'label'=>'Demande en cours',     'from'=>'from-[#4C1D95]', 'to'=>'to-[#6C2BD9]', 'badge'=>'Live'],
-            ] as $s)
-            <div class="relative overflow-hidden rounded-2xl p-5 bg-gradient-to-br {{ $s['from'] }} {{ $s['to'] }} shadow-lg hover:-translate-y-1 transition-all duration-200">
-                <div class="absolute top-0 right-0 w-24 h-24 rounded-full bg-white/10 -translate-y-1/3 translate-x-1/3"></div>
-                <div class="flex items-start justify-between mb-3">
-                    <div class="w-10 h-10 rounded-xl bg-white/20 flex items-center justify-center">
-                        <span class="material-symbols-outlined text-white">{{ $s['icon'] }}</span>
-                    </div>
-                    @if($s['badge']) <span class="text-xs font-bold text-white bg-white/20 px-2 py-0.5 rounded-full">{{ $s['badge'] }}</span> @endif
-                </div>
-                <p class="text-xl font-black text-white">{{ $s['value'] }} @if($s['unit'])<span class="text-sm font-semibold text-white/70">{{ $s['unit'] }}</span>@endif</p>
-                <p class="text-xs text-white/70 mt-1 font-medium">{{ $s['label'] }}</p>
-            </div>
-            @endforeach
-        @endif
-    </div>
-
-    {{-- CONTENU PRINCIPAL --}}
-    @if(Auth::user()->role === 'driver')
-    <div class="grid grid-cols-1 lg:grid-cols-3 gap-4">
-
-        {{-- Trajets publiés --}}
-        <div class="lg:col-span-2 rounded-2xl overflow-hidden bg-white dark:bg-card-dark border border-violet-100 dark:border-violet-900/20 shadow-sm">
-            <div class="flex items-center justify-between px-5 py-4 bg-gradient-to-r from-violet-50 to-white dark:from-violet-900/20 dark:to-transparent border-b border-violet-100 dark:border-violet-900/20">
-                <div class="flex items-center gap-2">
-                    <div class="w-7 h-7 rounded-lg bg-violet-100 dark:bg-violet-500/20 flex items-center justify-center">
-                        <span class="material-symbols-outlined text-[#6C2BD9] text-base">directions_car</span>
-                    </div>
-                    <h3 class="font-black text-base">Mes trajets publiés</h3>
-                </div>
-                <a href="{{ route('driver.my-trips') }}" class="text-[#6C2BD9] text-sm font-bold hover:underline">Voir tout</a>
-            </div>
-            <div class="divide-y divide-violet-50 dark:divide-white/5">
-                @foreach([
-                    ['from'=>'Cotonou','to'=>'Porto-Novo','date'=>"Aujourd'hui 07:30",'seats'=>2,'price'=>'1 500','status'=>'active'],
-                    ['from'=>'Cotonou','to'=>'Abomey-Calavi','date'=>'Demain 08:00','seats'=>3,'price'=>'800','status'=>'active'],
-                    ['from'=>'Porto-Novo','to'=>'Cotonou','date'=>'08 Mar 17:00','seats'=>0,'price'=>'1 500','status'=>'full'],
-                ] as $i => $t)
-                @php $ic = ['bg-violet-50 dark:bg-violet-500/10','bg-blue-50 dark:bg-blue-500/10','bg-red-50 dark:bg-red-500/10']; $tc = ['text-[#6C2BD9]','text-blue-500','text-red-400']; @endphp
-                <div class="flex items-center gap-4 px-5 py-4 hover:bg-violet-50/50 dark:hover:bg-white/5 transition-colors">
-                    <div class="w-10 h-10 rounded-xl {{ $ic[$i] }} flex items-center justify-center flex-shrink-0">
-                        <span class="material-symbols-outlined text-xl {{ $tc[$i] }}">directions_car</span>
-                    </div>
-                    <div class="flex-1 min-w-0">
-                        <p class="font-bold text-sm">{{ $t['from'] }} → {{ $t['to'] }}</p>
-                        <p class="text-xs text-slate-500 dark:text-slate-400 mt-0.5">{{ $t['date'] }}</p>
-                    </div>
-                    <div class="text-right flex-shrink-0">
-                        <p class="font-black text-sm text-[#6C2BD9]">{{ $t['price'] }} FCFA</p>
-                        <span class="text-xs font-semibold {{ $t['status']==='full' ? 'text-red-400' : 'text-[#6C2BD9]' }}">
-                            {{ $t['status']==='full' ? 'Complet' : $t['seats'].' places' }}
-                        </span>
-                    </div>
-                </div>
-                @endforeach
-            </div>
-        </div>
-
-        {{-- Colonne droite --}}
-        <div class="flex flex-col gap-4">
-            {{-- Demandes --}}
-            <div class="rounded-2xl overflow-hidden bg-white dark:bg-card-dark border border-orange-100 dark:border-orange-900/20 shadow-sm">
-                <div class="flex items-center justify-between px-5 py-4 bg-gradient-to-r from-orange-50 to-amber-50 dark:from-orange-900/20 dark:to-transparent border-b border-orange-100 dark:border-orange-900/20">
-                    <div class="flex items-center gap-2">
-                        <div class="w-7 h-7 rounded-lg bg-orange-100 dark:bg-orange-500/20 flex items-center justify-center">
-                            <span class="material-symbols-outlined text-[#E8470A] text-base">pending_actions</span>
-                        </div>
-                        <h3 class="font-black text-base">Demandes</h3>
-                    </div>
-                    <span class="bg-gradient-to-r from-[#E8470A] to-[#F97316] text-white text-xs font-black px-2.5 py-1 rounded-full">3</span>
-                </div>
-                <div class="divide-y divide-orange-50 dark:divide-white/5">
-                    @foreach([
-                        ['name'=>'Amine D.','trajet'=>'Cotonou → Porto-Novo','time'=>'Il y a 5 min'],
-                        ['name'=>'Fatou K.','trajet'=>'Cotonou → Calavi','time'=>'Il y a 20 min'],
-                        ['name'=>'Kofi A.','trajet'=>'Cotonou → Porto-Novo','time'=>'Il y a 1h'],
-                    ] as $d)
-                    <div class="px-5 py-4">
-                        <div class="flex items-center gap-3 mb-3">
-                            <div class="w-8 h-8 rounded-full bg-gradient-to-br from-[#6C2BD9] to-[#4C1D95] flex items-center justify-center flex-shrink-0">
-                                <span class="material-symbols-outlined text-white text-base">person</span>
-                            </div>
-                            <div class="min-w-0 flex-1">
-                                <p class="font-bold text-sm">{{ $d['name'] }}</p>
-                                <p class="text-xs text-slate-500">{{ $d['trajet'] }}</p>
-                            </div>
-                            <span class="text-xs text-slate-400 flex-shrink-0">{{ $d['time'] }}</span>
-                        </div>
-                        <div class="flex gap-2">
-                            <button class="flex-1 py-1.5 rounded-lg bg-gradient-to-r from-[#6C2BD9] to-[#8B5CF6] text-white text-xs font-bold hover:opacity-90 transition-opacity">Accepter</button>
-                            <button class="flex-1 py-1.5 rounded-lg bg-slate-100 dark:bg-white/10 text-slate-600 dark:text-slate-400 text-xs font-bold hover:bg-red-50 hover:text-red-500 transition-colors">Refuser</button>
-                        </div>
-                    </div>
-                    @endforeach
-                </div>
-            </div>
-            {{-- Courses à proximité --}}
-            <div class="rounded-2xl overflow-hidden bg-white dark:bg-card-dark border border-violet-100 dark:border-violet-900/20 shadow-sm">
-                <div class="flex items-center justify-between px-5 py-4 bg-gradient-to-r from-violet-50 to-white dark:from-violet-900/20 dark:to-transparent border-b border-violet-100 dark:border-violet-900/20">
-                    <div class="flex items-center gap-2">
-                        <div class="w-7 h-7 rounded-lg bg-violet-100 dark:bg-violet-500/20 flex items-center justify-center">
-                            <span class="material-symbols-outlined text-[#6C2BD9] text-base">hail</span>
-                        </div>
-                        <h3 class="font-black text-base">Courses à proximité</h3>
-                    </div>
-                    <span class="bg-gradient-to-r from-[#6C2BD9] to-[#8B5CF6] text-white text-xs font-black px-2.5 py-1 rounded-full">2</span>
-                </div>
-                <div class="divide-y divide-violet-50 dark:divide-white/5">
-                    @foreach([
-                        ['name'=>'Séna M.','from'=>'Cotonou','to'=>'Porto-Novo','time'=>'Auj. 09:00','budget'=>'1 500','passengers'=>1,'expires'=>'2h rest.'],
-                        ['name'=>'Ibrahim T.','from'=>'Calavi','to'=>'Cotonou','time'=>'Auj. 11:30','budget'=>'1 000','passengers'=>2,'expires'=>'45 min'],
-                    ] as $c)
-                    <div class="px-5 py-4 space-y-3">
-                        <div class="flex items-start gap-3">
-                            <div class="w-8 h-8 rounded-full bg-gradient-to-br from-[#6C2BD9] to-[#4C1D95] flex items-center justify-center flex-shrink-0 mt-0.5">
-                                <span class="material-symbols-outlined text-white text-base">person</span>
-                            </div>
-                            <div class="flex-1 min-w-0">
-                                <div class="flex items-center justify-between gap-1">
-                                    <p class="font-bold text-sm">{{ $c['name'] }}</p>
-                                    <span class="text-xs text-[#E8470A] font-semibold flex items-center gap-0.5 flex-shrink-0">
-                                        <span class="material-symbols-outlined text-sm">timer</span>{{ $c['expires'] }}
-                                    </span>
-                                </div>
-                                <p class="text-xs font-semibold text-slate-700 dark:text-slate-300 mt-0.5">{{ $c['from'] }} → {{ $c['to'] }}</p>
-                                <div class="flex items-center gap-2 mt-1 flex-wrap">
-                                    <span class="flex items-center gap-0.5 text-xs text-slate-500"><span class="material-symbols-outlined text-sm">schedule</span>{{ $c['time'] }}</span>
-                                    <span class="flex items-center gap-0.5 text-xs text-slate-500"><span class="material-symbols-outlined text-sm">group</span>{{ $c['passengers'] }} pers.</span>
-                                    <span class="flex items-center gap-0.5 text-xs font-bold text-[#6C2BD9]"><span class="material-symbols-outlined text-sm">payments</span>{{ $c['budget'] }} FCFA</span>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="flex gap-2">
-                            <button class="flex-1 py-1.5 rounded-lg bg-gradient-to-r from-[#6C2BD9] to-[#8B5CF6] text-white text-xs font-bold hover:opacity-90">Accepter</button>
-                            <button class="px-3 py-1.5 rounded-lg bg-slate-100 dark:bg-white/10 text-slate-500 text-xs font-bold hover:bg-red-50 hover:text-red-500 transition-colors">Ignorer</button>
-                        </div>
-                    </div>
-                    @endforeach
-                </div>
-                <div class="px-5 py-3 border-t border-violet-50 dark:border-white/5">
-                    <a href="{{ route('driver.requests') }}" class="text-xs font-bold text-[#6C2BD9] hover:underline flex items-center gap-1">
-                        <span class="material-symbols-outlined text-sm">open_in_new</span>Voir toutes les demandes
-                    </a>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    @else
-
-    {{-- Recherche --}}
-    <div class="rounded-2xl p-5 bg-gradient-to-br from-[#1a0a3e] via-[#2d1270] to-[#1a0a3e] shadow-lg shadow-violet-900/30">
-        <h3 class="font-black text-base text-white mb-4">Rechercher un trajet</h3>
-        <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
-            @foreach([['label'=>'Départ','icon'=>'trip_origin','color'=>'text-[#8B5CF6]','placeholder'=>'Ex: Cotonou'],['label'=>'Destination','icon'=>'location_on','color'=>'text-[#F97316]','placeholder'=>'Ex: Porto-Novo']] as $f)
-            <div class="flex flex-col gap-1.5">
-                <label class="text-xs font-bold text-violet-300/70 uppercase tracking-wide">{{ $f['label'] }}</label>
-                <div class="flex items-center gap-2 px-3 py-2.5 rounded-xl border border-white/10 bg-white/10">
-                    <span class="material-symbols-outlined {{ $f['color'] }} text-lg">{{ $f['icon'] }}</span>
-                    <input type="text" placeholder="{{ $f['placeholder'] }}" class="flex-1 bg-transparent text-sm font-medium outline-none placeholder-slate-500 text-white"/>
-                </div>
-            </div>
-            @endforeach
-            <div class="flex flex-col gap-1.5">
-                <label class="text-xs font-bold text-violet-300/70 uppercase tracking-wide">Date</label>
-                <div class="flex items-center gap-2 px-3 py-2.5 rounded-xl border border-white/10 bg-white/10">
-                    <span class="material-symbols-outlined text-slate-400 text-lg">calendar_today</span>
-                    <input type="date" class="flex-1 bg-transparent text-sm font-medium outline-none text-slate-300"/>
-                </div>
-            </div>
-        </div>
-        <div class="mt-4 flex flex-wrap items-center gap-3">
-            <button class="inline-flex items-center gap-2 bg-gradient-to-r from-[#6C2BD9] to-[#8B5CF6] hover:opacity-90 text-white font-black px-6 py-2.5 rounded-xl shadow-lg shadow-violet-900/50 text-sm">
-                <span class="material-symbols-outlined">search</span>Rechercher
-            </button>
-            <span class="text-slate-500 text-sm">ou</span>
-            <a href="{{ route('passenger.showtrips') }}" class="inline-flex items-center gap-2 border-2 border-[#E8470A]/40 text-[#F97316] hover:bg-orange-500/10 font-bold px-5 py-2.5 rounded-xl text-sm">
-                <span class="material-symbols-outlined text-lg">hail</span>Lancer une demande de course
-            </a>
-        </div>
-    </div>
-
-    <div class="grid grid-cols-1 lg:grid-cols-3 gap-4">
-        {{-- Réservations --}}
-        <div class="lg:col-span-2 rounded-2xl overflow-hidden bg-white dark:bg-card-dark border border-violet-100 dark:border-violet-900/20 shadow-sm">
-            <div class="flex items-center justify-between px-5 py-4 bg-gradient-to-r from-violet-50 to-white dark:from-violet-900/20 dark:to-transparent border-b border-violet-100 dark:border-violet-900/20">
-                <div class="flex items-center gap-2">
-                    <div class="w-7 h-7 rounded-lg bg-violet-100 dark:bg-violet-500/20 flex items-center justify-center">
-                        <span class="material-symbols-outlined text-[#6C2BD9] text-base">bookmark</span>
-                    </div>
-                    <h3 class="font-black text-base">Mes réservations</h3>
-                </div>
-                <a href="{{ route('passenger.my-requests') }}" class="text-[#6C2BD9] text-sm font-bold hover:underline">Voir tout</a>
-            </div>
-            <div class="divide-y divide-violet-50 dark:divide-white/5">
-                @foreach([
-                    ['from'=>'Cotonou','to'=>'Porto-Novo','date'=>"Aujourd'hui 07:30",'driver'=>'Koffi M.','price'=>'1 500','status'=>'confirmed'],
-                    ['from'=>'Cotonou','to'=>'Abomey-Calavi','date'=>'Demain 08:00','driver'=>'Aïcha B.','price'=>'800','status'=>'pending'],
-                    ['from'=>'Porto-Novo','to'=>'Cotonou','date'=>'08 Mar 17:00','driver'=>'Séverin D.','price'=>'1 500','status'=>'confirmed'],
-                ] as $r)
-                <div class="flex items-center gap-4 px-5 py-4 hover:bg-violet-50/50 dark:hover:bg-white/5 transition-colors">
-                    <div class="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0 {{ $r['status']==='confirmed' ? 'bg-violet-100 dark:bg-violet-500/15' : 'bg-amber-100 dark:bg-amber-500/15' }}">
-                        <span class="material-symbols-outlined text-xl {{ $r['status']==='confirmed' ? 'text-[#6C2BD9]' : 'text-amber-500' }}">{{ $r['status']==='confirmed' ? 'check_circle' : 'schedule' }}</span>
-                    </div>
-                    <div class="flex-1 min-w-0">
-                        <p class="font-bold text-sm">{{ $r['from'] }} → {{ $r['to'] }}</p>
-                        <p class="text-xs text-slate-500 dark:text-slate-400 mt-0.5">{{ $r['date'] }} · {{ $r['driver'] }}</p>
-                    </div>
-                    <div class="text-right flex-shrink-0">
-                        <p class="font-black text-sm text-[#6C2BD9]">{{ $r['price'] }} FCFA</p>
-                        <span class="inline-flex items-center text-xs font-semibold px-2 py-0.5 rounded-full {{ $r['status']==='confirmed' ? 'bg-violet-100 text-[#6C2BD9] dark:bg-violet-500/20' : 'bg-amber-100 text-amber-700 dark:bg-amber-500/20 dark:text-amber-400' }}">
-                            {{ $r['status']==='confirmed' ? 'Confirmé' : 'En attente' }}
-                        </span>
-                    </div>
-                </div>
-                @endforeach
-            </div>
-        </div>
-
-        <div class="flex flex-col gap-4">
-            {{-- Demande en cours --}}
-            <div class="rounded-2xl overflow-hidden bg-white dark:bg-card-dark border border-violet-100 dark:border-violet-900/20 shadow-sm">
-                <div class="flex items-center gap-2 px-5 py-4 bg-gradient-to-r from-violet-50 to-white dark:from-violet-900/20 dark:to-transparent border-b border-violet-100 dark:border-violet-900/20">
-                    <div class="w-7 h-7 rounded-lg bg-violet-100 dark:bg-violet-500/20 flex items-center justify-center">
-                        <span class="material-symbols-outlined text-[#6C2BD9] text-base">hail</span>
-                    </div>
-                    <h3 class="font-black text-base flex-1">Ma demande en cours</h3>
-                    <span class="flex items-center gap-1 text-xs font-bold text-[#E8470A]">
-                        <span class="w-2 h-2 rounded-full bg-[#E8470A] animate-pulse"></span>En attente
-                    </span>
-                </div>
-                <div class="p-5 space-y-3">
-                    <div class="flex items-center gap-3">
-                        <div class="flex flex-col items-center gap-1">
-                            <span class="w-2.5 h-2.5 rounded-full bg-[#6C2BD9] border-2 border-violet-200"></span>
-                            <span class="w-0.5 h-6 bg-slate-200 dark:bg-white/10"></span>
-                            <span class="w-2.5 h-2.5 rounded-full bg-[#E8470A] border-2 border-orange-200"></span>
-                        </div>
-                        <div class="flex flex-col gap-3">
-                            <p class="text-sm font-bold leading-none">Cotonou <span class="text-slate-400 font-medium text-xs">Cadjèhoun</span></p>
-                            <p class="text-sm font-bold leading-none">Porto-Novo <span class="text-slate-400 font-medium text-xs">Gare centrale</span></p>
-                        </div>
-                    </div>
-                    <div class="flex flex-wrap gap-2 text-xs">
-                        <span class="flex items-center gap-1 px-2.5 py-1 rounded-full bg-slate-100 dark:bg-white/10 font-semibold text-slate-600 dark:text-slate-400"><span class="material-symbols-outlined text-sm">schedule</span>Auj. 09:00</span>
-                        <span class="flex items-center gap-1 px-2.5 py-1 rounded-full bg-slate-100 dark:bg-white/10 font-semibold text-slate-600 dark:text-slate-400"><span class="material-symbols-outlined text-sm">group</span>1 pers.</span>
-                        <span class="flex items-center gap-1 px-2.5 py-1 rounded-full bg-violet-100 dark:bg-violet-500/20 font-bold text-[#6C2BD9]"><span class="material-symbols-outlined text-sm">payments</span>1 500 FCFA max</span>
-                    </div>
-                    <p class="flex items-center gap-1 text-xs text-[#E8470A] font-semibold"><span class="material-symbols-outlined text-sm">timer</span>Expire dans 2h 14min</p>
-                    <button class="w-full py-2 rounded-xl border-2 border-red-200 dark:border-red-500/30 text-red-500 text-xs font-bold hover:bg-red-50 dark:hover:bg-red-500/10 transition-colors">Annuler la demande</button>
-                </div>
-            </div>
-            {{-- Historique --}}
-            <div class="rounded-2xl overflow-hidden bg-white dark:bg-card-dark border border-violet-100 dark:border-violet-900/20 shadow-sm">
-                <div class="flex items-center justify-between px-5 py-4 bg-gradient-to-r from-violet-50 to-white dark:from-violet-900/20 dark:to-transparent border-b border-violet-100 dark:border-violet-900/20">
-                    <div class="flex items-center gap-2">
-                        <div class="w-7 h-7 rounded-lg bg-slate-100 dark:bg-white/10 flex items-center justify-center">
-                            <span class="material-symbols-outlined text-slate-500 text-base">history</span>
-                        </div>
-                        <h3 class="font-black text-base">Historique</h3>
-                    </div>
-                    <a href="#" class="text-[#6C2BD9] text-sm font-bold hover:underline">Voir tout</a>
-                </div>
-                <div class="divide-y divide-violet-50 dark:divide-white/5">
-                    @foreach([
-                        ['from'=>'Cotonou','to'=>'Porto-Novo','date'=>'03 Mar','price'=>'1 500','color'=>'bg-violet-100 dark:bg-violet-500/10 text-[#6C2BD9]'],
-                        ['from'=>'Calavi','to'=>'Cotonou','date'=>'01 Mar','price'=>'800','color'=>'bg-blue-100 dark:bg-blue-500/10 text-blue-500'],
-                        ['from'=>'Cotonou','to'=>'Ouidah','date'=>'28 Fév','price'=>'2 000','color'=>'bg-orange-100 dark:bg-orange-500/10 text-[#E8470A]'],
-                        ['from'=>'Porto-Novo','to'=>'Cotonou','date'=>'25 Fév','price'=>'1 500','color'=>'bg-violet-100 dark:bg-violet-500/10 text-[#8B5CF6]'],
-                    ] as $h)
-                    <div class="flex items-center gap-3 px-5 py-3.5 hover:bg-violet-50/50 dark:hover:bg-white/5 transition-colors">
-                        <div class="w-8 h-8 rounded-lg {{ $h['color'] }} flex items-center justify-center flex-shrink-0">
-                            <span class="material-symbols-outlined text-base">route</span>
-                        </div>
-                        <div class="flex-1 min-w-0">
-                            <p class="font-semibold text-xs">{{ $h['from'] }} → {{ $h['to'] }}</p>
-                            <p class="text-xs text-slate-400">{{ $h['date'] }}</p>
-                        </div>
-                        <p class="text-xs font-bold text-slate-500 dark:text-slate-400 flex-shrink-0">-{{ $h['price'] }} FCFA</p>
-                    </div>
-                    @endforeach
-                </div>
-            </div>
-        </div>
-    </div>
-    @endif
-
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Global User Dashboard Overview</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#13ec49",
+                        "background-light": "#f6f8f6",
+                        "background-dark": "#102215",
+                    },
+                    fontFamily: {
+                        "display": ["Inter"]
+                    },
+                    borderRadius: {"DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px"},
+                },
+            },
+        }
+    </script>
+<style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+    </style>
+</head>
+<body class="bg-background-light dark:bg-background-dark text-slate-900 dark:text-slate-100 font-display">
+<div class="flex h-screen overflow-hidden">
+<!-- Side Navigation Rail -->
+<aside class="w-64 border-r border-slate-200 dark:border-primary/10 bg-white dark:bg-background-dark flex flex-col justify-between p-4">
+<div class="flex flex-col gap-8">
+<div class="flex items-center gap-3 px-2">
+<div class="text-primary size-8 bg-primary/10 rounded-lg flex items-center justify-center">
+<span class="material-symbols-outlined">directions_car</span>
 </div>
-@endsection
+<h2 class="text-xl font-bold tracking-tight">CarpoolGo</h2>
+</div>
+<nav class="flex flex-col gap-2">
+<a class="flex items-center gap-3 px-3 py-2.5 rounded-lg bg-primary/10 text-primary font-medium" href="#">
+<span class="material-symbols-outlined">dashboard</span>
+<span>Dashboard</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-primary/5 transition-colors" href="#">
+<span class="material-symbols-outlined">map</span>
+<span>My Trips</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-primary/5 transition-colors" href="#">
+<span class="material-symbols-outlined">chat_bubble</span>
+<span>Messages</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-primary/5 transition-colors" href="#">
+<span class="material-symbols-outlined">account_balance_wallet</span>
+<span>Wallet</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-primary/5 transition-colors" href="#">
+<span class="material-symbols-outlined">settings</span>
+<span>Settings</span>
+</a>
+</nav>
+</div>
+<div class="flex flex-col gap-4">
+<button class="w-full bg-primary text-background-dark font-bold py-3 rounded-lg flex items-center justify-center gap-2">
+<span class="material-symbols-outlined">add_circle</span>
+<span>Publish a Ride</span>
+</button>
+<div class="flex items-center gap-3 p-2 border-t border-slate-200 dark:border-primary/10 pt-4">
+<div class="size-10 rounded-full bg-slate-200 dark:bg-primary/20 bg-cover bg-center" data-alt="User profile picture of Alex Rivers" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuApsGNC2cS3yA-S4bzftxcbkyLn-Z0-S7jiUVvPFILbcmR6Dildlpc0OHvRpyDzSnpxzO1bLmYI377YKeYJFkxf8F1ZZRmSoLHelRm0ik1OL8H-_4VV7D-QEyc4fGlh8En6vD48S7ll1yaKb4itmgda5ppSU0-b7vXXGWe214IZXFGVH-q-6HbrKd-0uRlNudGwrQCB9TwZeqbSifL6kgRDa_zSOoUTGBcYxY5258lmU579V6rSh_9IobM5eqMwtOLEj65hyKKKUY3S')"></div>
+<div class="flex flex-col">
+<span class="text-sm font-semibold">Alex Rivers</span>
+<span class="text-xs text-primary">Premium Member</span>
+</div>
+</div>
+</div>
+</aside>
+<!-- Main Content Area -->
+<main class="flex-1 overflow-y-auto bg-slate-50 dark:bg-background-dark/50">
+<!-- Header -->
+<header class="sticky top-0 z-10 flex items-center justify-between px-8 py-4 bg-white/80 dark:bg-background-dark/80 backdrop-blur-md border-b border-slate-200 dark:border-primary/10">
+<div class="flex items-center gap-4 flex-1">
+<div class="relative w-full max-w-md">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-sm">search</span>
+<input class="w-full bg-slate-100 dark:bg-primary/5 border-none rounded-lg pl-10 pr-4 py-2 focus:ring-2 focus:ring-primary text-sm" placeholder="Search routes, drivers, or trips..." type="text"/>
+</div>
+</div>
+<div class="flex items-center gap-3">
+<button class="p-2 rounded-lg hover:bg-slate-100 dark:hover:bg-primary/10 transition-colors">
+<span class="material-symbols-outlined">dark_mode</span>
+</button>
+<button class="p-2 rounded-lg hover:bg-slate-100 dark:hover:bg-primary/10 transition-colors relative">
+<span class="material-symbols-outlined">notifications</span>
+<span class="absolute top-2 right-2 size-2 bg-primary rounded-full border-2 border-white dark:border-background-dark"></span>
+</button>
+<button class="p-2 rounded-lg hover:bg-slate-100 dark:hover:bg-primary/10 transition-colors">
+<span class="material-symbols-outlined">help</span>
+</button>
+</div>
+</header>
+<div class="p-8 space-y-8">
+<!-- Welcome Section -->
+<div>
+<h1 class="text-3xl font-black text-slate-900 dark:text-slate-100 tracking-tight">Hello, Alex</h1>
+<p class="text-slate-500 dark:text-slate-400 mt-1">Ready for your next journey today? You have 2 rides scheduled for this week.</p>
+</div>
+<!-- Quick Stats Row -->
+<div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+<div class="bg-white dark:bg-primary/5 p-6 rounded-xl border border-slate-200 dark:border-primary/10 shadow-sm">
+<p class="text-sm font-medium text-slate-500 dark:text-slate-400">Upcoming Trips</p>
+<div class="flex items-baseline gap-2 mt-2">
+<span class="text-3xl font-bold">4</span>
+<span class="text-sm font-semibold text-primary">+1 this week</span>
+</div>
+</div>
+<div class="bg-white dark:bg-primary/5 p-6 rounded-xl border border-slate-200 dark:border-primary/10 shadow-sm">
+<p class="text-sm font-medium text-slate-500 dark:text-slate-400">Total Savings</p>
+<div class="flex items-baseline gap-2 mt-2">
+<span class="text-3xl font-bold">$128.50</span>
+<span class="text-sm font-semibold text-primary">+$12.20</span>
+</div>
+</div>
+<div class="bg-white dark:bg-primary/5 p-6 rounded-xl border border-slate-200 dark:border-primary/10 shadow-sm">
+<p class="text-sm font-medium text-slate-500 dark:text-slate-400">Driver Rating</p>
+<div class="flex items-baseline gap-2 mt-2">
+<span class="text-3xl font-bold">4.9</span>
+<span class="text-sm font-semibold text-primary">Top 1%</span>
+</div>
+</div>
+</div>
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+<!-- Activity Feed: Next Trip -->
+<div class="lg:col-span-2 space-y-4">
+<h2 class="text-lg font-bold flex items-center gap-2">
+<span class="material-symbols-outlined text-primary">event_upcoming</span>
+                            Next Scheduled Trip
+                        </h2>
+<div class="bg-white dark:bg-primary/5 rounded-xl border border-slate-200 dark:border-primary/10 overflow-hidden shadow-sm">
+<div class="h-48 bg-slate-200 dark:bg-slate-800 relative">
+<div class="absolute inset-0 bg-cover bg-center opacity-80" data-alt="Map showing route between San Francisco and San Jose" data-location="San Francisco" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuAUDwipcZEQM8BgLKEdIyuBxDIkeQXvnv5wINQw9Z6COOzmkSavzt3PUAFTmLLLyRy4eAbo9xk0Rcj88XGp8KtbAiF_tj9mKwLOKhp2ClgL_W6MFYV0JzrpQ_QqnGP2NAynl0Yt917dNezlIhhZL0zAfq_ar0NxJ6vx5bRL9-0XCoJRFZ-R0GD2ZUxMarH9JpD_l1UWgx_xmsTKvXwofLeK8xd-haZjT2qvQqmENu9ovcQC_IdX89M8knb-6IiPGY-HJSA5Zmox_8jt')"></div>
+<div class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
+<div class="absolute bottom-4 left-4 text-white">
+<div class="text-xs font-bold uppercase tracking-wider opacity-75">Today at 5:30 PM</div>
+<div class="text-xl font-bold">San Francisco → San Jose</div>
+</div>
+</div>
+<div class="p-6 flex items-center justify-between">
+<div class="flex items-center gap-4">
+<div class="size-12 rounded-full border-2 border-primary overflow-hidden">
+<img alt="Driver Profile" class="w-full h-full object-cover" data-alt="Driver profile picture of Sarah J." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAt8-WWzik01j7VEkcKQEMio9hU-HTzzDdV22H3seKiuIWZ8PyO__C8nCNoqSmQgk49563UpPeZ5eSlKGd_ibbtJiJubU0qoGRunAwEAxctfX52OelJCHenVWSsk_aPiScGck4NgB0ryBVbeggW6NcfQ5O8CrQdqNvs6AIa9s1sd0gjJ3oPPCnfgO4bhsdIDsWKzJ4uw-c2C88A2B2O-LNd-OmzPTs25pLll2nZvsTil0MyPWf_UuVEzFcztRhUc9GNsji-ItilzfQP"/>
+</div>
+<div>
+<p class="font-bold">Sarah J.</p>
+<p class="text-sm text-slate-500 dark:text-slate-400">Tesla Model 3 • White</p>
+</div>
+</div>
+<button class="px-6 py-2 bg-primary/10 text-primary border border-primary/20 rounded-lg font-bold hover:bg-primary/20 transition-all">
+                                    View Details
+                                </button>
+</div>
+</div>
+</div>
+<!-- Right Column Widgets -->
+<div class="space-y-8">
+<!-- Wallet Summary -->
+<div class="bg-primary text-background-dark p-6 rounded-xl shadow-lg relative overflow-hidden">
+<div class="absolute top-0 right-0 p-4 opacity-20">
+<span class="material-symbols-outlined text-6xl">payments</span>
+</div>
+<p class="text-sm font-bold opacity-80 uppercase tracking-widest">Wallet Balance</p>
+<h3 class="text-4xl font-black mt-1">$420.00</h3>
+<button class="mt-6 w-full bg-background-dark/10 hover:bg-background-dark/20 py-2 rounded-lg font-bold border border-background-dark/20 transition-colors">
+                                Top Up Balance
+                            </button>
+</div>
+<!-- Recent Messages -->
+<div class="space-y-4">
+<div class="flex items-center justify-between">
+<h2 class="text-lg font-bold">Recent Messages</h2>
+<button class="text-primary text-sm font-bold">See all</button>
+</div>
+<div class="bg-white dark:bg-primary/5 rounded-xl border border-slate-200 dark:border-primary/10 divide-y divide-slate-100 dark:divide-primary/10">
+<div class="p-4 flex gap-3 hover:bg-slate-50 dark:hover:bg-primary/10 transition-colors cursor-pointer">
+<img class="size-10 rounded-full" data-alt="Profile of Mark Thompson" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDIfSCNhGP5h0Fy7xRfDVl_N1lzUa1tLdVHJl84Y06t0FuwWKK3MOboD2dV2vkbDAtm4GeHj7VJ3MISoea77nH6HVkxaAh1sjoxboCYHyrngmKBm-SJCiiudoRV4H90RlcIZFWipvc_8Aj4K79f2P6FCWAtqEi9dD_kxdCl5r97oHrzCw3br9E_i7ryoxLEHHL7uDFnFRXiddO3-3By-tASd5Uavke91n0qoyZc-ywUj5VjXmB5wW5vvWC3FVSH6TSnboZiJ_3JNcTB"/>
+<div class="flex-1 overflow-hidden">
+<div class="flex justify-between items-center">
+<span class="font-bold text-sm">Mark Thompson</span>
+<span class="text-[10px] text-slate-400">12m ago</span>
+</div>
+<p class="text-sm text-slate-500 dark:text-slate-400 truncate">I'll be at the pickup point in 5 minutes.</p>
+</div>
+</div>
+<div class="p-4 flex gap-3 hover:bg-slate-50 dark:hover:bg-primary/10 transition-colors cursor-pointer">
+<img class="size-10 rounded-full" data-alt="Profile of Elena Rodriguez" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDPFo_FHmr8uYjbZpclt9C_yRF2wXfbPJpuJdnYfbI7flgq6fepW2t-Hf_bGWe60Rrloh7QWV2UnKrT-Fn5W20VNHSPjM3HCX6WuIqLBcwERvBXqzrcZIy5ujZdBC98CooPUakHmVdeNTgiMjPAlXm88CJqhBcfnJTQyo216tGS4-hEMabzufwOWHqwm1UAYZj4M7wuJAlyligr-lPWNqcxcT_iTKvLFOl8WN30_JQKo6nogogIyVngsDFn_c04N4cybWlN1mjdsQ8v"/>
+<div class="flex-1 overflow-hidden">
+<div class="flex justify-between items-center">
+<span class="font-bold text-sm">Elena Rodriguez</span>
+<span class="text-[10px] text-slate-400">2h ago</span>
+</div>
+<p class="text-sm text-slate-500 dark:text-slate-400 truncate">Thanks for the smooth ride yesterday!</p>
+</div>
+</div>
+<div class="p-4 flex gap-3 hover:bg-slate-50 dark:hover:bg-primary/10 transition-colors cursor-pointer">
+<img class="size-10 rounded-full" data-alt="Profile of David Kim" src="https://lh3.googleusercontent.com/aida-public/AB6AXuD-SPBhT7qhXqIJ6tktpBCxB6zdet6Xb106G6Xl4Uzbp5EOttcDGL2Ft93plu2BAeshJnadShyWPu7x38HaLLCD8svqXgDDy-lMI8GFWF1qPXAOTgRfUQnG5j0AQDx95PKOkMWHIVf8fzIbtezXOVQvQUfuqlfHXHpHJJ1-ykvGiYrT9jWXP-JxM_1yzEDETJr0S6Mw2ruTFRVrArIVVUS5FzQv74BugJi3Knb5zIWJlryic_x1dKEO7O48c82vW2Mchnc6I4Mz6JLj"/>
+<div class="flex-1 overflow-hidden">
+<div class="flex justify-between items-center">
+<span class="font-bold text-sm">David Kim</span>
+<span class="text-[10px] text-slate-400">5h ago</span>
+</div>
+<p class="text-sm text-slate-500 dark:text-slate-400 truncate">Is there space for one extra bag?</p>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</main>
+</div>
+</body></html>

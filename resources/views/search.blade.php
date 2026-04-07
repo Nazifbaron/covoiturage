@@ -1,4 +1,5 @@
 <x-layout>
+    <x-header></x-header>
     <section class="relative h-[500px] flex items-center justify-center">
 
     <!-- Image de fond -->
