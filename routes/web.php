@@ -140,6 +140,14 @@ Route::middleware(['auth', IsAdmin::class])->prefix('admin')->name('admin.')
         // Réservations passagers
         Route::get('/reservations','reservations')->name('reservations');
 
+        // Administrateurs (super admin uniquement)
+        Route::get('/admins',                          'adminsList')            ->name('admins.list');
+        Route::get('/admins/create',                   'addAdmin')              ->name('admins.create');
+        Route::post('/admins',                         'storeAdmin')            ->name('admins.store');
+        Route::get('/admins/{admin}/permissions',      'editAdminPermissions')  ->name('admins.permissions.edit');
+        Route::patch('/admins/{admin}/permissions',    'updateAdminPermissions')->name('admins.permissions.update');
+        Route::delete('/admins/{admin}',               'deleteAdmin')           ->name('admins.delete');
+
         // Véhicules
         Route::get('/vehicles','vehicles')->name('vehicles');
         Route::patch('/vehicles/{vehicle}/approve', 'approveVehicle')->name('vehicles.approve');

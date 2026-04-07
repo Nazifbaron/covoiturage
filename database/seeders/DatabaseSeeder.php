@@ -16,6 +16,7 @@ class DatabaseSeeder extends Seeder
         // L'admin est le premier user
 
        $this->call([
+            PermissionSeeder::class,
             AdminSeeder::class,
         ]);
     }

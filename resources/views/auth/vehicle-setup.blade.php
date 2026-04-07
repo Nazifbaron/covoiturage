@@ -42,13 +42,13 @@
         <div class="flex flex-col items-center gap-1" id="step{{ $s['num'] }}-indicator">
             <div class="w-9 h-9 sm:w-10 sm:h-10 rounded-full
                         {{ $s['num'] === 1
-                            ? 'bg-gradient-to-r from-[#6C2BD9] to-[#8B5CF6] text-white shadow-lg'
+                            ? 'bg-gradient-to-r from-[#16a34a] to-[#0891b2] text-white shadow-lg'
                             : 'bg-slate-200 dark:bg-white/10 text-slate-500' }}
                         flex items-center justify-center font-bold text-base sm:text-lg transition-all">
                 {{ $s['num'] }}
             </div>
             <span class="text-[10px] sm:text-xs font-semibold
-                         {{ $s['num'] === 1 ? 'text-[#6C2BD9]' : 'text-slate-400' }}">
+                         {{ $s['num'] === 1 ? 'text-[#16a34a]' : 'text-slate-400' }}">
                 {{ $s['label'] }}
             </span>
         </div>
@@ -77,7 +77,7 @@
 
                 <div class="p-4 sm:p-6">
                     <div class="text-center mb-5 sm:mb-6">
-                        <div class="w-12 h-12 sm:w-16 sm:h-16 rounded-2xl bg-gradient-to-br from-[#6C2BD9] to-[#8B5CF6]
+                        <div class="w-12 h-12 sm:w-16 sm:h-16 rounded-2xl bg-gradient-to-br from-[#16a34a] to-[#0891b2]
                                     flex items-center justify-center mx-auto mb-3 shadow-lg">
                             <span class="material-symbols-outlined text-white text-2xl sm:text-3xl">directions_car</span>
                         </div>
@@ -99,29 +99,29 @@
                             <div class="grid grid-cols-2 gap-3">
                                 <div class="type-card border-2 rounded-xl p-3 sm:p-4 text-center cursor-pointer
                                             transition-all border-slate-200 dark:border-white/10
-                                            hover:border-[#6C2BD9] hover:bg-violet-50 dark:hover:bg-violet-900/20
-                                            active:scale-[0.97] {{ old('type') === 'tricycle' ? 'border-[#6C2BD9] bg-violet-50' : '' }}"
+                                            hover:border-[#16a34a] hover:bg-green-50 dark:hover:bg-green-900/20
+                                            active:scale-[0.97] {{ old('type') === 'tricycle' ? 'border-[#16a34a] bg-green-50' : '' }}"
                                      data-type="tricycle">
                                     <span class="material-symbols-outlined text-3xl sm:text-4xl
-                                                 {{ old('type') === 'tricycle' ? 'text-[#6C2BD9]' : 'text-slate-400' }}">
+                                                 {{ old('type') === 'tricycle' ? 'text-[#16a34a]' : 'text-slate-400' }}">
                                         electric_rickshaw
                                     </span>
                                     <p class="text-sm font-semibold mt-1.5
-                                              {{ old('type') === 'tricycle' ? 'text-[#6C2BD9]' : 'text-slate-700 dark:text-slate-300' }}">
+                                              {{ old('type') === 'tricycle' ? 'text-[#16a34a]' : 'text-slate-700 dark:text-slate-300' }}">
                                         Tricycle
                                     </p>
                                 </div>
                                 <div class="type-card border-2 rounded-xl p-3 sm:p-4 text-center cursor-pointer
                                             transition-all border-slate-200 dark:border-white/10
-                                            hover:border-[#6C2BD9] hover:bg-violet-50 dark:hover:bg-violet-900/20
-                                            active:scale-[0.97] {{ old('type') === 'voiture' ? 'border-[#6C2BD9] bg-violet-50' : '' }}"
+                                            hover:border-[#16a34a] hover:bg-green-50 dark:hover:bg-green-900/20
+                                            active:scale-[0.97] {{ old('type') === 'voiture' ? 'border-[#16a34a] bg-green-50' : '' }}"
                                      data-type="voiture">
                                     <span class="material-symbols-outlined text-3xl sm:text-4xl
-                                                 {{ old('type') === 'voiture' ? 'text-[#6C2BD9]' : 'text-slate-400' }}">
+                                                 {{ old('type') === 'voiture' ? 'text-[#16a34a]' : 'text-slate-400' }}">
                                         directions_car
                                     </span>
                                     <p class="text-sm font-semibold mt-1.5
-                                              {{ old('type') === 'voiture' ? 'text-[#6C2BD9]' : 'text-slate-700 dark:text-slate-300' }}">
+                                              {{ old('type') === 'voiture' ? 'text-[#16a34a]' : 'text-slate-700 dark:text-slate-300' }}">
                                         Voiture
                                     </p>
                                 </div>
@@ -154,7 +154,7 @@
                                               {{ $errors->has($f['id']) ? 'border-red-400' : 'border-slate-200 dark:border-white/10' }}
                                               bg-slate-50 dark:bg-white/5 text-slate-900 dark:text-white
                                               text-sm font-semibold focus:outline-none focus:ring-2
-                                              focus:ring-[#6C2BD9]/30 focus:border-[#6C2BD9] transition-all">
+                                              focus:ring-[#16a34a]/30 focus:border-[#16a34a] transition-all">
                             </div>
                             @endforeach
                         </div>
@@ -180,7 +180,7 @@
                                               {{ $errors->has($f['id']) ? 'border-red-400' : 'border-slate-200 dark:border-white/10' }}
                                               bg-slate-50 dark:bg-white/5 text-slate-900 dark:text-white
                                               text-sm font-semibold {{ $f['extra'] }} focus:outline-none focus:ring-2
-                                              focus:ring-[#6C2BD9]/30 focus:border-[#6C2BD9] transition-all">
+                                              focus:ring-[#16a34a]/30 focus:border-[#16a34a] transition-all">
                             </div>
                             @endforeach
                         </div>
@@ -191,9 +191,9 @@
                 <div class="border-t border-slate-100 dark:border-white/10 p-4 sm:p-6 bottom-action flex justify-end">
                     <button type="button" onclick="goToStep2()"
                             class="w-full sm:w-auto px-6 py-3.5 sm:py-3
-                                   bg-gradient-to-r from-[#6C2BD9] to-[#8B5CF6]
+                                   bg-gradient-to-r from-[#16a34a] to-[#0891b2]
                                    text-white font-bold rounded-xl hover:opacity-90
-                                   active:scale-[0.98] transition-all shadow-md shadow-violet-500/20">
+                                   active:scale-[0.98] transition-all shadow-md shadow-green-500/20">
                         Continuer →
                     </button>
                 </div>
@@ -206,7 +206,7 @@
 
                 <div class="p-4 sm:p-6">
                     <div class="text-center mb-5 sm:mb-6">
-                        <div class="w-12 h-12 sm:w-16 sm:h-16 rounded-2xl bg-gradient-to-br from-[#6C2BD9] to-[#8B5CF6]
+                        <div class="w-12 h-12 sm:w-16 sm:h-16 rounded-2xl bg-gradient-to-br from-[#16a34a] to-[#0891b2]
                                     flex items-center justify-center mx-auto mb-3 shadow-lg">
                             <span class="material-symbols-outlined text-white text-2xl sm:text-3xl">description</span>
                         </div>
@@ -231,7 +231,7 @@
                         @foreach($documents as $key => $doc)
                         <div class="document-card border-2 border-dashed rounded-xl p-3.5 sm:p-4 cursor-pointer transition-all
                                     {{ $errors->has($key) ? 'border-red-500 bg-red-50 dark:bg-red-900/20' : 'border-slate-200 dark:border-white/10' }}
-                                    hover:border-[#6C2BD9] hover:bg-violet-50 dark:hover:bg-violet-900/20 active:scale-[0.99]"
+                                    hover:border-[#16a34a] hover:bg-green-50 dark:hover:bg-green-900/20 active:scale-[0.99]"
                              data-doc="{{ $key }}">
 
                             <div class="flex items-center justify-between gap-3">
@@ -279,9 +279,9 @@
                     </button>
                     <button type="button" onclick="goToStep3()"
                             class="w-full sm:w-auto px-6 py-3.5 sm:py-3
-                                   bg-gradient-to-r from-[#6C2BD9] to-[#8B5CF6]
+                                   bg-gradient-to-r from-[#16a34a] to-[#0891b2]
                                    text-white font-bold rounded-xl hover:opacity-90
-                                   active:scale-[0.98] transition-all shadow-md shadow-violet-500/20">
+                                   active:scale-[0.98] transition-all shadow-md shadow-green-500/20">
                         Vérifier et soumettre →
                     </button>
                 </div>
@@ -294,7 +294,7 @@
 
                 <div class="p-4 sm:p-6">
                     <div class="text-center mb-5 sm:mb-6">
-                        <div class="w-12 h-12 sm:w-16 sm:h-16 rounded-2xl bg-gradient-to-br from-[#6C2BD9] to-[#8B5CF6]
+                        <div class="w-12 h-12 sm:w-16 sm:h-16 rounded-2xl bg-gradient-to-br from-[#16a34a] to-[#0891b2]
                                     flex items-center justify-center mx-auto mb-3 shadow-lg">
                             <span class="material-symbols-outlined text-white text-2xl sm:text-3xl">check_circle</span>
                         </div>
@@ -324,9 +324,9 @@
                     {{-- ✅ type="submit" — soumet le vrai formulaire HTML --}}
                     <button type="submit" id="submitBtn"
                             class="w-full sm:w-auto px-6 py-3.5 sm:py-3
-                                   bg-gradient-to-r from-[#6C2BD9] to-[#8B5CF6]
+                                   bg-gradient-to-r from-[#16a34a] to-[#0891b2]
                                    text-white font-bold rounded-xl hover:opacity-90
-                                   active:scale-[0.98] transition-all shadow-md shadow-violet-500/20
+                                   active:scale-[0.98] transition-all shadow-md shadow-green-500/20
                                    flex items-center justify-center gap-2">
                         <span class="material-symbols-outlined text-lg">check</span>
                         Enregistrer et soumettre
@@ -351,15 +351,15 @@
     document.querySelectorAll('.type-card').forEach(card => {
         card.addEventListener('click', function () {
             document.querySelectorAll('.type-card').forEach(c => {
-                c.classList.remove('border-[#6C2BD9]', 'bg-violet-50', 'dark:bg-violet-900/20');
-                c.querySelector('.material-symbols-outlined').classList.replace('text-[#6C2BD9]', 'text-slate-400');
-                c.querySelector('p').classList.remove('text-[#6C2BD9]');
+                c.classList.remove('border-[#16a34a]', 'bg-green-50', 'dark:bg-green-900/20');
+                c.querySelector('.material-symbols-outlined').classList.replace('text-[#16a34a]', 'text-slate-400');
+                c.querySelector('p').classList.remove('text-[#16a34a]');
                 c.querySelector('p').classList.add('text-slate-700', 'dark:text-slate-300');
             });
-            this.classList.add('border-[#6C2BD9]', 'bg-violet-50', 'dark:bg-violet-900/20');
-            this.querySelector('.material-symbols-outlined').classList.replace('text-slate-400', 'text-[#6C2BD9]');
+            this.classList.add('border-[#16a34a]', 'bg-green-50', 'dark:bg-green-900/20');
+            this.querySelector('.material-symbols-outlined').classList.replace('text-slate-400', 'text-[#16a34a]');
             const label = this.querySelector('p');
-            label.classList.add('text-[#6C2BD9]');
+            label.classList.add('text-[#16a34a]');
             label.classList.remove('text-slate-700', 'dark:text-slate-300');
             document.getElementById('vehicleType').value = this.dataset.type;
             document.getElementById('typeError').classList.add('hidden');
@@ -496,8 +496,8 @@
                 label.className   = 'text-[10px] sm:text-xs font-semibold text-green-500';
                 if (line) line.classList.add('bg-green-500');
             } else if (s === current) {
-                circle.className += 'bg-gradient-to-r from-[#6C2BD9] to-[#8B5CF6] text-white shadow-lg';
-                label.className   = 'text-[10px] sm:text-xs font-semibold text-[#6C2BD9]';
+                circle.className += 'bg-gradient-to-r from-[#16a34a] to-[#0891b2] text-white shadow-lg';
+                label.className   = 'text-[10px] sm:text-xs font-semibold text-[#16a34a]';
                 if (line) line.classList.remove('bg-green-500');
             } else {
                 circle.className += 'bg-slate-200 dark:bg-white/10 text-slate-500';
@@ -547,7 +547,7 @@
         document.getElementById('confirmationContent').innerHTML = `
             <div class="bg-slate-50 dark:bg-white/5 rounded-xl p-4">
                 <h3 class="font-bold text-slate-900 dark:text-white mb-3 flex items-center gap-2">
-                    <span class="material-symbols-outlined text-[#6C2BD9]">directions_car</span>
+                    <span class="material-symbols-outlined text-[#16a34a]">directions_car</span>
                     Informations du véhicule
                 </h3>
                 ${[
@@ -564,7 +564,7 @@
             </div>
             <div class="bg-slate-50 dark:bg-white/5 rounded-xl p-4">
                 <h3 class="font-bold text-slate-900 dark:text-white mb-3 flex items-center gap-2">
-                    <span class="material-symbols-outlined text-[#6C2BD9]">description</span>
+                    <span class="material-symbols-outlined text-[#16a34a]">description</span>
                     Documents
                 </h3>
                 ${docsHTML}

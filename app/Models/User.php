@@ -28,6 +28,7 @@ class User extends Authenticatable
         'role',
         'password',
         'is_blocked',
+        'is_super_admin',
     ];
 
     /**
@@ -51,6 +52,7 @@ class User extends Authenticatable
             'email_verified_at' => 'datetime',
             'password'          => 'hashed',
             'is_blocked'        => 'boolean',
+            'is_super_admin'    => 'boolean',
         ];
     }
 

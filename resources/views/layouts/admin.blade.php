@@ -171,29 +171,48 @@
                     <span>Tableau de bord</span>
                 </a>
 
+                @if(Auth::user()->is_super_admin || Auth::user()->can('manage_users'))
                 <a href="{{ route('admin.users') }}"
                    class="nav-link {{ request()->routeIs('admin.users') ? 'active' : '' }}">
                     <span class="material-symbols-outlined" style="font-size:20px">group</span>
                     <span>Utilisateurs</span>
                 </a>
+                @endif
 
+                @if(Auth::user()->is_super_admin || Auth::user()->can('manage_trips'))
                 <a href="{{ route('admin.trips') }}"
                    class="nav-link {{ request()->routeIs('admin.trips') ? 'active' : '' }}">
                     <span class="material-symbols-outlined" style="font-size:20px">directions_car</span>
                     <span>Trajets</span>
                 </a>
+                @endif
 
+                @if(Auth::user()->is_super_admin || Auth::user()->can('manage_reservations'))
                 <a href="{{ route('admin.reservations') }}"
                    class="nav-link {{ request()->routeIs('admin.reservations') ? 'active' : '' }}">
                     <span class="material-symbols-outlined" style="font-size:20px">bookmark</span>
                     <span>Réservations</span>
                 </a>
+                @endif
 
+                @if(Auth::user()->is_super_admin || Auth::user()->can('manage_vehicles'))
                 <a href="{{ route('admin.vehicles') }}"
                    class="nav-link {{ request()->routeIs('admin.vehicles') ? 'active' : '' }}">
                     <span class="material-symbols-outlined" style="font-size:20px">two_wheeler</span>
                     <span>Véhicules</span>
                 </a>
+                @endif
+
+                @if(Auth::user()->is_super_admin)
+                <div class="pt-2 pb-1">
+                    <p class="text-xs font-semibold text-gray-400 uppercase tracking-widest px-3 mb-2">Administration</p>
+                </div>
+                <a href="{{ route('admin.admins.list') }}"
+                   class="nav-link {{ request()->routeIs('admin.admins.*') ? 'active' : '' }}">
+                    <span class="material-symbols-outlined" style="font-size:20px">manage_accounts</span>
+                    <span>Gérer les admins</span>
+                </a>
+                @endif
 
             </div>
         </nav>

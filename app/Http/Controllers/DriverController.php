@@ -514,7 +514,7 @@ class DriverController extends Controller
             \Log::error('Échec envoi mail admin véhicule : ' . $e->getMessage());
         }
 
-        return redirect()->route('profile.edit')
+        return redirect()->route('driver.vehicle.pending')
             ->with('success', 'Véhicule soumis avec succès. Il sera visible dès validation par l\'administrateur.');
     }
 

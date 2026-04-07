@@ -5,7 +5,7 @@
 @push('styles')
 <style>
     .pending-card {
-        background: linear-gradient(135deg, rgba(108, 43, 217, 0.05), rgba(139, 92, 246, 0.05));
+        background: linear-gradient(135deg, rgba(22, 163, 74, 0.05), rgba(8, 145, 178, 0.05));
     }
 
     @keyframes pulse {
@@ -40,7 +40,7 @@
     <div class="bg-white dark:bg-card-dark rounded-2xl border border-slate-100 dark:border-primary/10 shadow-sm overflow-hidden">
         <div class="p-6">
             <div class="flex items-center gap-3 mb-6 pb-4 border-b border-slate-100 dark:border-white/10">
-                <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-[#6C2BD9] to-[#8B5CF6] flex items-center justify-center">
+                <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-[#16a34a] to-[#0891b2] flex items-center justify-center">
                     <span class="material-symbols-outlined text-white">directions_car</span>
                 </div>
                 <div>
@@ -105,7 +105,7 @@
                                 En attente
                             </span>
                             <a href="{{ Storage::url($vehicle->{$key . '_path'}) }}" target="_blank"
-                               class="text-[#6C2BD9] hover:text-[#8B5CF6] text-sm">
+                               class="text-[#16a34a] hover:text-[#0891b2] text-sm">
                                 Voir
                             </a>
                         @else
@@ -128,7 +128,7 @@
         </div>
 
         <div class="p-6 flex gap-3">
-            <a href=""
+            <a href="{{ route('driver.vehicle.setup') }}"
                class="flex-1 text-center px-4 py-3 rounded-xl border border-slate-200 dark:border-white/10 text-slate-600 dark:text-slate-400 font-semibold hover:bg-slate-50 dark:hover:bg-white/5 transition-colors">
                 Modifier les informations
             </a>
