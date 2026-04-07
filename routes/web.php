@@ -57,8 +57,8 @@ Route::middleware(['auth', Checkblocked::class])->group(function () {
         Route::post('/choose-role', 'storeRole')->name('user.role.store');
     });
 
-    // Routes véhicule accessibles sans approbation (setup/pending)
-    Route::controller(DriverController::class)->group(function () {
+    // Routes véhicule accessibles sans approbation (setup/pending) — conducteurs uniquement
+    Route::controller(DriverController::class)->middleware('check_role:driver')->group(function () {
         Route::get('/driver/vehicle/pending', 'pending')       ->name('driver.vehicle.pending');
         Route::get('/driver/vehicle/setup',   'showVehicleSetup')->name('driver.vehicle.setup');
         Route::post('/driver/vehicle/store',  'storeVehicle')  ->name('driver.vehicle.store');
@@ -66,7 +66,7 @@ Route::middleware(['auth', Checkblocked::class])->group(function () {
 
     // Routes driver protégées — véhicule approuvé obligatoire
     Route::controller(DriverController::class)
-        ->middleware('vehicle_approval')
+        ->middleware(['check_role:driver', 'vehicle_approval'])
         ->group(function () {
             Route::get('/driver/create-tips', 'showCreateTips')->name('driver.create-tips');
             Route::get('/driver/requests', 'requests')->name('driver.requests');
@@ -80,7 +80,7 @@ Route::middleware(['auth', Checkblocked::class])->group(function () {
             Route::get('/driver/earnings', 'earnings')->name('driver.earnings');
         });
 
-    Route::controller(PassengerController::class)->group(function () {
+    Route::controller(PassengerController::class)->middleware('check_role:passenger')->group(function () {
         Route::get('/passenger/create-request', 'showCreateRequest')->name('passenger.showtrips');
         Route::post('/passenger/requests', 'storetrips')->name('passenger.storetrips');
         Route::get('/passenger/my-requests', 'showMyRequests')->name('passenger.my-requests');
