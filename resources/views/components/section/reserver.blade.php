@@ -33,7 +33,8 @@
                         <h1 class="text-white text-5xl md:text-7xl font-extrabold mb-6 leading-tight drop-shadow-lg">Votre prochain voyage, <span class="text-primary">partagé.</span></h1>
                         <p class="text-slate-100 text-lg md:text-xl max-w-2xl mx-auto font-medium drop-shadow-md">Entrez en contact avec des chauffeurs fiables et économisez sur vos frais de déplacement tout en réduisant votre empreinte carbone.</p>
                     </div>
-                    <div class="bg-white dark:bg-charcoal p-3 rounded-2xl shadow-2xl flex flex-col md:flex-row items-stretch gap-2">
+                    <form action="{{ route('search.results') }}" method="GET">
+                        <div class="bg-white dark:bg-charcoal p-3 rounded-2xl shadow-2xl flex flex-col md:flex-row items-stretch gap-2">
                         <div class="flex-1 grid grid-cols-1 md:grid-cols-4 gap-2">
                             <div class="relative flex items-center group">
                                 <span class="material-symbols-outlined absolute left-4 text-slate-400 group-focus-within:text-primary text-[16px]">location_on</span>
@@ -61,5 +62,7 @@
                             <span class="material-symbols-outlined">search</span> Rechercher
                         </button>
                     </div>
+                    </form>
+
                 </div>
             </section>

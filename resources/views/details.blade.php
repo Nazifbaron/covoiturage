@@ -1,217 +1,305 @@
 <x-layout>
     <div class="relative flex min-h-screen w-full flex-col overflow-x-hidden">
-           <x-header></x-header>
-            <main class="max-w-[1200px] mx-auto w-full px-6 py-8">
-                <nav class="flex items-center gap-2 text-sm font-medium text-slate-500 dark:text-slate-400 mb-6">
-                    <a class="hover:text-primary" href="#">Résultats de recherche</a>
-                    <span class="material-symbols-outlined text-xs">chevron_right</span>
-                    <span class="text-slate-900 dark:text-slate-100">Détails du trajet</span>
-                </nav>
-                <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
-                    <div class="lg:col-span-2 space-y-8">
-                        <section class="bg-white dark:bg-slate-900 rounded-xl p-6 shadow-sm border border-slate-200 dark:border-slate-800">
-                            <div class="flex justify-between items-start mb-6">
-                                <div>
-                                    <h1 class="text-3xl font-extrabold tracking-tight mb-2">Cotonou à Calavi</h1>
-                                    <p class="text-slate-500 font-medium">Vendredi, Octobre 25 • 08:00 </p>
+        <x-header></x-header>
+
+        <main class="max-w-[1200px] mx-auto w-full px-6 py-8">
+
+            {{-- Fil d'ariane --}}
+            <nav class="flex items-center gap-2 text-sm font-medium text-slate-500 dark:text-slate-400 mb-6">
+                <a class="hover:text-primary" href="{{ url()->previous() }}">Résultats de recherche</a>
+                <span class="material-symbols-outlined text-xs">chevron_right</span>
+                <span class="text-slate-900 dark:text-slate-100">Détails du trajet</span>
+            </nav>
+
+            @php
+                $driver    = $trip->driver;
+                $driverName = trim(($driver->first_name ?? '') . ' ' . ($driver->last_name ?? '')) ?: 'Conducteur';
+                $initial   = strtoupper(substr($driver->first_name ?? $driver->name ?? '?', 0, 1));
+                $timeStr   = is_string($trip->departure_time) ? substr($trip->departure_time, 0, 5) : $trip->departure_time->format('H:i');
+            @endphp
+
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+
+                {{-- ── Colonne principale ── --}}
+                <div class="lg:col-span-2 space-y-8">
+
+                    {{-- Trajet --}}
+                    <section class="bg-white dark:bg-slate-900 rounded-xl p-6 shadow-sm border border-slate-200 dark:border-slate-800">
+                        <div class="flex justify-between items-start mb-6">
+                            <div>
+                                <h1 class="text-3xl font-extrabold tracking-tight mb-2">
+                                    {{ $trip->departure_city }} → {{ $trip->arrival_city }}
+                                </h1>
+                                <p class="text-slate-500 font-medium">
+                                    {{ $trip->departure_date->translatedFormat('l, d F Y') }}
+                                    &bull; {{ $timeStr }}
+                                </p>
+                            </div>
+                            <span class="bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400 px-3 py-1 rounded-full text-xs font-bold uppercase">
+                                {{ $trip->seats_available }} place{{ $trip->seats_available > 1 ? 's' : '' }} dispo
+                            </span>
+                        </div>
+
+                        <div class="relative space-y-0 pl-10">
+                            <div class="absolute left-4 top-1 bottom-1 w-0.5 bg-slate-200 dark:bg-slate-800"></div>
+                            <div class="relative pb-8">
+                                <span class="absolute -left-[30px] top-0 size-5 rounded-full border-4 border-white dark:border-slate-900 bg-primary ring-2 ring-primary/20"></span>
+                                <div class="flex flex-col">
+                                    <span class="text-lg font-bold">Départ : {{ $trip->departure_city }}</span>
+                                    <span class="text-slate-500">
+                                        {{ $trip->departure_address ?: 'Lieu de départ à confirmer avec le conducteur' }}
+                                        — {{ $timeStr }}
+                                    </span>
                                 </div>
                             </div>
-                            <div class="relative space-y-0 pl-10">
-                                <div class="absolute left-4 top-1 bottom-1 w-0.5 bg-slate-200 dark:bg-slate-800"></div>
-                                <div class="relative pb-8">
-                                    <span class="absolute -left-[30px] top-0 size-5 rounded-full border-4 border-white dark:border-slate-900 bg-others ring-2 ring-primary/20"></span>
-                                    <div class="flex flex-col">
-                                        <span class="text-lg font-bold">Départ : Gare de Cotonou, Calavi</span>
-                                        <span class="text-slate-500">Prise en charge à l'entrée principale, à 8 h</span>
-                                    </div>
+                            <div class="relative">
+                                <span class="absolute -left-[30px] top-0 size-5 rounded-full border-4 border-white dark:border-slate-900 bg-slate-400 ring-2 ring-slate-400/20"></span>
+                                <div class="flex flex-col">
+                                    <span class="text-lg font-bold">Arrivée : {{ $trip->arrival_city }}</span>
+                                    <span class="text-slate-500">
+                                        {{ $trip->arrival_address ?: 'Lieu d\'arrivée à confirmer avec le conducteur' }}
+                                    </span>
                                 </div>
+                            </div>
+                        </div>
+
+                        {{-- Options du trajet --}}
+                        @if($trip->luggage_allowed || $trip->pets_allowed || $trip->silent_ride || $trip->female_only)
+                        <div class="mt-6 pt-4 border-t border-slate-100 dark:border-slate-800 flex flex-wrap gap-3">
+                            @if($trip->luggage_allowed)
+                            <span class="flex items-center gap-1.5 text-xs font-semibold bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 px-3 py-1.5 rounded-full text-slate-600 dark:text-slate-400">
+                                <span class="material-symbols-outlined text-sm">luggage</span> Bagages acceptés
+                            </span>
+                            @endif
+                            @if($trip->pets_allowed)
+                            <span class="flex items-center gap-1.5 text-xs font-semibold bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 px-3 py-1.5 rounded-full text-slate-600 dark:text-slate-400">
+                                <span class="material-symbols-outlined text-sm">pets</span> Animaux acceptés
+                            </span>
+                            @endif
+                            @if($trip->silent_ride)
+                            <span class="flex items-center gap-1.5 text-xs font-semibold bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 px-3 py-1.5 rounded-full text-slate-600 dark:text-slate-400">
+                                <span class="material-symbols-outlined text-sm">volume_off</span> Trajet silencieux
+                            </span>
+                            @endif
+                            @if($trip->female_only)
+                            <span class="flex items-center gap-1.5 text-xs font-semibold bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 px-3 py-1.5 rounded-full text-slate-600 dark:text-slate-400">
+                                <span class="material-symbols-outlined text-sm">female</span> Femmes uniquement
+                            </span>
+                            @endif
+                        </div>
+                        @endif
+                    </section>
+
+                    {{-- Conducteur --}}
+                    <section class="bg-white dark:bg-slate-900 rounded-xl p-8 shadow-sm border border-slate-200 dark:border-slate-800">
+                        <h3 class="text-xl font-bold mb-6 flex items-center gap-2">
+                            <span class="material-symbols-outlined text-primary">person</span>
+                            Votre conducteur
+                        </h3>
+                        <div class="flex flex-col md:flex-row gap-8">
+                            <div class="flex flex-col items-center text-center space-y-3">
                                 <div class="relative">
-                                    <span class="absolute -left-[30px] top-0 size-5 rounded-full border-4 border-white dark:border-slate-900 bg-slate-400 ring-2 ring-slate-400/20"></span>
-                                    <div class="flex flex-col">
-                                        <span class="text-lg font-bold">Arrivée : Calavi</span>
-                                        <span class="text-slate-500">Dépose à la station de taxis, 12h30</span>
+                                    <div class="size-24 rounded-full bg-primary/10 ring-4 ring-primary/10
+                                                flex items-center justify-center font-black text-primary text-4xl">
+                                        {{ $initial }}
+                                    </div>
+                                    <div class="absolute bottom-0 right-0 bg-primary text-white size-8 rounded-full flex items-center justify-center border-2 border-white dark:border-slate-900">
+                                        <span class="material-symbols-outlined text-sm">verified</span>
+                                    </div>
+                                </div>
+                                <div>
+                                    <h4 class="text-xl font-bold">{{ $driverName }}</h4>
+                                    <p class="text-xs text-slate-400 mt-1">Conducteur vérifié</p>
+                                </div>
+                            </div>
+                            <div class="flex-1 space-y-4">
+                                @if($trip->description)
+                                <p class="text-slate-600 dark:text-slate-400 leading-relaxed italic">
+                                    « {{ $trip->description }} »
+                                </p>
+                                @endif
+                                <div class="grid grid-cols-2 gap-4">
+                                    <div class="flex items-center gap-3 p-3 bg-slate-50 dark:bg-slate-800/50 rounded-lg">
+                                        <span class="material-symbols-outlined text-slate-400">event_seat</span>
+                                        <div>
+                                            <p class="text-xs text-slate-500 font-bold uppercase tracking-wider">Places totales</p>
+                                            <p class="font-medium">{{ $trip->seats_total }} sièges</p>
+                                        </div>
+                                    </div>
+                                    <div class="flex items-center gap-3 p-3 bg-slate-50 dark:bg-slate-800/50 rounded-lg">
+                                        <span class="material-symbols-outlined text-slate-400">check_circle</span>
+                                        <div>
+                                            <p class="text-xs text-slate-500 font-bold uppercase tracking-wider">Statut</p>
+                                            <p class="font-medium text-green-600">Vérifié</p>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
-                        </section>
-                        <section class="bg-white dark:bg-slate-900 rounded-xl overflow-hidden shadow-sm border border-slate-200 dark:border-slate-800">
-                            <div class="p-4 bg-slate-50 dark:bg-slate-800/50 border-b border-slate-200 dark:border-slate-800 flex items-center gap-2">
-                                <span class="material-symbols-outlined text-others">map</span>
-                                <span class="font-bold">Carte routière</span>
+                        </div>
+                    </section>
+
+                </div>
+
+                {{-- ── Sidebar réservation ── --}}
+                <div class="lg:col-span-1">
+                    <div class="sticky top-24 space-y-4">
+                        <div class="bg-white dark:bg-slate-900 rounded-xl shadow-xl border border-slate-200 dark:border-slate-800 p-6">
+
+                            <div class="flex justify-between items-center mb-6">
+                                <div>
+                                    <span class="text-slate-500 text-sm font-medium">Prix par siège</span>
+                                    <div class="text-3xl font-extrabold text-primary">
+                                        {{ number_format($trip->price_per_seat) }} F CFA
+                                    </div>
+                                </div>
+                                <div class="bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400 px-3 py-1 rounded-full text-xs font-bold uppercase">
+                                    {{ $trip->seats_available }} place{{ $trip->seats_available > 1 ? 's' : '' }}
+                                </div>
                             </div>
-                            <div class="aspect-video w-full bg-slate-200 dark:bg-slate-800 relative">
-                                <div class="absolute inset-0 bg-cover bg-center" data-alt="Map showing a route between Paris and Lyon" data-location="France" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuBE4znW0rUU2ynnq6G9CEb2db9hVw9XtYqg9IF98H8DmV_m1S4trUu1zwcSmRmikiNMe21SF0qCPoWJaJk3mP3W2Xj2ZY_JVB1C0CK3IQcOvj3rP3AYH7dtxLsF4Q_M86wv4J4fR3Xh13wD_Gf0i7tQYM4w3L0CAh0f3AzkzixCGf8Zr0aK55vyo3J_aLZXfdFWJRPrmSwr5Ofo4BJPrlK-xAvq_hWir8tRUmZM57R4YveBj5sbfWingfI-zbZYxtqlHJ0ankVqd_ui')"></div>
-                                <div class="absolute inset-0 bg-primary/5 pointer-events-none"></div>
-                            </div>
-                        </section>
-                        <section class="bg-white dark:bg-slate-900 rounded-xl p-8 shadow-sm border border-slate-200 dark:border-slate-800">
-                            <h3 class="text-xl font-bold mb-6 flex items-center gap-2">
-                                <span class="material-symbols-outlined text-others">person</span>
-                                                    Votre chauffeur
-                            </h3>
-                            <div class="flex flex-col md:flex-row gap-8">
-                                <div class="flex flex-col items-center text-center space-y-3">
+
+                            {{-- Sélecteur de sièges --}}
+                            <div class="space-y-4 mb-6">
+                                <label class="block">
+                                    <span class="text-sm font-bold text-slate-700 dark:text-slate-300 mb-2 block">Nombre de sièges</span>
                                     <div class="relative">
-                                        <div class="size-24 rounded-full bg-slate-200 overflow-hidden ring-4 ring-primary/10">
-                                            <img alt="Thomas" class="w-full h-full object-cover" data-alt="Profile picture of male driver Thomas" src="{{ asset('images/avatar/conducteur.png') }}"/>
-                                        </div>
-                                        <div class="absolute bottom-0 right-0 bg-others text-white size-8 rounded-full flex items-center justify-center border-2 border-white dark:border-slate-900">
-                                            <span class="material-symbols-outlined text-sm">verified</span>
-                                        </div>
+                                        <select id="seats-select" class="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg py-3 pl-4 pr-10 appearance-none focus:ring-primary focus:border-primary transition-all font-medium">
+                                            @for($i = 1; $i <= min($trip->seats_available, 4); $i++)
+                                            <option value="{{ $i }}">{{ $i }} siège{{ $i > 1 ? 's' : '' }}</option>
+                                            @endfor
+                                        </select>
+                                        <span class="material-symbols-outlined absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none text-slate-400">expand_more</span>
                                     </div>
-                                    <div>
-                                        <h4 class="text-xl font-bold">Tossou R.</h4>
-                                        <div class="flex items-center justify-center gap-1 text-yellow-500">
-                                            <span class="material-symbols-outlined fill-1">star</span>
-                                            <span class="text-slate-900 dark:text-slate-100 font-bold">4.8</span>
-                                            <span class="text-slate-500 font-normal">(124 avis)</span>
-                                        </div>
-                                    </div>
+                                </label>
+                            </div>
+
+                            <div class="border-t border-slate-100 dark:border-slate-800 pt-4 mb-6">
+                                <div class="flex justify-between items-center mb-2">
+                                    <span class="text-slate-600 dark:text-slate-400">Coût du voyage</span>
+                                    <span class="font-bold" id="price-display">{{ number_format($trip->price_per_seat) }} F</span>
                                 </div>
-                                <div class="flex-1 space-y-4">
-                                    <div>
-                                        <p class="text-slate-600 dark:text-slate-400 leading-relaxed italic">
-                                            « Bonjour ! Je fais souvent la navette entre Cotonou et Calavi. Je ne fume pas, j'aime écouter des podcasts et j'ai généralement un peu de place pour des bagages légers. Au plaisir de partager le trajet ! »
-                                        </p>
-                                    </div>
-                                    <div class="grid grid-cols-2 gap-4">
-                                        <div class="flex items-center gap-3 p-3 bg-slate-50 dark:bg-slate-800/50 rounded-lg">
-                                            <span class="material-symbols-outlined text-slate-400">directions_car</span>
-                                            <div>
-                                                <p class="text-xs text-slate-500 font-bold uppercase tracking-wider">Vehicle</p>
-                                                <p class="font-medium">Tesla Model 3</p>
-                                            </div>
-                                        </div>
-                                        <div class="flex items-center gap-3 p-3 bg-slate-50 dark:bg-slate-800/50 rounded-lg">
-                                            <span class="material-symbols-outlined text-slate-400">check_circle</span>
-                                            <div>
-                                                <p class="text-xs text-slate-500 font-bold uppercase tracking-wider">Vérifié</p>
-                                                <p class="font-medium text-green-600">ID &amp; License</p>
-                                            </div>
-                                        </div>
-                                    </div>
+                                <div class="flex justify-between items-center mb-4">
+                                    <span class="text-slate-600 dark:text-slate-400">Frais de service</span>
+                                    <span class="font-bold text-green-600">Gratuit</span>
+                                </div>
+                                <div class="flex justify-between items-center pt-2 border-t border-slate-100 dark:border-slate-800">
+                                    <span class="text-lg font-extrabold">Total</span>
+                                    <span class="text-2xl font-extrabold text-slate-900 dark:text-white" id="total-display">{{ number_format($trip->price_per_seat) }} F</span>
                                 </div>
                             </div>
-                        </section>
-                        <section class="space-y-6">
-                            <div class="flex items-center justify-between">
-                                <h3 class="text-xl font-bold">Avis</h3>
-                                <button class="text-primary font-bold text-sm hover:underline">Voir tous les avis</button>
-                            </div>
-                            <div class="space-y-4">
-                                <div class="bg-white dark:bg-slate-900 p-6 rounded-xl shadow-sm border border-slate-200 dark:border-slate-800">
-                                    <div class="flex justify-between items-start mb-4">
-                                        <div class="flex items-center gap-3">
-                                            <div class="size-10 rounded-full bg-slate-100 overflow-hidden">
-                                                <img alt="Sarah" class="w-full h-full object-cover" data-alt="Portrait of passenger Sarah" src="{{  asset('images/avatar/avis.png') }}"/>
-                                            </div>
-                                            <div>
-                                                <p class="font-bold">Sarah M.</p>
-                                                <p class="text-xs text-slate-500">October 2026</p>
-                                            </div>
-                                        </div>
-                                        <div class="flex text-yellow-500">
-                                            <span class="material-symbols-outlined fill-1 text-sm">star</span>
-                                            <span class="material-symbols-outlined fill-1 text-sm">star</span>
-                                            <span class="material-symbols-outlined fill-1 text-sm">star</span>
-                                            <span class="material-symbols-outlined fill-1 text-sm">star</span>
-                                            <span class="material-symbols-outlined fill-1 text-sm">star</span>
-                                        </div>
-                                    </div>
-                                    <p class="text-slate-600 dark:text-slate-400">Excellent chauffeur, très ponctuel et la voiture était impeccable. La conversation était intéressante aussi ! Je recommande vivement Thomas.</p>
-                                </div>
-                                <div class="bg-white dark:bg-slate-900 p-6 rounded-xl shadow-sm border border-slate-200 dark:border-slate-800">
-                                    <div class="flex justify-between items-start mb-4">
-                                        <div class="flex items-center gap-3">
-                                            <div class="size-10 rounded-full bg-slate-100 overflow-hidden">
-                                                <img alt="Julian" class="w-full h-full object-cover" data-alt="Portrait of passenger Julian" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCHvQoYPavn5zhvu03xzuc6gjUt7C7PwcAmYeHuSzCledTSsUa4mqJBtLwCZALygmZiO6eXvE3j1lq9OSEldTAQfsuqfB8_BIcSumk1pmngR4nFKP3_OEhwPzko6s4iyER-OQ0W7OzxCRuaaPvcauyBO3siMUJvvJu2vYmmB88cv9HYQjqOWIzy9Lhi_V_knbzw_2EXe0rklLZONI0qnU1c3Z-IpsQXtH070KWZEc69NlkbrMuPS8bnFgzZoWG4FuAGLF2AeDncIu8E"/>
-                                            </div>
-                                            <div>
-                                                <p class="font-bold">Julian K.</p>
-                                                <p class="text-xs text-slate-500">September 2026</p>
-                                            </div>
-                                        </div>
-                                        <div class="flex text-yellow-500">
-                                            <span class="material-symbols-outlined fill-1 text-sm">star</span>
-                                            <span class="material-symbols-outlined fill-1 text-sm">star</span>
-                                            <span class="material-symbols-outlined fill-1 text-sm">star</span>
-                                            <span class="material-symbols-outlined fill-1 text-sm">star</span>
-                                            <span class="material-symbols-outlined text-sm">star</span>
-                                        </div>
-                                    </div>
-                                    <p class="text-slate-600 dark:text-slate-400">Trajet agréable, arrivée à Lyon pile à l'heure. Thomas est un conducteur très prudent.</p>
-                                </div>
-                            </div>
-                        </section>
-                    </div>
-                    <div class="lg:col-span-1">
-                        <div class="sticky top-24 space-y-4">
-                            <div class="bg-white dark:bg-slate-900 rounded-xl shadow-xl border border-slate-200 dark:border-slate-800 p-6">
-                                <div class="flex justify-between items-center mb-6">
-                                    <div class="flex flex-col">
-                                        <span class="text-slate-500 text-sm font-medium">Prix par siège</span>
-                                        <div class="flex items-baseline gap-1">
-                                            <span class="text-3xl font-extrabold text-others">34.00F CFA</span>
-                                        </div>
-                                    </div>
-                                    <div class="bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400 px-3 py-1 rounded-full text-xs font-bold uppercase tracking-tight">
-                                        Il reste 3 places disponibles.
-                                    </div>
-                                </div>
-                                <div class="space-y-4 mb-6">
-                                    <label class="block">
-                                        <span class="text-sm font-bold text-slate-700 dark:text-slate-300 mb-2 block">Nombre de sièges</span>
-                                            <div class="relative">
-                                                <select class="w-full bg-slate-50 dark:bg-slate-800 border-slate-200 dark:border-slate-700 rounded-lg py-3 pl-4 pr-10 appearance-none focus:ring-primary focus:border-primary transition-all font-medium">
-                                                    <option>1 siège</option>
-                                                    <option>2 sièges</option>
-                                                    <option>3 sièges</option>
-                                                </select>
-                                                <span class="material-symbols-outlined absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none text-slate-400">expand_more</span>
-                                            </div>
-                                    </label>
-                                </div>
-                                <div class="border-t border-slate-100 dark:border-slate-800 pt-4 mb-6">
-                                    <div class="flex justify-between items-center mb-2">
-                                        <span class="text-slate-600 dark:text-slate-400">Coût du voyage (1 place)</span>
-                                        <span class="font-bold">34F CFA</span>
-                                    </div>
-                                    <div class="flex justify-between items-center mb-4">
-                                        <span class="text-slate-600 dark:text-slate-400">Frais de service</span>
-                                        <span class="font-bold text-green-600">Gratuit</span>
-                                    </div>
-                                    <div class="flex justify-between items-center pt-2">
-                                        <span class="text-lg font-extrabold">Prix total</span>
-                                        <span class="text-2xl font-extrabold text-slate-900 dark:text-white">34F CFA</span>
-                                    </div>
-                                </div>
-                                <button class="w-full bg-others hover:bg-others/90 text-white font-bold py-4 rounded-xl shadow-lg shadow-primary/20 transition-all flex items-center justify-center gap-2 group">
+
+                            {{-- Bouton Réserver --}}
+                            @auth
+                                @if(Auth::user()->role === 'passenger')
+                                    <a href="{{ route('passenger.showtrips', [
+                                            'driver_trip_id' => $trip->id,
+                                            'departure_city' => $trip->departure_city,
+                                            'arrival_city'   => $trip->arrival_city,
+                                            'date'           => $trip->departure_date->format('Y-m-d'),
+                                            'time'           => $timeStr,
+                                            'passengers'     => 1,
+                                        ]) }}"
+                                       id="reserve-btn"
+                                       class="w-full bg-primary hover:bg-primary/90 text-white font-bold py-4 rounded-xl shadow-lg shadow-primary/20 transition-all flex items-center justify-center gap-2 group">
+                                        Réserver maintenant
+                                        <span class="material-symbols-outlined group-hover:translate-x-1 transition-transform">arrow_forward</span>
+                                    </a>
+                                @else
+                                    <button disabled
+                                        class="w-full bg-slate-100 text-slate-400 font-bold py-4 rounded-xl cursor-not-allowed flex items-center justify-center gap-2">
+                                        <span class="material-symbols-outlined text-sm">block</span>
+                                        Réservé aux passagers
+                                    </button>
+                                @endif
+                            @else
+                                <button onclick="document.getElementById('auth-modal').classList.remove('hidden')"
+                                    class="w-full bg-primary hover:bg-primary/90 text-white font-bold py-4 rounded-xl shadow-lg shadow-primary/20 transition-all flex items-center justify-center gap-2 group">
                                     Réserver maintenant
                                     <span class="material-symbols-outlined group-hover:translate-x-1 transition-transform">arrow_forward</span>
                                 </button>
-                                <p class="text-center text-xs text-slate-500 mt-4">Aucun paiement n'est encore requis. La réservation sera en attente de l'approbation du chauffeur.</p>
-                            </div>
-                            <!--<div class="bg-primary/5 border border-primary/20 rounded-xl p-4 flex gap-3">
-                                <span class="material-symbols-outlined text-primary">security</span>
-                                <div class="text-xs">
-                                    <p class="font-bold text-primary mb-1">Confiance &amp; Sécurité</p>
-                                    <p class="text-slate-600 dark:text-slate-400">Chaque chauffeur est vérifié et chaque trajet est assuré.</p>
-                                </div>
-                            </div>-->
+                            @endauth
+
+                            <p class="text-center text-xs text-slate-500 mt-4">
+                                Aucun paiement requis. La réservation sera confirmée par le conducteur.
+                            </p>
                         </div>
                     </div>
                 </div>
-            </main>
 
+            </div>
+        </main>
+    </div>
+
+    {{-- ── Modal connexion/inscription (visiteurs non connectés) ── --}}
+    <div id="auth-modal" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4">
+        {{-- Overlay --}}
+        <div class="absolute inset-0 bg-black/50 backdrop-blur-sm"
+             onclick="document.getElementById('auth-modal').classList.add('hidden')"></div>
+
+        {{-- Card --}}
+        <div class="relative bg-white dark:bg-slate-900 rounded-2xl shadow-2xl w-full max-w-md p-8 z-10">
+
+            <button onclick="document.getElementById('auth-modal').classList.add('hidden')"
+                    class="absolute top-4 right-4 w-8 h-8 rounded-full flex items-center justify-center hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors">
+                <span class="material-symbols-outlined text-slate-400">close</span>
+            </button>
+
+            <div class="text-center mb-6">
+                <div class="w-16 h-16 rounded-2xl bg-primary/10 flex items-center justify-center mx-auto mb-4">
+                    <span class="material-symbols-outlined text-primary text-3xl">directions_car</span>
+                </div>
+                <h2 class="text-2xl font-extrabold text-slate-900 dark:text-white mb-2">
+                    Presque prêt !
+                </h2>
+                <p class="text-slate-500 dark:text-slate-400 text-sm">
+                    Connectez-vous ou créez un compte pour réserver ce trajet
+                    <strong class="text-slate-700 dark:text-slate-300">{{ $trip->departure_city }} → {{ $trip->arrival_city }}</strong>.
+                </p>
+            </div>
+
+            <div class="space-y-3">
+                <a href="{{ route('login', ['redirect' => url()->current()]) }}"
+                   class="w-full flex items-center justify-center gap-3 bg-primary text-white font-bold py-3.5 rounded-xl hover:bg-primary/90 transition-all shadow-md shadow-primary/20">
+                    <span class="material-symbols-outlined">login</span>
+                    Se connecter
+                </a>
+                <a href="{{ route('register') }}"
+                   class="w-full flex items-center justify-center gap-3 border-2 border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 font-bold py-3.5 rounded-xl hover:border-primary hover:text-primary transition-all">
+                    <span class="material-symbols-outlined">person_add</span>
+                    Créer un compte
+                </a>
+            </div>
+
+            <p class="text-center text-xs text-slate-400 mt-5">
+                Inscription gratuite &bull; Aucun paiement requis
+            </p>
         </div>
-        <script>
+    </div>
 
-            const btn = document.getElementById("menu-btn");
-            const menu = document.getElementById("mobile-menu");
+    <script>
+        const pricePerSeat = {{ $trip->price_per_seat }};
+        const select       = document.getElementById('seats-select');
+        const priceDisplay = document.getElementById('price-display');
+        const totalDisplay = document.getElementById('total-display');
+        const reserveBtn   = document.getElementById('reserve-btn');
 
-            btn.addEventListener("click", () => {
-                menu.classList.toggle("hidden");
+        if (select) {
+            select.addEventListener('change', function () {
+                const seats  = parseInt(this.value);
+                const total  = seats * pricePerSeat;
+                const fmt    = n => n.toLocaleString('fr') + ' F';
+                if (priceDisplay) priceDisplay.textContent = fmt(total);
+                if (totalDisplay) totalDisplay.textContent = fmt(total);
+
+                @auth
+                @if(Auth::check() && Auth::user()->role === 'passenger')
+                if (reserveBtn) {
+                    const url = new URL(reserveBtn.href);
+                    url.searchParams.set('passengers', seats);
+                    reserveBtn.href = url.toString();
+                }
+                @endif
+                @endauth
             });
-
-        </script>
+        }
+    </script>
 </x-layout>

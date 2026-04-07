@@ -157,6 +157,64 @@ class PassengerController extends Controller
         return view('passager.tripsavailable');
     }
 
+    public function tripDetail(DriverTrips $trip)
+    {
+        abort_if($trip->status !== 'scheduled' || $trip->seats_available <= 0, 404);
+        $trip->load('driver');
+        return view('details', compact('trip'));
+    }
+
+    public function searchResults(Request $request)
+    {
+        $departure  = trim($request->get('departure', ''));
+        $arrival    = trim($request->get('arrival', ''));
+        $date       = $request->get('date', '');
+        $passengers = max(1, (int) $request->get('passengers', 1));
+        $priceMax   = $request->get('price_max');
+        $timeOfDay  = $request->get('time_of_day', '');
+        $luggage    = $request->boolean('luggage');
+        $pets       = $request->boolean('pets');
+
+        $query = DriverTrips::with(['driver'])
+            ->where('status', 'scheduled')
+            ->where('departure_date', '>=', today())
+            ->where('seats_available', '>=', $passengers)
+            ->orderBy('departure_date', 'asc')
+            ->orderBy('departure_time', 'asc');
+
+        if ($departure !== '') {
+            $query->where('departure_city', 'LIKE', "%{$departure}%");
+        }
+        if ($arrival !== '') {
+            $query->where('arrival_city', 'LIKE', "%{$arrival}%");
+        }
+        if ($date !== '') {
+            $query->whereDate('departure_date', $date);
+        }
+        if ($priceMax) {
+            $query->where('price_per_seat', '<=', (int) $priceMax);
+        }
+        if ($timeOfDay !== '') {
+            match ($timeOfDay) {
+                'matin'      => $query->whereTime('departure_time', '>=', '05:00')->whereTime('departure_time', '<', '12:00'),
+                'apres-midi' => $query->whereTime('departure_time', '>=', '12:00')->whereTime('departure_time', '<', '18:00'),
+                'soiree'     => $query->whereTime('departure_time', '>=', '18:00')->whereTime('departure_time', '<', '22:00'),
+                'nuit'       => $query->whereTime('departure_time', '>=', '22:00')->orWhereTime('departure_time', '<', '05:00'),
+                default      => null,
+            };
+        }
+        if ($luggage) {
+            $query->where('luggage_allowed', true);
+        }
+        if ($pets) {
+            $query->where('pets_allowed', true);
+        }
+
+        $trips = $query->paginate(8)->withQueryString();
+
+        return view('resultat', compact('trips', 'departure', 'arrival', 'date', 'passengers'));
+    }
+
     // ── Endpoint JSON recherche temps réel ───────────────────────────────
      public function searchTrips(Request $request)
     {

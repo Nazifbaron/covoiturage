@@ -21,10 +21,11 @@ use App\Http\Controllers\NotificationController;
 Route::view('/','welcome');
 Route::view('/contact','contact');
 Route::view('/about','about');
-Route::view('/result','resultat');
 Route::view('/detail','details');
 Route::view('/marche','marche');
 Route::view('/search','search');
+Route::get('/result', [PassengerController::class, 'searchResults'])->name('search.results');
+Route::get('/trip/{trip}', [PassengerController::class, 'tripDetail'])->name('trip.detail');
 
 // Route accessible même si bloqué (hors middleware auth)
 Route::get('/blocked', function () {

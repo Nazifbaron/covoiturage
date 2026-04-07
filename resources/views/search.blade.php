@@ -28,7 +28,7 @@
         <!-- FORMULAIRE -->
         <div class="bg-white text-black rounded-xl shadow-xl p-6">
 
-            <form action="#" method="GET">
+            <form action="{{ route('search.results') }}" method="GET">
                 <div class="grid md:grid-cols-5 gap-4">
 
                     <!-- Départ -->
@@ -36,7 +36,7 @@
                         <span class="material-symbols-outlined text-primary">
                             location_on
                         </span>
-                        <input type="text" name="departure_city_id" placeholder="Départ"
+                        <input type="text" name="departure" placeholder="Départ"
                             class="w-full border-none focus:ring-0 text-sm">
                     </div>
 
@@ -45,7 +45,7 @@
                         <span class="material-symbols-outlined text-primary">
                             near_me
                         </span>
-                        <input type="text" name="destination" placeholder="Destination"
+                        <input type="text" name="arrival" placeholder="Destination"
                             class="w-full border-none focus:ring-0 text-sm">
                     </div>
 
