@@ -31,7 +31,9 @@ class DriverController extends Controller
                 ->with('warning', 'Vous devez avoir au moins un véhicule approuvé pour publier un trajet.');
         }
 
-        return view('conducteur.createTrips', compact('vehicles'));
+        $vehicle = $vehicles->first();
+
+        return view('conducteur.createTrips', compact('vehicles', 'vehicle'));
     }
 
 

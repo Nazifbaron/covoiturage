@@ -23,9 +23,12 @@ class ProfileController extends Controller
             ? $request->user()->vehicles()->latest()->get()
             : collect();
 
+        $vehicle = $vehicles->first();
+
         return view('profile.edit', [
             'user'     => $request->user(),
             'vehicles' => $vehicles,
+            'vehicle'  => $vehicle,
         ]);
     }
 

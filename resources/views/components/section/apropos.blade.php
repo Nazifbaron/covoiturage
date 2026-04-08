@@ -8,7 +8,7 @@
                         <div class="relative">
                             <div class="absolute -inset-4 bg-gradient-to-tr from-primary/20 to-blue-500/20 rounded-3xl blur-2xl opacity-50"></div>
 
-                            <img src="{{ asset('images/about/img-car.png') }}" alt="Car illustration" class="relative rounded-3xl shadow-2xl object-cover w-full">
+                            <img src="{{ asset('images/about/propo.jpg') }}" alt="Car illustration" class="relative rounded-3xl shadow-2xl object-cover w-full">
                         </div>
                         <!-- Content Side -->
                         <div>

@@ -1,4 +1,5 @@
 <x-layout>
+    <x-header></x-header>
     <section class="relative h-[420px] flex items-center justify-center text-center">
         <!-- Image -->
         <img src="{{ asset('images/covoiturage-banner.jpg') }}"
@@ -78,7 +79,7 @@
                 <h2 class="text-3xl font-extrabold mb-6">
                     Pourquoi utiliser notre plateforme ?
                 </h2>
-                <ul class="space-y-4 text-slate-600">
+                <ul class="space-y-4 text-slate-800">
                     <li>✔ Réduisez vos frais de transport</li>
                     <li>✔ Voyagez en toute sécurité</li>
                     <li>✔ Rencontrez de nouvelles personnes</li>
@@ -104,7 +105,7 @@
                     Trouver un trajet
                 </a>
                 <a href="/trajets/create" class="border border-white px-8 py-3 rounded-lg font-bold">
-                    Proposer un trajet
+                    Demander un trajet
                 </a>
             </div>
         </div>

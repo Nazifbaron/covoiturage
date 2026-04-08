@@ -10,6 +10,7 @@ use App\Http\Controllers\AdminController;
 use App\Http\Middleware\Checkblocked;
 use App\Http\Controllers\MessagesController;
 use App\Http\Controllers\NotificationController;
+use App\Http\Controllers\DashboardController;
 
 
 // Route::view('/','welcome');
@@ -21,10 +22,11 @@ use App\Http\Controllers\NotificationController;
 Route::view('/','welcome');
 Route::view('/contact','contact');
 Route::view('/about','about');
-Route::view('/result','resultat');
 Route::view('/detail','details');
 Route::view('/marche','marche');
 Route::view('/search','search');
+Route::get('/result', [PassengerController::class, 'searchResults'])->name('search.results');
+Route::get('/trip/{trip}', [PassengerController::class, 'tripDetail'])->name('trip.detail');
 
 // Route accessible même si bloqué (hors middleware auth)
 Route::get('/blocked', function () {
@@ -39,9 +41,9 @@ Route::get('/blocked', function () {
     return view('blocked');
 })->middleware('auth')->name('blocked');
 
-Route::get('/dashboard', function () {
-    return view('dashboard');
-})->middleware(['auth', 'verified', 'vehicle_approval'])->name('dashboard');
+Route::get('/dashboard', [DashboardController::class, 'index'])
+    ->middleware(['auth', 'verified', 'check_blocked', 'vehicle_approval'])
+    ->name('dashboard');
 
 Route::middleware(['auth', Checkblocked::class])->group(function () {
 
@@ -101,9 +103,11 @@ Route::middleware(['auth', Checkblocked::class])->group(function () {
      });
 
     Route::controller(NotificationController::class)->group(function () {
-        Route::get('/notifications',          'index')      ->name('notifications.index');
-        Route::get('/notifications/{id}/read','markRead')   ->name('notifications.read');
-        Route::post('/notifications/read-all','markAllRead')->name('notifications.read-all');
+        Route::get('/notifications',             'index')      ->name('notifications.index');
+        Route::get('/notifications/{id}/read',  'markRead')   ->name('notifications.read');
+        Route::post('/notifications/read-all',  'markAllRead')->name('notifications.read-all');
+        Route::delete('/notifications/{id}',    'destroy')    ->name('notifications.destroy');
+        Route::delete('/notifications',         'destroyAll') ->name('notifications.destroy-all');
     });
 
      Route::controller(MessagesController::class)->group(function () {

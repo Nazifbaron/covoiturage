@@ -14,9 +14,9 @@
             theme: {
                 extend: {
                     colors: {
-                        primary: "#fe7644",        // couleur principale (navbar, titres)
-                        secondary: "#c33c72",      // hover, éléments actifs
-                        accent: "#fe7644",
+                        primary: "#10b981",        // couleur principale (navbar, titres)
+                        secondary: "#045373",      // hover, éléments actifs
+
                         background: "#f8faf8"
                     },
                     fontFamily: {
@@ -47,15 +47,7 @@
                     <!-- EMAIL -->
                     <div class="space-y-2">
                         <label class="text-sm font-medium">Email</label>
-                        <input type="email" name="email" value="{{ old('email') }}" required placeholder="email@exemple.com"
-                               class="w-full rounded-xl border p-3 focus:ring-2 outline-none transition
-                                      {{ $errors->has('email') ? 'border-red-400 focus:border-red-400 focus:ring-red-200' : 'border-gray-200 focus:border-primary focus:ring-primary/30' }}">
-                        @error('email')
-                            <p class="text-sm text-red-500 flex items-center gap-1">
-                                <span class="material-symbols-outlined text-base">error</span>
-                                {{ $message }}
-                            </p>
-                        @enderror
+                        <input type="email" name="email" required placeholder="email@exemple.com" class="w-full rounded-xl border border-gray-200 p-3 focus:border-primary focus:ring-2 focus:ring-primary/30 outline-none transition">
                     </div>
                     <!-- PASSWORD -->
                     <div class="space-y-2">
@@ -63,9 +55,7 @@
                             <label class="text-sm font-medium">Mot de passe</label>
                             <a class="text-sm font-bold text-primary hover:underline" href="{{ route('password.request') }}">Mot de passe oublié?</a>
                         </div>
-                        <input type="password" name="password" required placeholder="••••••••"
-                               class="w-full rounded-xl border p-3 focus:ring-2 outline-none transition
-                                      {{ $errors->has('email') ? 'border-red-400 focus:border-red-400 focus:ring-red-200' : 'border-gray-200 focus:border-primary focus:ring-primary/30' }}">
+                        <input type="password" name="password" required placeholder="••••••••" class="w-full rounded-xl border border-gray-200 p-3 focus:border-primary focus:ring-2 focus:ring-primary/30 outline-none transition">
                     </div>
                     <!-- BUTTON -->
                     <button type="submit"

@@ -1,4 +1,5 @@
 <x-layout>
+    <x-header></x-header>
     <x-section.reserver />
     <x-section.marche />
     <x-section.avantage />

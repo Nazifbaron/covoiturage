@@ -175,7 +175,7 @@
         </div>
 
         {{-- User info --}}
-        <div class="px-4 py-3 border-b border-green-100 dark:border-green-900/30">
+        {{-- <div class="px-4 py-3 border-b border-green-100 dark:border-green-900/30">
             <div class="flex items-center gap-3 p-2.5 rounded-xl
                         bg-green-50 dark:bg-green-900/20
                         border border-green-100 dark:border-green-800/30">
@@ -211,7 +211,7 @@
                     @endif
                 </div>
             </div>
-        </div>
+        </div> --}}
 
         {{-- Navigation --}}
         <nav class="flex-1 overflow-y-auto px-3 py-4 space-y-1">
@@ -406,10 +406,16 @@
                         <div class="flex items-center justify-between px-4 py-3
                                     border-b border-slate-100 dark:border-white/10">
                             <p class="font-black text-sm text-slate-900 dark:text-white">Notifications</p>
-                            <button id="notifMarkAll"
-                                    class="text-xs font-semibold text-primary hover:underline">
-                                Tout marquer lu
-                            </button>
+                            <div class="flex items-center gap-3">
+                                <button id="notifMarkAll"
+                                        class="text-xs font-semibold text-primary hover:underline">
+                                    Tout lire
+                                </button>
+                                <button id="notifDeleteAll"
+                                        class="text-xs font-semibold text-red-400 hover:text-red-500 hover:underline">
+                                    Tout effacer
+                                </button>
+                            </div>
                         </div>
 
                         {{-- Liste --}}
@@ -494,23 +500,45 @@
             notifications     : 'text-slate-400',
         };
 
+        const deleteUrl    = "{{ route('notifications.destroy', '__ID__') }}".replace('__ID__', '__ID__');
+        const deleteAllUrl = "{{ route('notifications.destroy-all') }}";
+        const csrfToken    = document.querySelector('meta[name="csrf-token"]').content;
+
+        window.deleteNotif = function(id, el) {
+            fetch(deleteUrl.replace('__ID__', id), {
+                method: 'DELETE',
+                headers: { 'X-CSRF-TOKEN': csrfToken, 'X-Requested-With': 'XMLHttpRequest' }
+            }).then(() => {
+                el.closest('.notif-item').remove();
+                if (!list.querySelector('.notif-item')) empty.classList.remove('hidden');
+                loaded = false;
+                fetchNotifs();
+            });
+        }
+
         function renderNotif(n) {
             const d    = n.data;
             const icon = d.icon || 'notifications';
             const color= iconColor[icon] || 'text-slate-400';
             const url  = "{{ route('notifications.read', '__ID__') }}".replace('__ID__', n.id);
             return `
-            <a href="${url}"
-               class="flex items-start gap-3 px-4 py-3 hover:bg-slate-50 dark:hover:bg-white/5 transition-colors
+            <div class="notif-item flex items-start gap-3 px-4 py-3 hover:bg-slate-50 dark:hover:bg-white/5 transition-colors
                       ${n.read ? 'opacity-60' : ''}">
-                <span class="material-symbols-outlined ${color} mt-0.5" style="font-size:20px">${icon}</span>
-                <div class="flex-1 min-w-0">
+                <span class="material-symbols-outlined ${color} mt-0.5 flex-shrink-0" style="font-size:20px">${icon}</span>
+                <a href="${url}" class="flex-1 min-w-0">
                     <p class="text-xs font-black text-slate-900 dark:text-white leading-snug">${d.title}</p>
                     <p class="text-xs text-slate-500 dark:text-slate-400 mt-0.5 leading-snug line-clamp-2">${d.body}</p>
                     <p class="text-[10px] text-slate-400 mt-1">${n.created_at}</p>
+                </a>
+                <div class="flex items-center gap-1 flex-shrink-0 ml-1">
+                    ${!n.read ? '<span class="w-2 h-2 rounded-full bg-primary"></span>' : ''}
+                    <button onclick="deleteNotif('${n.id}', this)"
+                            class="p-1 rounded-lg text-slate-300 hover:text-red-400 hover:bg-red-50 dark:hover:bg-red-500/10 transition-colors"
+                            title="Supprimer">
+                        <span class="material-symbols-outlined" style="font-size:15px">close</span>
+                    </button>
                 </div>
-                ${!n.read ? '<span class="w-2 h-2 rounded-full bg-primary mt-1.5 flex-shrink-0"></span>' : ''}
-            </a>`;
+            </div>`;
         }
 
         function fetchNotifs() {
@@ -532,8 +560,8 @@
 
                 // Liste
                 const items = data.notifications;
-                // Retirer les anciennes entrées (garder header/empty)
-                list.querySelectorAll('a').forEach(el => el.remove());
+                // Retirer les anciennes entrées
+                list.querySelectorAll('.notif-item').forEach(el => el.remove());
 
                 if (items.length === 0) {
                     empty.classList.remove('hidden');
@@ -567,14 +595,16 @@
         markAll.addEventListener('click', () => {
             fetch("{{ route('notifications.read-all') }}", {
                 method: 'POST',
-                headers: {
-                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
-                    'X-Requested-With': 'XMLHttpRequest',
-                }
-            }).then(() => {
-                loaded = false;
-                fetchNotifs();
-            });
+                headers: { 'X-CSRF-TOKEN': csrfToken, 'X-Requested-With': 'XMLHttpRequest' }
+            }).then(() => { loaded = false; fetchNotifs(); });
+        });
+
+        // Tout effacer
+        document.getElementById('notifDeleteAll').addEventListener('click', () => {
+            fetch(deleteAllUrl, {
+                method: 'DELETE',
+                headers: { 'X-CSRF-TOKEN': csrfToken, 'X-Requested-With': 'XMLHttpRequest' }
+            }).then(() => { loaded = false; fetchNotifs(); });
         });
 
         // Rafraîchir toutes les 30 secondes

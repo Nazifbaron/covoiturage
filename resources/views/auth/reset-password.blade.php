@@ -14,9 +14,9 @@
                     theme: {
                         extend: {
                             colors: {
-                                primary: "#401268",        // couleur principale (navbar, titres)
-                                secondary: "#c33c72",      // hover, éléments actifs
-                                accent: "#fe7644", 
+                                primary: "#10b981",        // couleur principale (navbar, titres)
+                                secondary: "#045373",      // hover, éléments actifs
+
                                 "background-light": "#f6f8f6",
                                 "background-dark": "#102215",
                             },

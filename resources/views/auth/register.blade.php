@@ -14,9 +14,9 @@
                         theme: {
                             extend: {
                                 colors: {
-                                    primary: "#fe7644",        // couleur principale (navbar, titres)
-                                    secondary: "#c33c72",      // hover, éléments actifs
-                                    accent: "#fe7644",
+                                    primary: "#10b981",        // couleur principale (navbar, titres)
+                                    secondary: "#045373",      // hover, éléments actifs
+
                                     "background-light": "#fbfcfb",
                                     "background-dark": "#102215",
                                 },
@@ -42,64 +42,56 @@
                     }
                 </style>
     </head>
-    <body class="bg-background-light dark:bg-background-dark text-slate-900 dark:text-slate-100 min-h-screen flex flex-col transition-colors duration-300">
-            <!-- Main Content Split Layout -->
-        <main class="min-h-screen flex items-center justify-center bg-background-light dark:bg-background-dark px-6 py-12">
-            <div class="w-full max-w-6xl grid lg:grid-cols-2 bg-white dark:bg-slate-900 rounded-3xl shadow-2xl overflow-hidden">
-                <!-- Image -->
-                <div class="relative h-64 sm:h-80 lg:h-auto">
-                    <img src="https://lh3.googleusercontent.com/aida-public/AB6AXuBqczn5CrwTfEEywQ63_5B65FvqTlPYrHokjnhU1DGPvdLDMun-jPzPjA-bhuI3NdJYMkM0_FAPdiZcqMV1jrl5MtWmkIvPDWdgiVz1azlqXXqWpTXCe4Gz1UGxNULlO-s0n_DltVvD7LM1pE6x4zcKx20bb8CjO6v73z2z1llvGMC_Hr0RTPbMJCnCAgmqEPyCf2dmZa1MozcR_DZbf8XsZRSi_GwarqRrdd8ltUyS_NYvZLRVcgsSr_gCI_eDAbzUfvCGBZu04t7Q"
-                        class="absolute inset-0 w-full h-full object-cover" alt="">
-                    <div class="absolute inset-0 bg-gradient-to-br from-primary/40 to-black/70"></div>
-                    <div class="relative z-10 h-full flex flex-col justify-end p-8 lg:p-12 text-white">
-                        <h1 class="text-3xl lg:text-4xl font-black leading-tight mb-4">
-                            Voyager ensemble,
-                            <span class="text-primary">économisez mieux</span>
-                        </h1>
-                        <p class="text-sm lg:text-base text-slate-200 max-w-md">
-                            Rejoignez des milliers de navetteurs qui partagent leurs trajets quotidiens et réduisent leur empreinte carbone.
-                        </p>
-                    </div>
+    <body class="bg-background-light dark:bg-background-dark min-h-screen flex items-center justify-center px-6 py-10">
 
-                </div>
-                <!-- Form -->
-                <div class="flex items-center justify-center p-8 lg:p-14">
-                    <div class="w-full max-w-md bg-white dark:bg-slate-900 rounded-2xl shadow-xl border border-slate-200 dark:border-slate-800 p-8 space-y-6">
-                        <div class="text-center space-y-2">
-                            <h2 class="text-2xl font-black">Créer un compte</h2>
-                            <p class="text-sm text-slate-500">
-                                Rejoignez la communauté de covoiturage.
-                            </p>
-                        </div>
-                        <form method="POST" action="{{ route('register') }}" class="space-y-4">
-                            @csrf
-                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                                <x-input type="text" name="first_name" label="Prénom" placeholder="Toni" :required="true" />
-                                <x-input type="text" name="last_name" label="Nom" placeholder="Dossou" :required="true" />
-                            </div>
-                            <x-input type="email" name="email" label="Email" placeholder="toni@example.com" :required="true" />
+    <div class="w-full max-w-md">
 
-                            <x-input type="tel" name="phone" label="Téléphone" placeholder="+229 01 00 00 00" :required="true" />
 
-                            <x-input type="password" name="password" label="Mot de passe" placeholder="••••••••" :required="true" />
+        <!-- Card -->
+        <div class="bg-white dark:bg-slate-900 rounded-2xl shadow-xl border border-slate-200 dark:border-slate-800 p-8 space-y-6">
 
-                            <x-input type="password" name="password_confirmation" label="Confirmer mot de passe" placeholder="••••••••" :required="true" />
-
-                            <button type="submit"
-                                class="w-full bg-primary hover:bg-primary/90 text-white py-3 rounded-xl font-bold transition flex items-center justify-center gap-2 shadow-lg shadow-primary/20">
-                                Créer un compte
-                                <span class="material-symbols-outlined">arrow_forward</span>
-                            </button>
-                        </form>
-                        <p class="text-center text-sm text-slate-500">
-                            Déjà inscrit ?
-                            <a href="login" class="text-primary font-semibold hover:underline">
-                                Connectez-vous
-                            </a>
-                        </p>
-                    </div>
-                </div>
+            <div class="text-center space-y-2">
+                <h2 class="text-2xl font-black">Créer un compte</h2>
+                <p class="text-sm text-slate-500">
+                    Rejoignez la communauté de covoiturage
+                </p>
             </div>
-        </main>
-    </body>
+
+            <form method="POST" action="{{ route('register') }}" class="space-y-4">
+                @csrf
+
+                <div class="grid grid-cols-2 gap-4">
+                    <x-input type="text" name="first_name" label="Prénom" placeholder="Toni" :required="true" />
+                    <x-input type="text" name="last_name" label="Nom" placeholder="Dossou" :required="true" />
+                </div>
+
+                <x-input type="email" name="email" label="Email" placeholder="toni@example.com" :required="true" />
+
+                <x-input type="tel" name="phone" label="Téléphone" placeholder="+229 01 00 00 00" :required="true" />
+
+                <x-input type="password" name="password" label="Mot de passe" placeholder="••••••••" :required="true" />
+
+                <x-input type="password" name="password_confirmation" label="Confirmer mot de passe" placeholder="••••••••" :required="true" />
+
+                <button
+                    type="submit"
+                    class="w-full bg-primary hover:bg-secondary text-white py-3 rounded-xl font-bold transition">
+                    Créer un compte
+
+                </button>
+
+            </form>
+
+            <p class="text-center text-sm text-slate-500">
+                Déjà inscrit ?
+                <a href="/login" class="text-primary font-semibold hover:underline">
+                    Connectez-vous
+                </a>
+            </p>
+
+        </div>
+
+    </div>
+
+</body>
 </html>

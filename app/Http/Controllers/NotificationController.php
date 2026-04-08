@@ -47,4 +47,20 @@ class NotificationController extends Controller
 
         return response()->json(['ok' => true]);
     }
+
+    /** Supprime une notification */
+    public function destroy(string $id)
+    {
+        Auth::user()->notifications()->findOrFail($id)->delete();
+
+        return response()->json(['ok' => true]);
+    }
+
+    /** Supprime toutes les notifications */
+    public function destroyAll()
+    {
+        Auth::user()->notifications()->delete();
+
+        return response()->json(['ok' => true]);
+    }
 }
