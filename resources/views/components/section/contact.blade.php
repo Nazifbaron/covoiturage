@@ -156,8 +156,17 @@
 
             </div>
 
+            <!-- Success message -->
+            @if(session('success'))
+                <div class="mb-6 flex items-center gap-3 bg-green-50 border border-green-200 text-green-800 rounded-xl px-5 py-4 text-sm">
+                    <span class="material-symbols-outlined text-green-500">check_circle</span>
+                    {{ session('success') }}
+                </div>
+            @endif
+
             <!-- Form -->
-            <form action="#" method="POST" class="grid md:grid-cols-2 gap-6">
+            <form action="{{ route('contact.send') }}" method="POST" class="grid md:grid-cols-2 gap-6">
+            @csrf
 
                 <!-- Nom -->
                 <div>
@@ -168,10 +177,12 @@
                     <input
                         type="text"
                         name="name"
+                        value="{{ old('name') }}"
                         placeholder="Jean Dossou"
-                        class="w-full rounded-xl border border-slate-300 p-3
+                        class="w-full rounded-xl border @error('name') border-red-400 @else border-slate-300 @enderror p-3
                         focus:ring-2 focus:ring-primary/40 focus:border-primary outline-none transition"
                     >
+                    @error('name') <p class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror
                 </div>
 
                 <!-- Email -->
@@ -183,10 +194,12 @@
                     <input
                         type="email"
                         name="email"
+                        value="{{ old('email') }}"
                         placeholder="email@example.com"
-                        class="w-full rounded-xl border border-slate-300 p-3
+                        class="w-full rounded-xl border @error('email') border-red-400 @else border-slate-300 @enderror p-3
                         focus:ring-2 focus:ring-primary/40 focus:border-primary outline-none transition"
                     >
+                    @error('email') <p class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror
                 </div>
 
                 <!-- Sujet -->
@@ -198,10 +211,12 @@
                     <input
                         type="text"
                         name="subject"
+                        value="{{ old('subject') }}"
                         placeholder="Question concernant un trajet"
-                        class="w-full rounded-xl border border-slate-300 p-3
+                        class="w-full rounded-xl border @error('subject') border-red-400 @else border-slate-300 @enderror p-3
                         focus:ring-2 focus:ring-primary/40 focus:border-primary outline-none transition"
                     >
+                    @error('subject') <p class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror
                 </div>
 
                 <!-- Message -->
@@ -214,9 +229,10 @@
                         rows="5"
                         name="message"
                         placeholder="Expliquez votre demande..."
-                        class="w-full rounded-xl border border-slate-300 p-3
+                        class="w-full rounded-xl border @error('message') border-red-400 @else border-slate-300 @enderror p-3
                         focus:ring-2 focus:ring-primary/40 focus:border-primary outline-none transition"
-                    ></textarea>
+                    >{{ old('message') }}</textarea>
+                    @error('message') <p class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror
                 </div>
 
                 <!-- Button -->

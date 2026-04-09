@@ -1,6 +1,6 @@
 <footer class="bg-slate-50 dark:bg-background-dark border-t border-slate-200 dark:border-white/5 py-2 ">
             <div class="max-w-7xl mx-auto px-6">
-                <div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-12 mb-2">
+                <div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-12 mb-2 pt-4">
                     <div class="col-span-2 lg:col-span-2">
                         <div class="flex items-center gap-2 mb-2">
                             <div class="p-1 rounded flex items-center justify-center">

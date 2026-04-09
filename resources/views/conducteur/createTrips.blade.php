@@ -297,7 +297,7 @@
     </div>
     <p class="text-xs text-slate-400 mt-1.5 flex items-center gap-1">
         <span class="material-symbols-outlined text-primary text-sm">auto_awesome</span>
-        Prix calculé automatiquement selon la distance et le nombre de places
+        Prix calculé automatiquement selon la distance (voiture 50 FCFA/km · tricycle 40 FCFA/km)
     </p>
 </div>
             </div>
@@ -522,6 +522,8 @@ document.querySelectorAll('.note-tag').forEach(label => {
         input.value = val;
         display.textContent = val;
         display.nextElementSibling.textContent = 'place' + (val > 1 ? 's' : '');
+        // Recalcul immédiat du prix
+        if (typeof window.updatePriceDisplay === 'function') window.updatePriceDisplay();
     };
 
     // Ajoutez ce script après votre code existant
@@ -567,22 +569,8 @@ document.querySelectorAll('.note-tag').forEach(label => {
         if (!distanceKm || distanceKm <= 0) return 0;
 
         const pricePerKm = pricingConfig[vehicleType]?.pricePerKm || pricingConfig.default.pricePerKm;
-        let basePrice = distanceKm * pricePerKm;
-
-        // Ajustement selon le nombre de sièges
-        if (vehicleType === 'tricycle') {
-            // Tricycle: généralement 3 places max
-            if (seats === 3) basePrice = basePrice * 0.9; // -10% pour 3 places
-            if (seats === 2) basePrice = basePrice * 0.95; // -5% pour 2 places
-            if (seats === 1) basePrice = basePrice * 1; // Prix normal pour 1 place
-        } else {
-            // Voiture: ajustements standards
-            if (seats >= 4) basePrice = basePrice * 0.95;    // -5% pour 4+ sièges
-            if (seats <= 2) basePrice = basePrice * 1.05;     // +5% pour 1-2 sièges
-        }
-
-        const finalPrice = Math.ceil(basePrice / 50) * 50; // Arrondi à 50 FCFA supérieur
-        return finalPrice;
+        // Pas de réduction selon le nombre de places
+        return Math.ceil((distanceKm * pricePerKm) / 50) * 50; // Arrondi à 50 FCFA supérieur
     }
 
     // Fonction pour obtenir le nom du véhicule affiché
@@ -595,7 +583,7 @@ document.querySelectorAll('.note-tag').forEach(label => {
     }
 
     // Fonction pour mettre à jour l'affichage du prix
-    function updatePriceDisplay() {
+    window.updatePriceDisplay = function updatePriceDisplay() {
         const distanceElement = document.getElementById('route-distance');
         const seatsElement = document.getElementById('seats_total');
         const priceInput = document.querySelector('input[name="price_per_seat"]');
@@ -638,25 +626,15 @@ document.querySelectorAll('.note-tag').forEach(label => {
             priceField.appendChild(infoDiv);
         }
 
-        const pricePerKm = pricingConfig[vehicleType]?.pricePerKm || pricingConfig.default.pricePerKm;
+        const pricePerKm     = pricingConfig[vehicleType]?.pricePerKm || pricingConfig.default.pricePerKm;
         const vehicleDisplay = vehicleType === 'tricycle' ? 'Tricycle' : 'Voiture';
-
-        let multiplierText = '';
-        if (vehicleType === 'tricycle') {
-            if (seats === 3) multiplierText = ' (-10% plein)';
-            if (seats === 2) multiplierText = ' (-5% duo)';
-            if (seats === 1) multiplierText = ' (tarif normal)';
-        } else {
-            if (seats >= 4) multiplierText = ' (-5% groupe)';
-            if (seats <= 2) multiplierText = ' (+5% individuel)';
-        }
 
         infoDiv.innerHTML = `
             <div class="flex items-start gap-1.5">
                 <span class="material-symbols-outlined text-primary text-sm flex-shrink-0">calculate</span>
                 <div class="flex-1">
                     <span class="font-medium block mb-0.5">${vehicleDisplay} · ${pricePerKm} FCFA/km</span>
-                    <span>${distance} km × ${pricePerKm} FCFA/km${multiplierText} = ${price} FCFA/place</span>
+                    <span>${distance} km × ${pricePerKm} FCFA/km = ${price} FCFA/place</span>
                 </div>
             </div>
         `;

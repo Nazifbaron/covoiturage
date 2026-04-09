@@ -24,6 +24,7 @@ class Pastrips extends Model
         'requested_time',
         'flexibility',
         'passengers',
+        'vehicle_type',
         'budget_max',
         'need_luggage_space',
         'female_driver_only',

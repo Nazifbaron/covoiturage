@@ -38,30 +38,30 @@
                         <div class="flex-1 grid grid-cols-1 md:grid-cols-4 gap-2">
                             <div class="relative flex items-center group">
                                 <span class="material-symbols-outlined absolute left-4 text-slate-400 group-focus-within:text-primary text-[16px]">location_on</span>
-                                <input class="w-full pl-12 pr-4 py-5 bg-slate-50 dark:bg-slate-800/50 border-none rounded-xl focus:ring-2 focus:ring-primary/50 text-slate-900 dark:text-white font-medium" placeholder="Départ" type="text"/>
+                                <input name="departure" class="w-full pl-12 pr-4 py-5 bg-slate-50 dark:bg-slate-800/50 border-none rounded-xl focus:ring-2 focus:ring-primary/50 text-slate-900 dark:text-white font-medium" placeholder="Départ" type="text"/>
                             </div>
                             <div class="relative flex items-center group">
                                 <span class="material-symbols-outlined absolute left-4 text-slate-400 group-focus-within:text-primary text-[20px]">near_me</span>
-                                <input class="w-full pl-12 pr-4 py-5 bg-slate-50 dark:bg-slate-800/50 border-none rounded-xl focus:ring-2 focus:ring-primary/50 text-slate-900 dark:text-white font-medium" placeholder="Destination" type="text"/>
+                                <input name="arrival" class="w-full pl-12 pr-4 py-5 bg-slate-50 dark:bg-slate-800/50 border-none rounded-xl focus:ring-2 focus:ring-primary/50 text-slate-900 dark:text-white font-medium" placeholder="Destination" type="text"/>
                             </div>
                             <div class="relative flex items-center group">
                                 <span class="material-symbols-outlined absolute left-4 text-slate-400 group-focus-within:text-primary text-[20px]">calendar_month</span>
-                                <input class="w-full pl-12 pr-4 py-5 bg-slate-50 dark:bg-slate-800/50 border-none rounded-xl focus:ring-2 focus:ring-primary/50 text-slate-900 dark:text-white font-medium" placeholder="Aujourd'hui" type="text"/>
+                                <input name="date" class="w-full pl-12 pr-4 py-5 bg-slate-50 dark:bg-slate-800/50 border-none rounded-xl focus:ring-2 focus:ring-primary/50 text-slate-900 dark:text-white font-medium" type="date"/>
                             </div>
                             <div class="relative flex items-center group">
                                 <span class="material-symbols-outlined absolute left-4 text-slate-400 group-focus-within:text-primary text-[20px]">person</span>
-                                <select class="w-full pl-12 pr-4 py-5 bg-slate-50 dark:bg-slate-800/50 border-none rounded-xl focus:ring-2 focus:ring-primary/50 text-slate-900 dark:text-white font-medium appearance-none">
-                                    <option>1 passager</option>
-                                    <option>2 passagers</option>
-                                    <option>3 passagers</option>
-                                    <option>4+ passagers</option>
+                                <select name="passengers" class="w-full pl-12 pr-4 py-5 bg-slate-50 dark:bg-slate-800/50 border-none rounded-xl focus:ring-2 focus:ring-primary/50 text-slate-900 dark:text-white font-medium appearance-none">
+                                    <option value="1">1 passager</option>
+                                    <option value="2">2 passagers</option>
+                                    <option value="3">3 passagers</option>
+                                    <option value="4">4+ passagers</option>
                                 </select>
                             </div>
                         </div>
                         <button class="bg-primary text-background-dark font-bold px-10 py-5 rounded-xl hover:bg-primary/90 transition-all text-lg flex items-center justify-center gap-2">
                             <span class="material-symbols-outlined">search</span> Rechercher
                         </button>
-                    </div>
+                     </div>
                     </form>
 
                 </div>

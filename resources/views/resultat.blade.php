@@ -130,9 +130,25 @@
             {{-- ── Résultats ── --}}
             <div class="lg:col-span-9 space-y-6">
 
-                <p class="text-sm font-bold text-slate-500 mb-2">
-                    {{ $trips->total() }} trajet{{ $trips->total() > 1 ? 's' : '' }} disponible{{ $trips->total() > 1 ? 's' : '' }}
-                </p>
+                <div class="flex items-center justify-between">
+                    <p class="text-sm font-bold text-slate-500">
+                        {{ $trips->total() }} trajet{{ $trips->total() > 1 ? 's' : '' }} disponible{{ $trips->total() > 1 ? 's' : '' }}
+                    </p>
+                    <form method="GET" action="{{ route('search.results') }}" id="sort-form">
+                        <input type="hidden" name="departure"  value="{{ $departure }}">
+                        <input type="hidden" name="arrival"    value="{{ $arrival }}">
+                        <input type="hidden" name="date"       value="{{ $date }}">
+                        <input type="hidden" name="passengers" value="{{ $passengers }}">
+                        @if($priceMax) <input type="hidden" name="price_max"  value="{{ $priceMax }}"> @endif
+                        @if($timeOfDay) <input type="hidden" name="time_of_day" value="{{ $timeOfDay }}"> @endif
+                        <select name="sort" onchange="document.getElementById('sort-form').submit()"
+                                class="text-sm font-semibold border border-slate-200 rounded-xl px-3 py-2 focus:ring-2 focus:ring-primary/30 focus:border-primary outline-none bg-white dark:bg-background-dark dark:text-white">
+                            <option value="date"       {{ $sortBy === 'date'       ? 'selected' : '' }}>Trier : Date</option>
+                            <option value="price_asc"  {{ $sortBy === 'price_asc'  ? 'selected' : '' }}>Prix croissant</option>
+                            <option value="price_desc" {{ $sortBy === 'price_desc' ? 'selected' : '' }}>Prix décroissant</option>
+                        </select>
+                    </form>
+                </div>
 
                 @forelse($trips as $trip)
                 @php

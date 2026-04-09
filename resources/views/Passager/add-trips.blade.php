@@ -199,6 +199,41 @@
             </div>
         </div>
 
+        {{-- ── TYPE DE VÉHICULE ── --}}
+        <div class="bg-white dark:bg-card-dark rounded-2xl border border-slate-100 dark:border-primary/10 shadow-sm p-5 space-y-3">
+            <h2 class="font-black text-sm uppercase tracking-widest text-slate-400 dark:text-slate-500">Type de véhicule</h2>
+            <div class="grid grid-cols-2 gap-3">
+
+                <label class="cursor-pointer">
+                    <input type="radio" name="vehicle_type" id="type_voiture" value="voiture"
+                           class="hidden peer" {{ old('vehicle_type', 'voiture') === 'voiture' ? 'checked' : '' }}>
+                    <div class="peer-checked:border-primary peer-checked:bg-primary/5 peer-checked:text-primary
+                                border-2 border-slate-200 dark:border-white/10 rounded-xl p-4
+                                flex flex-col items-center gap-2 text-slate-500 dark:text-slate-400
+                                hover:border-primary/50 transition-all select-none">
+                        <span class="material-symbols-outlined text-3xl">directions_car</span>
+                        <span class="text-sm font-bold">Voiture</span>
+                        <span class="text-xs font-semibold opacity-70">50 FCFA / km</span>
+                    </div>
+                </label>
+
+                <label class="cursor-pointer">
+                    <input type="radio" name="vehicle_type" id="type_tricycle" value="tricycle"
+                           class="hidden peer" {{ old('vehicle_type') === 'tricycle' ? 'checked' : '' }}>
+                    <div class="peer-checked:border-primary peer-checked:bg-primary/5 peer-checked:text-primary
+                                border-2 border-slate-200 dark:border-white/10 rounded-xl p-4
+                                flex flex-col items-center gap-2 text-slate-500 dark:text-slate-400
+                                hover:border-primary/50 transition-all select-none">
+                        <span class="material-symbols-outlined text-3xl">electric_rickshaw</span>
+                        <span class="text-sm font-bold">Tricycle</span>
+                        <span class="text-xs font-semibold opacity-70">40 FCFA / km</span>
+                    </div>
+                </label>
+
+            </div>
+            @error('vehicle_type') <p class="text-xs text-red-500 font-semibold mt-1">{{ $message }}</p> @enderror
+        </div>
+
         {{-- ── PASSAGERS ── --}}
         <div class="bg-white dark:bg-card-dark rounded-2xl border border-slate-100 dark:border-primary/10 shadow-sm p-5 space-y-4">
             <h2 class="font-black text-sm uppercase tracking-widest text-slate-400 dark:text-slate-500">Passagers</h2>
@@ -217,9 +252,7 @@
                                     {{ $n }} passager{{ $n > 1 ? 's' : '' }}
                                 </option>
                             @endforeach
-
                         </select>
-                        {{-- <span class="absolute right-3 top-1/2 -translate-y-1/2 material-symbols-outlined text-slate-400 text-xl pointer-events-none">expand_more</span> --}}
                     </div>
                 </div>
 
@@ -233,7 +266,7 @@
                         <span class="material-symbols-outlined text-slate-400" style="font-size:18px">payments</span>
                         <span id="price-value">— FCFA</span>
                     </div>
-                    <p class="text-[11px] text-slate-400 mt-1">Calculé selon la distance</p>
+                    <p class="text-[11px] text-slate-400 mt-1">Calculé selon la distance et le type</p>
                     <input type="hidden" name="budget_max" id="budget_max_hidden" value="{{ old('budget_max') }}"/>
                 </div>
             </div>
@@ -422,9 +455,9 @@
 
         // Afficher distance + durée + prix estimé
         routeControl.on('routesfound', e => {
-            const r    = e.routes[0].summary;
-            const km   = r.totalDistance / 1000;
-            const dist = km.toFixed(1) + ' km';
+            const r   = e.routes[0].summary;
+            currentKm = r.totalDistance / 1000;
+            const dist = currentKm.toFixed(1) + ' km';
             const mins = Math.round(r.totalTime / 60);
             const dur  = mins >= 60
                 ? Math.floor(mins / 60) + 'h' + (mins % 60 ? (mins % 60) + 'min' : '')
@@ -436,29 +469,49 @@
             info.classList.remove('opacity-0', 'pointer-events-none');
             info.classList.add('opacity-100');
 
-            // Prix estimé : 100 FCFA/km, arrondi à la centaine
-            const price = Math.max(200, Math.round((km * 100) / 100) * 100);
-            document.getElementById('price-value').textContent =
-                price.toLocaleString('fr-FR') + ' FCFA';
-            document.getElementById('budget_max_hidden').value = price;
-            updateTotalPrice(price);
+            recalcPrice();
         });
     }
 
-    // ── Prix estimé : recalcul si nb passagers change ────────────────────
-    let currentPricePerPerson = 0;
+    // ── Tarif selon le type de véhicule ──────────────────────────────────
+    const RATES = { voiture: 50, tricycle: 40 };
+
+    function getVehicleRate() {
+        const checked = document.querySelector('input[name="vehicle_type"]:checked');
+        return RATES[checked?.value] ?? 50;
+    }
+
+    // ── Prix estimé : recalcul si nb passagers ou type change ────────────
+    let currentKm = 0;
 
     function updateTotalPrice(pricePerPerson) {
-        currentPricePerPerson = pricePerPerson;
-        const nb = parseInt(document.getElementById('passengers_select').value) || 1;
+        const nb    = parseInt(document.getElementById('passengers_select').value) || 1;
         const total = pricePerPerson * nb;
         document.getElementById('price-value').textContent =
             pricePerPerson.toLocaleString('fr-FR') + ' FCFA / pers.'
             + (nb > 1 ? ' · Total ' + total.toLocaleString('fr-FR') + ' FCFA' : '');
     }
 
-    document.getElementById('passengers_select').addEventListener('change', () => {
-        if (currentPricePerPerson > 0) updateTotalPrice(currentPricePerPerson);
+    function recalcPrice() {
+        if (currentKm <= 0) return;
+        const rate  = getVehicleRate();
+        const price = Math.max(200, Math.round((currentKm * rate) / 100) * 100);
+        document.getElementById('budget_max_hidden').value = price;
+        updateTotalPrice(price);
+    }
+
+    document.getElementById('passengers_select').addEventListener('change', recalcPrice);
+
+    // Écouter le click sur les labels (les cards visuelles) — plus fiable que
+    // l'événement 'change' sur les inputs hidden qui peut être silencieux
+    document.querySelectorAll('input[name="vehicle_type"]').forEach(radio => {
+        const label = radio.closest('label');
+        if (label) {
+            label.addEventListener('click', () => {
+                // Le navigateur coche le radio après le click, on attend un tick
+                setTimeout(recalcPrice, 0);
+            });
+        }
     });
 
     // ── Validation avant submit ───────────────────────────────────────────

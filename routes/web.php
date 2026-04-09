@@ -11,6 +11,7 @@ use App\Http\Middleware\Checkblocked;
 use App\Http\Controllers\MessagesController;
 use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\ContactController;
 
 
 // Route::view('/','welcome');
@@ -21,6 +22,7 @@ use App\Http\Controllers\DashboardController;
 
 Route::view('/','welcome');
 Route::view('/contact','contact');
+Route::post('/contact', [ContactController::class, 'send'])->name('contact.send');
 Route::view('/about','about');
 Route::view('/detail','details');
 Route::view('/marche','marche');
