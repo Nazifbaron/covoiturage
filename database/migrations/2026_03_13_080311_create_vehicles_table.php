@@ -25,6 +25,7 @@ return new class extends Migration
             $table->string('brand', 80);        // Marque
             $table->string('model', 80);        // Modèle
             $table->string('color', 50);        // Couleur
+            $table->string('photo')->nullable();
             $table->string('plate', 20);        // Immatriculation
             $table->enum('status', ['pending', 'approved', 'rejected'])->default('pending');
             $table->text('rejection_reason')->nullable();

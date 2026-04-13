@@ -41,10 +41,19 @@
             </div>
         </div>
         {{-- Compteur résultats --}}
-        <div class="mt-3 flex items-center gap-2">
-            <div id="search-spinner" class="hidden w-4 h-4 border-2 border-primary border-t-transparent rounded-full animate-spin"></div>
-            <p id="results-count" class="text-xs font-semibold text-slate-400"></p>
-        </div>
+        <div class="mt-3 flex items-center justify-between gap-2">
+    <div class="flex items-center gap-2">
+        <div id="search-spinner" class="hidden w-4 h-4 border-2 border-primary border-t-transparent rounded-full animate-spin"></div>
+        <p id="results-count" class="text-xs font-semibold text-slate-400"></p>
+    </div>
+    <a href="{{ route('passenger.showtrips') }}"
+       class="flex items-center gap-1.5 px-3 py-2 rounded-xl
+              bg-primary hover:bg-primary/90 text-background-dark
+              font-black text-xs transition-all shadow-md shadow-primary/20 whitespace-nowrap">
+        <span class="material-symbols-outlined" style="font-size:14px">add_circle</span>
+        Demander un trajet
+    </a>
+</div>
     </div>
 
     {{-- ── Liste des trajets ── --}}

@@ -11,7 +11,7 @@
         {{-- Nav desktop --}}
         <nav class="hidden lg:flex items-center gap-8 xl:gap-12 absolute left-1/2 -translate-x-1/2">
             <a href="/"       class="text-sm font-semibold transition-colors {{ request()->is('/')       ? 'text-primary border-b-2 border-primary pb-1' : 'hover:text-primary' }}">Accueil</a>
-            <a href="/search" class="text-sm font-semibold transition-colors {{ request()->is('search') ? 'text-primary border-b-2 border-primary pb-1' : 'hover:text-primary' }}">Trouver un trajet</a>
+            <a href="/result" class="text-sm font-semibold transition-colors {{ request()->is('search.results') ? 'text-primary border-b-2 border-primary pb-1' : 'hover:text-primary' }}">Trouver un trajet</a>
             <a href="/marche" class="text-sm font-semibold transition-colors {{ request()->is('marche') ? 'text-primary border-b-2 border-primary pb-1' : 'hover:text-primary' }}">Comment ça marche</a>
             <a href="/about"  class="text-sm font-semibold transition-colors {{ request()->is('about')  ? 'text-primary border-b-2 border-primary pb-1' : 'hover:text-primary' }}">À propos</a>
             <a href="/contact"class="text-sm font-semibold transition-colors {{ request()->is('contact')? 'text-primary border-b-2 border-primary pb-1' : 'hover:text-primary' }}">Contact</a>

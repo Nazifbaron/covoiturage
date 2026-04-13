@@ -71,6 +71,22 @@ class ProfileController extends Controller
         return Redirect::route('profile.edit')->with('success', 'Photo de profil mise à jour.');
     }
 
+    public function updatePhoto(Request $request, Vehicle $vehicle)
+{
+    $request->validate(['photo' => 'required|image|mimes:jpeg,jpg,png,webp|max:3072']);
+
+    // Supprimer l'ancienne photo
+    if ($vehicle->photo) {
+        Storage::disk('public')->delete($vehicle->photo);
+    }
+
+    $vehicle->update([
+        'photo' => $request->file('photo')->store('vehicles', 'public'),
+    ]);
+
+    return back()->with('success', 'Photo du véhicule mise à jour.');
+}
+
     /**
      * Delete the user's account.
      */

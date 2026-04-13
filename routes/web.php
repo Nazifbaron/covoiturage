@@ -54,6 +54,7 @@ Route::middleware(['auth', Checkblocked::class])->group(function () {
         Route::patch('/profile', 'update')->name('profile.update');
         Route::post('/profile/avatar', 'updateAvatar')->name('profile.avatar.update');
         Route::delete('/profile', 'destroy')->name('profile.destroy');
+        Route::post('/vehicles/{vehicle}/photo','updatePhoto')->name('vehicle.photo.update');
     });
 
        Route::controller(AuthenticatedSessionController::class)->group(function () {

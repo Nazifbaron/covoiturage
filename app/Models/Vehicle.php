@@ -13,6 +13,7 @@ class Vehicle extends Model
         'model',
         'color',
         'plate',
+        'photo',
         'status',
         'rejection_reason',
         'approved_at',
