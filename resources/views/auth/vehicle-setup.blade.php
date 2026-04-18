@@ -126,7 +126,6 @@
                                     </p>
                                 </div>
                             </div>
-                            {{-- ✅ Champ caché avec name= pour la soumission --}}
                             <input type="hidden" name="type" id="vehicleType" value="{{ old('type') }}">
                             <p class="text-xs text-red-500 mt-1.5 text-center {{ $errors->has('type') ? '' : 'hidden' }}" id="typeError">
                                 Veuillez sélectionner un type de véhicule
@@ -144,7 +143,6 @@
                                        class="text-sm font-bold text-slate-700 dark:text-slate-300 block mb-1.5">
                                     {{ $f['label'] }} *
                                 </label>
-                                {{-- ✅ name= ajouté --}}
                                 <input type="text"
                                        id="{{ $f['id'] }}"
                                        name="{{ $f['id'] }}"
@@ -170,7 +168,6 @@
                                        class="text-sm font-bold text-slate-700 dark:text-slate-300 block mb-1.5">
                                     {{ $f['label'] }} *
                                 </label>
-                                {{-- ✅ name= ajouté --}}
                                 <input type="text"
                                        id="{{ $f['id'] }}"
                                        name="{{ $f['id'] }}"
@@ -185,6 +182,38 @@
                             @endforeach
                         </div>
 
+                        {{-- Photo du véhicule --}}
+                        <div>
+                            <label class="text-sm font-bold text-slate-700 dark:text-slate-300 block mb-2">
+                                Photo du véhicule <span class="text-slate-400 font-normal">(optionnel)</span>
+                            </label>
+                            <div id="photoCard"
+                                 class="border-2 border-dashed border-slate-200 dark:border-white/10 rounded-xl p-4
+                                        cursor-pointer transition-all hover:border-[#16a34a] hover:bg-green-50
+                                        dark:hover:bg-green-900/20 active:scale-[0.99]"
+                                 onclick="document.getElementById('vehicle_photo').click()">
+                                <div class="flex items-center justify-between gap-3">
+                                    <div class="flex items-center gap-3">
+                                        <div class="w-10 h-10 rounded-xl bg-slate-100 dark:bg-white/10
+                                                    flex items-center justify-center flex-shrink-0">
+                                            <span class="material-symbols-outlined text-xl text-slate-400" id="photoIcon">
+                                                photo_camera
+                                            </span>
+                                        </div>
+                                        <div>
+                                            <p class="font-bold text-slate-900 dark:text-white text-sm">Photo du véhicule</p>
+                                            <p class="text-[11px] text-slate-400 mt-0.5">JPG, PNG · max 5 Mo</p>
+                                        </div>
+                                    </div>
+                                    <span class="text-[11px] font-semibold text-slate-400 flex items-center gap-1" id="photo-status">
+                                        <span class="material-symbols-outlined text-sm">upload</span>Ajouter
+                                    </span>
+                                </div>
+                                <div id="photo-preview" class="mt-2.5 hidden"></div>
+                            </div>
+                            <input type="file" id="vehicle_photo" name="vehicle_photo"
+                                   accept=".jpg,.jpeg,.png" class="hidden">
+                        </div>
                     </div>
                 </div>
 
@@ -200,7 +229,7 @@
             </div>
 
             {{-- ════════════════════════════════════════
-                 Étape 2 : Documents
+                 Étape 2 : Documents (avec dates d'expiration)
             ════════════════════════════════════════ --}}
             <div id="step2" class="step-content hidden">
 
@@ -221,48 +250,71 @@
                     <div class="space-y-3 sm:space-y-4">
                         @php
                             $documents = [
-                                'insurance'         => ['label'=>'Assurance véhicule', 'icon'=>'verified',    'color'=>'text-blue-500'],
-                                'registration'      => ['label'=>'Carte grise',         'icon'=>'description', 'color'=>'text-green-500'],
-                                'technical_control' => ['label'=>'Contrôle technique',  'icon'=>'engineering', 'color'=>'text-orange-500'],
-                                'driver_license'    => ['label'=>'Permis de conduire',  'icon'=>'badge',       'color'=>'text-purple-500'],
+                                'insurance'         => ['label'=>'Assurance véhicule', 'icon'=>'verified',    'color'=>'text-blue-500', 'has_expiry' => true],
+                                'registration'      => ['label'=>'Carte grise',         'icon'=>'description', 'color'=>'text-green-500', 'has_expiry' => true],
+                                'technical_control' => ['label'=>'Contrôle technique',  'icon'=>'engineering', 'color'=>'text-orange-500', 'has_expiry' => false],
+                                'driver_license'    => ['label'=>'Permis de conduire',  'icon'=>'badge',       'color'=>'text-purple-500', 'has_expiry' => false],
                             ];
                         @endphp
 
                         @foreach($documents as $key => $doc)
-                        <div class="document-card border-2 border-dashed rounded-xl p-3.5 sm:p-4 cursor-pointer transition-all
+                        <div class="border-2 border-dashed rounded-xl overflow-hidden
                                     {{ $errors->has($key) ? 'border-red-500 bg-red-50 dark:bg-red-900/20' : 'border-slate-200 dark:border-white/10' }}
-                                    hover:border-[#16a34a] hover:bg-green-50 dark:hover:bg-green-900/20 active:scale-[0.99]"
-                             data-doc="{{ $key }}">
+                                    transition-all hover:border-[#16a34a]">
 
-                            <div class="flex items-center justify-between gap-3">
-                                <div class="flex items-center gap-3 min-w-0">
-                                    <div class="w-10 h-10 rounded-xl bg-slate-100 dark:bg-white/10
-                                                flex items-center justify-center flex-shrink-0">
-                                        <span class="material-symbols-outlined text-xl {{ $doc['color'] }}">
-                                            {{ $doc['icon'] }}
-                                        </span>
+                            {{-- Upload card --}}
+                            <div class="document-card p-3.5 sm:p-4 cursor-pointer transition-all hover:bg-green-50 dark:hover:bg-green-900/20 active:scale-[0.99]"
+                                 data-doc="{{ $key }}">
+                                <div class="flex items-center justify-between gap-3">
+                                    <div class="flex items-center gap-3 min-w-0">
+                                        <div class="w-10 h-10 rounded-xl bg-slate-100 dark:bg-white/10
+                                                    flex items-center justify-center flex-shrink-0">
+                                            <span class="material-symbols-outlined text-xl {{ $doc['color'] }}">
+                                                {{ $doc['icon'] }}
+                                            </span>
+                                        </div>
+                                        <div class="min-w-0">
+                                            <h3 class="font-bold text-slate-900 dark:text-white text-sm truncate">
+                                                {{ $doc['label'] }}
+                                            </h3>
+                                            <p class="text-[11px] text-slate-400 mt-0.5">PDF, JPG, PNG · max 5 Mo</p>
+                                        </div>
                                     </div>
-                                    <div class="min-w-0">
-                                        <h3 class="font-bold text-slate-900 dark:text-white text-sm truncate">
-                                            {{ $doc['label'] }}
-                                        </h3>
-                                        <p class="text-[11px] text-slate-400 mt-0.5">PDF, JPG, PNG · max 5 Mo</p>
-                                    </div>
+                                    <span class="text-[11px] font-semibold text-slate-400 flex-shrink-0 flex items-center gap-1"
+                                          id="{{ $key }}-status">
+                                        <span class="material-symbols-outlined text-sm">upload</span>
+                                        Ajouter
+                                    </span>
                                 </div>
-                                <span class="text-[11px] font-semibold text-slate-400 flex-shrink-0 flex items-center gap-1"
-                                      id="{{ $key }}-status">
-                                    <span class="material-symbols-outlined text-sm">upload</span>
-                                    Ajouter
-                                </span>
+                                <div id="{{ $key }}-preview" class="mt-2.5 hidden"></div>
                             </div>
 
-                            {{-- ✅ name= ajouté directement sur l'input file --}}
                             <input type="file"
                                    id="{{ $key }}"
                                    name="{{ $key }}"
                                    accept=".pdf,.jpg,.jpeg,.png"
                                    class="hidden">
-                            <div id="{{ $key }}-preview" class="mt-2.5 hidden"></div>
+
+                            {{-- Date d'expiration uniquement pour insurance et registration --}}
+                            @if($doc['has_expiry'])
+                            <div class="p-3.5 sm:p-4 bg-slate-50 dark:bg-white/5 border-t border-slate-200 dark:border-white/10">
+                                <label for="{{ $key }}_expires_at" class="text-xs font-semibold text-slate-600 dark:text-slate-400 block mb-1">
+                                    Date d'expiration *
+                                </label>
+                                <input type="date"
+                                       id="{{ $key }}_expires_at"
+                                       name="{{ $key }}_expires_at"
+                                       value="{{ old($key . '_expires_at') }}"
+                                       min="{{ date('Y-m-d') }}"
+                                       class="w-full px-3 py-2 rounded-lg border border-slate-200 dark:border-white/10
+                                              bg-white dark:bg-white/5 text-slate-900 dark:text-white
+                                              text-sm focus:outline-none focus:ring-2 focus:ring-[#16a34a]/30
+                                              focus:border-[#16a34a] transition-all">
+                                @error($key . '_expires_at')
+                                    <p class="text-xs text-red-500 mt-1">{{ $message }}</p>
+                                @enderror
+                            </div>
+                            @endif
                         </div>
                         @endforeach
                     </div>
@@ -321,7 +373,6 @@
                         ← Modifier
                     </button>
 
-                    {{-- ✅ type="submit" — soumet le vrai formulaire HTML --}}
                     <button type="submit" id="submitBtn"
                             class="w-full sm:w-auto px-6 py-3.5 sm:py-3
                                    bg-gradient-to-r from-[#16a34a] to-[#0891b2]
@@ -336,12 +387,11 @@
 
         </div>
     </form>
-    {{-- ── Fin du formulaire ── --}}
 
 </div>
 
 <script>
-    // ── État global des fichiers (pour la prévisualisation uniquement) ───
+    // ── État global des fichiers ───
     let selectedFiles = {
         insurance: null, registration: null,
         technical_control: null, driver_license: null
@@ -393,9 +443,9 @@
         statusEl.innerHTML = `<span class="material-symbols-outlined text-sm">check_circle</span> Ajouté`;
         statusEl.classList.replace('text-slate-400', 'text-green-500');
 
-        const card = document.querySelector(`[data-doc="${docType}"]`);
-        card.classList.add('border-green-500', 'bg-green-50', 'dark:bg-green-900/20', '!border-solid');
-        card.classList.remove('border-slate-200', 'dark:border-white/10', 'border-red-500', 'bg-red-50');
+        const container = document.querySelector(`[data-doc="${docType}"]`).parentElement;
+        container.classList.add('border-green-500', 'bg-green-50', 'dark:bg-green-900/20', '!border-solid');
+        container.classList.remove('border-slate-200', 'dark:border-white/10', 'border-red-500', 'bg-red-50');
 
         const previewDiv = document.getElementById(`${docType}-preview`);
         previewDiv.classList.remove('hidden');
@@ -438,9 +488,9 @@
         statusEl.innerHTML = `<span class="material-symbols-outlined text-sm">upload</span> Ajouter`;
         statusEl.classList.replace('text-green-500', 'text-slate-400');
 
-        const card = document.querySelector(`[data-doc="${docType}"]`);
-        card.classList.remove('border-green-500', 'bg-green-50', 'dark:bg-green-900/20', '!border-solid');
-        card.classList.add('border-slate-200', 'dark:border-white/10');
+        const container = document.querySelector(`[data-doc="${docType}"]`).parentElement;
+        container.classList.remove('border-green-500', 'bg-green-50', 'dark:bg-green-900/20', '!border-solid');
+        container.classList.add('border-slate-200', 'dark:border-white/10');
 
         const previewDiv = document.getElementById(`${docType}-preview`);
         previewDiv.classList.add('hidden');
@@ -469,16 +519,28 @@
     function validateStep2() {
         const required = ['insurance', 'registration', 'technical_control', 'driver_license'];
         let valid = true;
+
         required.forEach(doc => {
-            const card = document.querySelector(`[data-doc="${doc}"]`);
+            const container = document.querySelector(`[data-doc="${doc}"]`).parentElement;
             if (!selectedFiles[doc]) {
-                card.classList.add('border-red-500', 'bg-red-50', 'dark:bg-red-900/20');
+                container.classList.add('border-red-500', 'bg-red-50', 'dark:bg-red-900/20');
+                showToast(`Veuillez charger le fichier pour ${doc}`, 'error');
                 valid = false;
             } else {
-                card.classList.remove('border-red-500', 'bg-red-50', 'dark:bg-red-900/20');
+                container.classList.remove('border-red-500', 'bg-red-50', 'dark:bg-red-900/20');
             }
         });
-        if (!valid) showToast('Veuillez fournir tous les documents requis', 'error');
+
+        // Vérifier les dates d'expiration pour insurance et registration
+        const expiryDocs = ['insurance', 'registration'];
+        expiryDocs.forEach(doc => {
+            const expiryInput = document.getElementById(`${doc}_expires_at`);
+            if (expiryInput && !expiryInput.value) {
+                showToast(`Veuillez entrer la date d'expiration pour ${doc === 'insurance' ? 'l\'assurance' : 'la carte grise'}`, 'error');
+                valid = false;
+            }
+        });
+
         return valid;
     }
 
@@ -529,20 +591,38 @@
 
         const typeLabels = { tricycle: 'Tricycle', voiture: 'Voiture' };
         const type       = document.getElementById('vehicleType').value;
-        const docNames   = {
-            insurance: 'Assurance', registration: 'Carte grise',
-            technical_control: 'Contrôle technique', driver_license: 'Permis de conduire'
+
+        const docNames = {
+            insurance: 'Assurance',
+            registration: 'Carte grise',
+            technical_control: 'Contrôle technique',
+            driver_license: 'Permis de conduire'
         };
 
-        const esc = s => s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+        const esc = s => s ? String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;') : '';
 
-        const docsHTML = Object.entries(docNames).map(([k, label]) => `
+        // Récupérer les dates d'expiration
+        const insuranceExpiry = document.getElementById('insurance_expires_at')?.value || '';
+        const registrationExpiry = document.getElementById('registration_expires_at')?.value || '';
+
+        const formatExpiry = (date) => date ? new Date(date).toLocaleDateString('fr-FR') : '';
+
+        const docsHTML = Object.entries(docNames).map(([key, label]) => {
+            let extraInfo = '';
+            if (key === 'insurance' && insuranceExpiry) {
+                extraInfo = `<span class="text-xs text-slate-400 ml-2">(exp. ${formatExpiry(insuranceExpiry)})</span>`;
+            } else if (key === 'registration' && registrationExpiry) {
+                extraInfo = `<span class="text-xs text-slate-400 ml-2">(exp. ${formatExpiry(registrationExpiry)})</span>`;
+            }
+
+            return `
             <div class="flex justify-between items-center py-1.5 border-b border-slate-100 dark:border-white/5 last:border-0">
-                <span class="text-slate-500 text-sm">${esc(label)}</span>
+                <span class="text-slate-500 text-sm">${esc(label)}${extraInfo}</span>
                 <span class="text-green-500 text-sm font-semibold flex items-center gap-1">
                     <span class="material-symbols-outlined text-base">check_circle</span> Fourni
                 </span>
-            </div>`).join('');
+            </div>`;
+        }).join('');
 
         document.getElementById('confirmationContent').innerHTML = `
             <div class="bg-slate-50 dark:bg-white/5 rounded-xl p-4">
@@ -613,7 +693,8 @@
     // ── Si retour avec erreurs Laravel → afficher la bonne étape ────────
     @if ($errors->hasAny(['type','brand','model','color','plate']))
         updateStepIndicators(1);
-    @elseif ($errors->hasAny(['insurance','registration','technical_control','driver_license']))
+    @elseif ($errors->hasAny(['insurance','registration','technical_control','driver_license',
+                             'insurance_expires_at','registration_expires_at']))
         showStep('step2', 'step1', 'step3');
         updateStepIndicators(2);
     @endif

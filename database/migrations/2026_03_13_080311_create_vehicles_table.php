@@ -25,7 +25,9 @@ return new class extends Migration
             $table->string('brand', 80);        // Marque
             $table->string('model', 80);        // Modèle
             $table->string('color', 50);        // Couleur
-            $table->string('photo')->nullable();
+            $table->string('vehicle_photo_path')->nullable();
+            $table->string('vehicle_photo_name')->nullable();
+
             $table->string('plate', 20);        // Immatriculation
             $table->enum('status', ['pending', 'approved', 'rejected'])->default('pending');
             $table->text('rejection_reason')->nullable();
@@ -40,6 +42,8 @@ return new class extends Migration
             $table->string('technical_control_name')->nullable();
             $table->string('driver_license_path')->nullable();
             $table->string('driver_license_name')->nullable();
+            $table->date('insurance_expires_at')->nullable();
+            $table->date('registration_expires_at')->nullable();
 
             // Un conducteur = un seul véhicule
             $table->unique('driver_id');

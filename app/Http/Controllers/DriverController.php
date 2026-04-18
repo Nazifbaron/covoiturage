@@ -455,6 +455,9 @@ class DriverController extends Controller
             'registration'      => ['required', 'file', 'mimes:pdf,jpg,jpeg,png', 'max:5120'],
             'technical_control' => ['required', 'file', 'mimes:pdf,jpg,jpeg,png', 'max:5120'],
             'driver_license'    => ['required', 'file', 'mimes:pdf,jpg,jpeg,png', 'max:5120'],
+            'vehicle_photo'          => ['nullable', 'file', 'mimes:jpg,jpeg,png', 'max:5120'],
+            'insurance_expires_at'   => ['required', 'date', 'after:today'],
+            'registration_expires_at'=> ['required', 'date', 'after:today'],
         ], [
             'type.required'              => 'Veuillez sélectionner un type de véhicule.',
             'type.in'                    => 'Type de véhicule invalide.',
@@ -476,11 +479,19 @@ class DriverController extends Controller
             'driver_license.required'    => 'Le permis de conduire est requis.',
             'driver_license.mimes'       => 'Le permis de conduire doit être un fichier PDF, JPG ou PNG.',
             'driver_license.max'         => 'Le permis de conduire ne doit pas dépasser 5 Mo.',
+            'vehicle_photo.mimes'              => 'La photo doit être un fichier JPG ou PNG.',
+            'vehicle_photo.max'                => 'La photo ne doit pas dépasser 5 Mo.',
+            'insurance_expires_at.required'    => "La date d'expiration de l'assurance est requise.",
+            'insurance_expires_at.date'        => "Date d'expiration invalide.",
+            'insurance_expires_at.after'       => "La date d'expiration doit être dans le futur.",
+            'registration_expires_at.required' => "La date d'expiration de la carte grise est requise.",
+            'registration_expires_at.date'     => "Date d'expiration invalide.",
+            'registration_expires_at.after'    => "La date d'expiration doit être dans le futur.",
         ]);
 
         // ── 3. Stockage des fichiers ──────────────────────────────────────
         $driverFolder = 'vehicles/driver_' . Auth::id();
-        $docs  = ['insurance', 'registration', 'technical_control', 'driver_license'];
+        $docs  = ['insurance', 'registration', 'technical_control', 'driver_license', 'vehicle_photo'];
         $paths = [];
 
         foreach ($docs as $doc) {
@@ -496,6 +507,8 @@ class DriverController extends Controller
             'brand'                  => $validated['brand'],
             'model'                  => $validated['model'],
             'color'                  => $validated['color'],
+            'vehicle_photo_path'   => $paths['vehicle_photo']['path'],
+            'vehicle_photo_name'   => $paths['vehicle_photo']['name'],
             'plate'                  => strtoupper($validated['plate']),
             'status'                 => 'pending',
             'insurance_path'         => $paths['insurance']['path'],
@@ -506,6 +519,8 @@ class DriverController extends Controller
             'technical_control_name' => $paths['technical_control']['name'],
             'driver_license_path'    => $paths['driver_license']['path'],
             'driver_license_name'    => $paths['driver_license']['name'],
+            'insurance_expires_at'   => $validated['insurance_expires_at'],
+            'registration_expires_at'=> $validated['registration_expires_at'],
         ]);
 
         // ── 5. Notifier l'admin ───────────────────────────────────────────

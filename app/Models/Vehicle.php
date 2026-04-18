@@ -13,7 +13,8 @@ class Vehicle extends Model
         'model',
         'color',
         'plate',
-        'photo',
+        'vehicle_photo_path',
+        'vehicle_photo_name',
         'status',
         'rejection_reason',
         'approved_at',
@@ -24,11 +25,16 @@ class Vehicle extends Model
         'technical_control_path',
         'technical_control_name',
         'driver_license_path',
-        'driver_license_name'
+        'driver_license_name',
+        'insurance_expires_at',
+        'registration_expires_at',
     ];
 
     protected $casts = [
         'driver_id' => 'integer',
+        'insurance_expires_at' => 'date',
+        'registration_expires_at' => 'date',
+
     ];
 
     // Labels lisibles

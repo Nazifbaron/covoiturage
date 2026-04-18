@@ -58,6 +58,8 @@ class PassengerController extends Controller
     {
         $validated = $request->validate([
             'driver_trip_id'    => ['nullable', 'integer', 'exists:driver_trips,id'],
+
+                
             'departure_city'    => ['required', 'string', 'max:100'],
             'arrival_city'      => ['required', 'string', 'max:100'],
             'departure_address' => ['nullable', 'string', 'max:255'],
@@ -244,85 +246,91 @@ class PassengerController extends Controller
 }
 
     // ── Endpoint JSON recherche temps réel ───────────────────────────────
-     public function searchTrips(Request $request)
-    {
-        try {
-            $dep = trim($request->get('departure', ''));
-            $arr = trim($request->get('arrival',   ''));
+    public function searchTrips(Request $request)
+{
+    try {
+        $dep = trim($request->get('departure', ''));
+        $arr = trim($request->get('arrival',   ''));
 
-            // Eager load driver + son véhicule
-            $query = DriverTrips::with(['driver.vehicle'])
-                ->where('status', 'scheduled')
-                ->where('departure_date', '>=', today())
-                ->where('seats_available', '>', 0)
-                ->orderBy('departure_date', 'asc')
-                ->orderBy('departure_time', 'asc');
+        $query = DriverTrips::with(['driver', 'driver.vehicle'])
+            ->where('status', 'scheduled')
+            ->where('departure_date', '>=', today())
+            ->where('seats_available', '>', 0)
+            ->orderBy('departure_date', 'asc')
+            ->orderBy('departure_time', 'asc');
 
-            if ($dep !== '') {
-                $query->where('departure_city', 'LIKE', "%{$dep}%");
-            }
-            if ($arr !== '') {
-                $query->where('arrival_city', 'LIKE', "%{$arr}%");
-            }
-
-            $total     = $query->count();
-            $paginated = $query->paginate(8);
-
-            $trips = $paginated->map(function ($trip) {
-                // Véhicule via driver (relation correcte)
-                $v = optional($trip->driver)->vehicle;
-
-                // departure_time peut être string "HH:MM:SS" ou objet Carbon
-                $timeStr = is_string($trip->departure_time)
-                    ? substr($trip->departure_time, 0, 5)
-                    : $trip->departure_time;
-
-                return [
-                    'id'              => $trip->id,
-                    'departure_city'  => $trip->departure_city,
-                    'arrival_city'    => $trip->arrival_city,
-                    'departure_date'  => $trip->departure_date->format('Y-m-d'),
-                    'departure_time'  => $timeStr,
-                    'seats_available' => (int) $trip->seats_available,
-                    'seats_total'     => (int) $trip->seats_total,
-                    'price_per_seat'  => (int) $trip->price_per_seat,
-                    'luggage_allowed' => (bool) $trip->luggage_allowed,
-                    'pets_allowed'    => (bool) $trip->pets_allowed,
-                    'silent_ride'     => (bool) $trip->silent_ride,
-                    'female_only'     => (bool) $trip->female_only,
-                    'driver_name'     => $trip->driver
-                        ? trim(($trip->driver->first_name ?? '') . ' ' . ($trip->driver->last_name ?? ''))
-                        : 'Conducteur',
-                    'vehicle'         => $v ? [
-                        'brand'      => $v->brand,
-                        'model'      => $v->model,
-                        'color'      => $v->color,
-                        'plate'      => $v->plate,
-                        'type_icon'  => $v->type_icon,
-                    ] : null,
-                ];
-            });
-
-            return response()->json([
-                'success'    => true,
-                'trips'      => $trips->values(),
-                'total'      => $total,
-                'pagination' => [
-                    'current_page' => $paginated->currentPage(),
-                    'last_page'    => $paginated->lastPage(),
-                ],
-            ]);
-
-        } catch (\Exception $e) {
-            return response()->json([
-                'success' => false,
-                'error'   => $e->getMessage(),
-                'trips'   => [],
-                'total'   => 0,
-                'pagination' => ['current_page' => 1, 'last_page' => 1],
-            ], 500);
+        if ($dep !== '') {
+            $query->where('departure_city', 'LIKE', "%{$dep}%");
         }
+        if ($arr !== '') {
+            $query->where('arrival_city', 'LIKE', "%{$arr}%");
+        }
+
+        $total     = $query->count();
+        $paginated = $query->paginate(8);
+
+        $trips = $paginated->map(function ($trip) {
+            $v = optional($trip->driver)->vehicle;
+
+            $timeStr = is_string($trip->departure_time)
+                ? substr($trip->departure_time, 0, 5)
+                : $trip->departure_time;
+
+            return [
+                'id'              => $trip->id,
+                'departure_city'  => $trip->departure_city,
+                'arrival_city'    => $trip->arrival_city,
+                'departure_date'  => $trip->departure_date->format('Y-m-d'),
+                'departure_time'  => $timeStr,
+                'seats_available' => (int) $trip->seats_available,
+                'seats_total'     => (int) $trip->seats_total,
+                'price_per_seat'  => (int) $trip->price_per_seat,
+                'luggage_allowed' => (bool) $trip->luggage_allowed,
+                'pets_allowed'    => (bool) $trip->pets_allowed,
+                'silent_ride'     => (bool) $trip->silent_ride,
+                'female_only'     => (bool) $trip->female_only,
+
+                'driver_name'   => $trip->driver
+                    ? trim(($trip->driver->first_name ?? '') . ' ' . ($trip->driver->last_name ?? ''))
+                    : 'Conducteur',
+
+                // On utilise l'accessor getAvatarUrlAttribute() du modèle User
+                'driver_avatar' => $trip->driver?->avatar_url ?: null,
+
+                'vehicle' => $v ? [
+                    'id'                      => $v->id,
+                    'brand'                   => $v->brand,
+                    'model'                   => $v->model,
+                    'color'                   => $v->color,
+                    'plate'                   => $v->plate,
+                    'type_icon'               => $v->type_icon,
+                    'vehicle_photo_url'       => $v->vehicle_photo ? asset('storage/' . $v->vehicle_photo) : null,
+                    'insurance_expires_at'    => $v->insurance_expires_at?->format('Y-m-d'),
+                    'registration_expires_at' => $v->registration_expires_at?->format('Y-m-d'),
+                ] : null,
+            ];
+        });
+
+        return response()->json([
+            'success'    => true,
+            'trips'      => $trips->values(),
+            'total'      => $total,
+            'pagination' => [
+                'current_page' => $paginated->currentPage(),
+                'last_page'    => $paginated->lastPage(),
+            ],
+        ]);
+
+    } catch (\Exception $e) {
+        return response()->json([
+            'success'    => false,
+            'error'      => $e->getMessage(),
+            'trips'      => [],
+            'total'      => 0,
+            'pagination' => ['current_page' => 1, 'last_page' => 1],
+        ], 500);
     }
+}
 
     public function cancelRequest(Pastrips $pastrip)
     {

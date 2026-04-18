@@ -71,17 +71,36 @@ class ProfileController extends Controller
         return Redirect::route('profile.edit')->with('success', 'Photo de profil mise à jour.');
     }
 
-    public function updatePhoto(Request $request, Vehicle $vehicle)
+public function updatePhoto(Request $request, Vehicle $vehicle)
 {
-    $request->validate(['photo' => 'required|image|mimes:jpeg,jpg,png,webp|max:3072']);
-
-    // Supprimer l'ancienne photo
-    if ($vehicle->photo) {
-        Storage::disk('public')->delete($vehicle->photo);
+    // Vérifier que le véhicule appartient à l'utilisateur connecté
+    if ($vehicle->driver_id !== auth()->id()) {
+        abort(403, 'Vous n\'êtes pas autorisé à modifier ce véhicule.');
     }
 
+    $request->validate([
+        'vehicle_photo' => 'required|image|mimes:jpeg,jpg,png,webp|max:3072',
+    ], [
+        'vehicle_photo.required' => 'Veuillez sélectionner une photo.',
+        'vehicle_photo.image'    => 'Le fichier doit être une image.',
+        'vehicle_photo.mimes'    => 'La photo doit être au format JPG, JPEG, PNG ou WEBP.',
+        'vehicle_photo.max'      => 'La photo ne doit pas dépasser 3 Mo.',
+    ]);
+
+    // Supprimer l'ancienne photo si elle existe
+    if ($vehicle->vehicle_photo_path) {
+        Storage::disk('public')->delete($vehicle->vehicle_photo_path);
+    }
+
+    // Stocker la nouvelle photo
+    $driverFolder = 'vehicles/driver_' . auth()->id();
+    $file = $request->file('vehicle_photo');
+    $path = $file->store("{$driverFolder}/vehicle_photo", 'public');
+
+    // Mettre à jour le véhicule avec les nouveaux chemins
     $vehicle->update([
-        'photo' => $request->file('photo')->store('vehicles', 'public'),
+        'vehicle_photo_path' => $path,
+        'vehicle_photo_name' => $file->getClientOriginalName(),
     ]);
 
     return back()->with('success', 'Photo du véhicule mise à jour.');

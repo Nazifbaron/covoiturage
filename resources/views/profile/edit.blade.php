@@ -347,15 +347,18 @@
                                 <div class="flex items-center gap-3">
                                     {{-- Icône véhicule --}}
                                     <div
-                                        class="w-10 h-10 rounded-xl overflow-hidden flex-shrink-0 shadow-sm border border-slate-200 dark:border-white/10">
-                                        @if ($v->photo)
-                                            <img src="{{ asset('storage/' . $v->photo) }}" alt="{{ $v->full_name }}"
+                                        class="w-10 h-10 rounded-xl overflow-hidden flex-shrink-0 shadow-sm border border-slate-200 dark:border-white/10 cursor-pointer hover:opacity-80 transition-opacity"
+     onclick="openVehiclePhotoModal('{{ asset('storage/' . $v->vehicle_photo_path) }}', '{{ $v->brand . ' ' . $v->model }}', '{{ $v->plate }}')">
+                                        @if ($v->vehicle_photo_path)
+                                            <img src="{{ asset('storage/' . $v->vehicle_photo_path) }}"
+                                                alt="{{ $v->brand . ' ' . $v->model }}"
                                                 class="w-full h-full object-cover">
                                         @else
                                             <div
                                                 class="w-full h-full bg-white dark:bg-white/10 flex items-center justify-center">
-                                                <span
-                                                    class="material-symbols-outlined text-primary text-xl">{{ $v->type_icon }}</span>
+                                                <span class="material-symbols-outlined text-primary text-xl">
+                                                    {{ $v->type === 'tricycle' ? 'electric_rickshaw' : 'directions_car' }}
+                                                </span>
                                             </div>
                                         @endif
                                     </div>
@@ -424,7 +427,7 @@
                     <form method="POST" action="{{ route('vehicle.photo.update', $v->id) }}"
                         enctype="multipart/form-data" id="photoForm-{{ $v->id }}" class="hidden">
                         @csrf
-                        <input type="file" id="photoInput-{{ $v->id }}" name="photo"
+                        <input type="file" id="photoInput-{{ $v->id }}" name="vehicle_photo"
                             accept="image/jpeg,image/jpg,image/png,image/webp">
                     </form>
                 @endforeach
@@ -467,6 +470,39 @@
         </div>
 
     </div>
+
+    {{-- Modal photo véhicule --}}
+    {{-- Modal pour visualiser la photo du véhicule --}}
+<div id="vehiclePhotoModal" class="fixed inset-0 z-50 hidden items-center justify-center p-4 bg-black/70 backdrop-blur-sm transition-all duration-300">
+    <div class="relative max-w-2xl w-full bg-white dark:bg-gray-800 rounded-2xl shadow-2xl overflow-hidden">
+        {{-- Header --}}
+        <div class="flex items-center justify-between p-4 border-b border-gray-200 dark:border-gray-700">
+            <h3 class="font-bold text-lg text-gray-900 dark:text-white" id="modalVehicleTitle">Photo du véhicule</h3>
+            <button type="button" onclick="closeVehiclePhotoModal()" class="w-8 h-8 rounded-full flex items-center justify-center hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">
+                <span class="material-symbols-outlined text-gray-500 dark:text-gray-400">close</span>
+            </button>
+        </div>
+
+        {{-- Image --}}
+        <div class="p-4 flex items-center justify-center bg-gray-100 dark:bg-gray-900">
+            <img id="modalVehicleImage" src="" alt="Photo du véhicule" class="max-w-full max-h-[70vh] object-contain rounded-lg">
+        </div>
+
+        {{-- Footer avec infos --}}
+        <div class="p-4 border-t border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900/50">
+            <div class="flex items-center justify-between">
+                <div>
+                    <p class="text-sm font-semibold text-gray-900 dark:text-white" id="modalVehicleName"></p>
+                    <p class="text-xs text-gray-500 dark:text-gray-400" id="modalVehiclePlate"></p>
+                </div>
+                <button type="button" onclick="closeVehiclePhotoModal()" class="px-4 py-2 rounded-lg bg-primary text-background-dark font-bold text-sm hover:bg-primary/90 transition">
+                    Fermer
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
 
     {{-- ── Modal suppression compte ── --}}
     <div id="deleteModal"
@@ -538,14 +574,13 @@
 
     @push('scripts')
         <script>
-
             document.querySelectorAll('[id^="photoInput-"]').forEach(input => {
-    input.addEventListener('change', function () {
-        if (!this.files[0]) return;
-        const id = this.id.replace('photoInput-', '');
-        document.getElementById('photoForm-' + id).submit();
-    });
-});
+                input.addEventListener('change', function() {
+                    if (!this.files[0]) return;
+                    const id = this.id.replace('photoInput-', '');
+                    document.getElementById('photoForm-' + id).submit();
+                });
+            });
             // Avatar — aperçu + soumission automatique
             const avatarInput = document.getElementById('avatarInput');
             const avatarForm = document.getElementById('avatarForm');
@@ -569,6 +604,52 @@
                 });
             }
 
+            // Modal photo véhicule
+            // Fonctions pour le modal de photo
+function openVehiclePhotoModal(imageUrl, vehicleName, vehiclePlate) {
+    const modal = document.getElementById('vehiclePhotoModal');
+    const modalImage = document.getElementById('modalVehicleImage');
+    const modalTitle = document.getElementById('modalVehicleTitle');
+    const modalName = document.getElementById('modalVehicleName');
+    const modalPlate = document.getElementById('modalVehiclePlate');
+
+    if (!imageUrl || imageUrl.includes('null')) {
+        modalImage.src = '';
+        modalTitle.textContent = 'Aucune photo disponible';
+        modalName.textContent = vehicleName || 'Véhicule';
+        modalPlate.textContent = 'Aucune photo uploadée';
+    } else {
+        modalImage.src = imageUrl;
+        modalTitle.textContent = 'Photo du véhicule';
+        modalName.textContent = vehicleName || 'Véhicule';
+        modalPlate.textContent = vehiclePlate || '';
+    }
+
+    modal.classList.remove('hidden');
+    modal.classList.add('flex');
+    document.body.style.overflow = 'hidden';
+}
+
+function closeVehiclePhotoModal() {
+    const modal = document.getElementById('vehiclePhotoModal');
+    modal.classList.add('hidden');
+    modal.classList.remove('flex');
+    document.body.style.overflow = '';
+}
+
+// Fermer le modal avec la touche Echap
+document.addEventListener('keydown', function(event) {
+    if (event.key === 'Escape') {
+        closeVehiclePhotoModal();
+    }
+});
+
+// Fermer en cliquant sur l'arrière-plan
+document.getElementById('vehiclePhotoModal')?.addEventListener('click', function(event) {
+    if (event.target === this) {
+        closeVehiclePhotoModal();
+    }
+});
             // Modal suppression compte
             const modal = document.getElementById('deleteModal');
             const modalBox = document.getElementById('deleteModalBox');
