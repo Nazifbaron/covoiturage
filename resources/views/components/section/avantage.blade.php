@@ -1,12 +1,11 @@
-<section class="relative py-12 sm:py-20 bg-slate-950 overflow-hidden">
+<section class="relative py-20 bg-slate-950 overflow-hidden">
   <!-- Glow background -->
-  <div class="absolute -top-40 -left-40 w-96 h-96 rounded-full blur-[120px]" style="background: #61BE2E33;"></div>
-  <div class="absolute -bottom-40 -right-40 w-96 h-96 rounded-full blur-[120px]" style="background: #04537333;"></div>
+  <div class="absolute -top-40 -left-40 w-96 h-96 rounded-full" style="background: #61BE2E33; filter: blur(120px);"></div>
+  <div class="absolute -bottom-40 -right-40 w-96 h-96 rounded-full" style="background: #04537333; filter: blur(120px);"></div>
 
-  <div class="relative max-w-7xl mx-auto px-4 sm:px-6">
-
+  <div class="relative max-w-7xl mx-auto px-6">
     <!-- Title -->
-    <div class="text-center max-w-2xl mx-auto mb-8 sm:mb-10">
+    <div class="text-center max-w-2xl mx-auto">
       <h2 class="text-lg md:text-4xl font-bold text-white leading-tight">
         Découvrez vos
         <span class="bg-clip-text text-transparent" style="background-image: linear-gradient(to right, #61BE2E, #045373);">
@@ -14,7 +13,7 @@
         </span>
         🙌
       </h2>
-      <p class="mt-3 text-gray-400 text-sm sm:text-lg">
+      <p class="mt-4 text-gray-400 text-sm md:text-lg">
         Choisissez votre rôle et découvrez comment le covoiturage peut
         transformer vos trajets quotidiens.
       </p>
@@ -47,14 +46,15 @@
             </span>
           </div>
           <!-- Image -->
-          <img src="{{ asset('images/passager1.png') }}"
-               class="relative w-32 md:w-56 flex-shrink-0 transform group-hover:scale-110 transition duration-500"
-               alt="Passager covoiturage"/>
+          <img
+            src="{{ asset('images/passager1.png') }}"
+            class="relative w-32 md:w-56 transform group-hover:scale-110 transition duration-500"
+            alt="">
         </div>
       </a>
 
       <!-- CONDUCTEUR -->
-      <a href="/login"
+      <a href="/lancez-vous/interest/driver"
         class="group relative rounded-3xl p-[1px]"
         style="background: linear-gradient(to bottom right, #04537366, #61BE2E66);">
         <div class="relative flex items-center justify-between h-full rounded-3xl bg-white/5 backdrop-blur-xl border border-white/10 p-6 md:p-10 overflow-hidden transition duration-500 group-hover:scale-[1.02]">
@@ -69,7 +69,9 @@
             </span>
             <p class="mt-4 md:mt-6 text-base md:text-xl text-white font-medium leading-relaxed">
               Gagnez en moyenne
-              <span class="font-bold" style="color: #5BB8D4;">100 000F CFA par mois</span>
+              <span class="font-bold" style="color: #5BB8D4;">
+                100 000F CFA par mois
+              </span>
               en partageant vos trajets 💸
             </p>
             <span class="inline-block mt-5 md:mt-8 font-semibold group-hover:translate-x-1 transition text-sm md:text-base"
@@ -78,9 +80,10 @@
             </span>
           </div>
           <!-- Image -->
-          <img src="{{ asset('images/passager2.png') }}"
-               class="relative w-32 md:w-56 flex-shrink-0 transform group-hover:scale-110 transition duration-500"
-               alt="Conducteur covoiturage"/>
+          <img
+            src="{{ asset('images/passager2.png') }}"
+            class="relative w-32 md:w-56 transform group-hover:scale-110 transition duration-500"
+            alt="">
         </div>
       </a>
 

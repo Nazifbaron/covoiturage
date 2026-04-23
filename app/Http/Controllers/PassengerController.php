@@ -304,7 +304,7 @@ class PassengerController extends Controller
                     'color'                   => $v->color,
                     'plate'                   => $v->plate,
                     'type_icon'               => $v->type_icon,
-                    'vehicle_photo_url'       => $v->vehicle_photo ? asset('storage/' . $v->vehicle_photo) : null,
+                    'vehicle_photo_url'       => $v->vehicle_photo_path ? asset('storage/' . $v->vehicle_photo_path) : null,
                     'insurance_expires_at'    => $v->insurance_expires_at?->format('Y-m-d'),
                     'registration_expires_at' => $v->registration_expires_at?->format('Y-m-d'),
                 ] : null,

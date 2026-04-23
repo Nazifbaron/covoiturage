@@ -231,16 +231,46 @@ class AdminController extends Controller
     {
         abort_unless($this->hasAccess('manage_reservations'), 403);
 
-        $query = Pastrips::with(['user', 'driverTrip'])
+        $query = Pastrips::with(['user', 'driverTrip', 'driver'])
             ->orderBy('created_at', 'desc');
 
         if ($request->filled('status')) {
             $query->where('status', $request->status);
         }
+        if ($request->filled('search')) {
+            $search = $request->search;
+            $query->where(function ($q) use ($search) {
+                $q->where('departure_city', 'LIKE', "%{$search}%")
+                  ->orWhere('arrival_city',  'LIKE', "%{$search}%")
+                  ->orWhereHas('user', fn($u) => $u
+                      ->where('first_name', 'LIKE', "%{$search}%")
+                      ->orWhere('last_name',  'LIKE', "%{$search}%")
+                  );
+            });
+        }
 
         $reservations = $query->paginate(15)->withQueryString();
 
         return view('admin.reservations', compact('reservations'));
+    }
+
+    public function cancelReservation(Pastrips $reservation)
+    {
+        abort_unless($this->hasAccess('manage_reservations'), 403);
+        abort_if(in_array($reservation->status, ['cancelled', 'expired']), 422, 'Cette réservation est déjà annulée ou expirée.');
+
+        $reservation->update(['status' => 'cancelled']);
+
+        return redirect()->back()->with('success', 'Réservation annulée.');
+    }
+
+    public function deleteReservation(Pastrips $reservation)
+    {
+        abort_unless($this->hasAccess('manage_reservations'), 403);
+
+        $reservation->delete();
+
+        return redirect()->route('admin.reservations')->with('success', 'Réservation supprimée.');
     }
 
     // ─── Gestion des admins (super admin uniquement) ─────────────────────────────

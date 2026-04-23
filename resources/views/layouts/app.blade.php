@@ -115,6 +115,14 @@
         }
         #sidebar-overlay.show { display: block; }
 
+        /* Sidebar gradient — same palette as logo section */
+        #sidebar {
+            background: linear-gradient(160deg, #f0fdf4 0%, #ecfeff 100%);
+        }
+        .dark #sidebar {
+            background: linear-gradient(160deg, rgba(5,46,22,.95) 0%, rgba(8,51,68,.90) 100%);
+        }
+
         /* Scrollbar */
         ::-webkit-scrollbar { width: 4px; }
         ::-webkit-scrollbar-track { background: transparent; }
@@ -150,7 +158,6 @@
     <aside id="sidebar"
            class="fixed lg:relative z-50 lg:z-auto
                   w-64 h-full flex-shrink-0
-                  bg-white dark:bg-sidebar-dark
                   border-r border-green-100 dark:border-green-900/30
                   flex flex-col
                   -translate-x-full lg:translate-x-0 transition-transform duration-300">

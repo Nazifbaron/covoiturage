@@ -27,6 +27,9 @@ Route::view('/about','about');
 Route::view('/detail','details');
 Route::view('/marche','marche');
 Route::view('/search','search');
+Route::view('/condition','condition');
+Route::view('/mention','mention');
+Route::view('/politique','politique');
 Route::get('/result', [PassengerController::class, 'searchResults'])->name('search.results');
 Route::get('/trip/{trip}', [PassengerController::class, 'tripDetail'])->name('trip.detail');
 
@@ -145,7 +148,9 @@ Route::middleware(['auth', IsAdmin::class])->prefix('admin')->name('admin.')
         Route::patch('/trips/{trip}/cancel','cancelTrip')->name('trips.cancel');
 
         // Réservations passagers
-        Route::get('/reservations','reservations')->name('reservations');
+        Route::get('/reservations',                      'reservations')      ->name('reservations');
+        Route::patch('/reservations/{reservation}/cancel','cancelReservation')->name('reservations.cancel');
+        Route::delete('/reservations/{reservation}',     'deleteReservation') ->name('reservations.delete');
 
         // Administrateurs (super admin uniquement)
         Route::get('/admins',                          'adminsList')            ->name('admins.list');
