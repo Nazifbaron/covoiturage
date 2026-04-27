@@ -1,7 +1,7 @@
 @extends('layouts.app')
 
 @section('content')
-    <div class="max-w-2xl mx-auto space-y-6">
+    <div class="max-w-2xl mx-auto space-y-6 pb-20 lg:pb-6">
 
         {{-- ── Header ── --}}
         <div class="flex items-center gap-4">
@@ -36,9 +36,10 @@
                             class="w-20 h-20 rounded-2xl object-cover shadow-lg ring-2 ring-primary/20 hidden"
                             alt="Aperçu">
                     @endif
-                    {{-- Overlay bouton changer --}}
+                    {{-- Overlay bouton changer — toujours visible sur mobile --}}
                     <label for="avatarInput"
-                        class="absolute inset-0 rounded-2xl bg-black/40 opacity-0 group-hover:opacity-100
+                        class="absolute inset-0 rounded-2xl bg-black/40
+                              opacity-100 sm:opacity-0 sm:group-hover:opacity-100
                               transition-opacity flex items-center justify-center cursor-pointer">
                         <span class="material-symbols-outlined text-white text-2xl">photo_camera</span>
                     </label>
@@ -55,13 +56,16 @@
                         </span>
                         {{ auth()->user()->role === 'driver' ? 'Conducteur' : 'Passager' }}
                     </span>
-                    <p class="text-xs text-slate-400 mt-2">Survolez la photo pour la modifier</p>
+                    <p class="text-xs text-slate-400 mt-2">
+                        <span class="sm:hidden">Appuyez sur la photo pour la modifier</span>
+                        <span class="hidden sm:inline">Survolez la photo pour la modifier</span>
+                    </p>
                 </div>
             </div>
 
-            {{-- Formulaire upload avatar (caché, soumis auto) --}}
+            {{-- Formulaire upload avatar — hors-écran (pas display:none pour iOS) --}}
             <form id="avatarForm" method="POST" action="{{ route('profile.avatar.update') }}" enctype="multipart/form-data"
-                class="hidden">
+                style="position:absolute;left:-9999px;top:-9999px;width:1px;height:1px;overflow:hidden;">
                 @csrf
                 <input type="file" id="avatarInput" name="avatar" accept="image/jpeg,image/jpg,image/png,image/webp">
             </form>
@@ -405,7 +409,8 @@
 
                                         @if ($v->status !== 'approved')
                                             <form method="POST" action="{{ route('vehicle.destroy', $v->id) }}"
-                                                onsubmit="return confirm('Supprimer ce véhicule définitivement ?')">
+                                                onsubmit="return confirm('Supprimer ce véhicule définitivement ?')"
+                                                style="display:contents">
                                                 @csrf @method('DELETE')
                                                 <button type="submit"
                                                     class="w-8 h-8 rounded-xl border border-red-200 dark:border-red-500/30
@@ -422,10 +427,11 @@
                         @endforeach
                     </div>
                 @endif
-                {{-- Upload photo véhicule --}}
+                {{-- Upload photo véhicule — hors-écran (pas display:none pour iOS) --}}
                 @foreach ($vehicles as $v)
                     <form method="POST" action="{{ route('vehicle.photo.update', $v->id) }}"
-                        enctype="multipart/form-data" id="photoForm-{{ $v->id }}" class="hidden">
+                        enctype="multipart/form-data" id="photoForm-{{ $v->id }}"
+                        style="position:absolute;left:-9999px;top:-9999px;width:1px;height:1px;overflow:hidden;">
                         @csrf
                         <input type="file" id="photoInput-{{ $v->id }}" name="vehicle_photo"
                             accept="image/jpeg,image/jpg,image/png,image/webp">

@@ -79,12 +79,12 @@ public function updatePhoto(Request $request, Vehicle $vehicle)
     }
 
     $request->validate([
-        'vehicle_photo' => 'required|image|mimes:jpeg,jpg,png,webp|max:3072',
+        'vehicle_photo' => 'required|image|mimes:jpeg,jpg,png,webp|max:5000',
     ], [
         'vehicle_photo.required' => 'Veuillez sélectionner une photo.',
         'vehicle_photo.image'    => 'Le fichier doit être une image.',
         'vehicle_photo.mimes'    => 'La photo doit être au format JPG, JPEG, PNG ou WEBP.',
-        'vehicle_photo.max'      => 'La photo ne doit pas dépasser 3 Mo.',
+        'vehicle_photo.max'      => 'La photo ne doit pas dépasser 5 Mo.',
     ]);
 
     // Supprimer l'ancienne photo si elle existe

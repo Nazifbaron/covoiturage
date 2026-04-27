@@ -354,8 +354,15 @@
             </div>
         </div>
 
+        {{-- Spacer mobile pour le bouton fixe --}}
+        <div class="h-20 lg:h-0"></div>
+
         {{-- ── BOUTONS ── --}}
-        <div class="flex gap-3 pb-6">
+        <div class="fixed bottom-0 left-0 right-0 z-40 lg:static lg:bg-transparent
+                    bg-white/90 dark:bg-gray-900/90 backdrop-blur-md
+                    border-t border-slate-200 dark:border-white/10 lg:border-0
+                    px-4 py-3 lg:px-0 lg:py-0
+                    flex gap-3 lg:pb-6">
             <a href="{{ route('dashboard') }}"
                class="flex items-center justify-center gap-2 px-5 py-3.5 rounded-xl
                       border-2 border-slate-200 dark:border-white/10

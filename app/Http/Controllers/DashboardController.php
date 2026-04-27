@@ -38,8 +38,11 @@ class DashboardController extends Controller
 
         $tripsCount = DriverTrips::where('driver_id', $driverId)->count();
 
+        // IDs des trajets du conducteur connecté (réutilisé plusieurs fois)
+        $driverTripIds = DriverTrips::where('driver_id', $driverId)->pluck('id');
+
         $pendingRequestsCount = Pastrips::where('status', 'pending')
-            ->whereNull('accepted_by')
+            ->whereIn('driver_trip_id', $driverTripIds)
             ->count();
 
         // ── Trajets récents ────────────────────────────────────────
@@ -48,15 +51,16 @@ class DashboardController extends Controller
             ->take(3)
             ->get();
 
-        // ── Demandes passagers en attente ──────────────────────────
-        Pastrips::where('status', 'pending')
+        // ── Demandes passagers en attente (sur les trajets du conducteur) ──
+        Pastrips::whereIn('driver_trip_id', $driverTripIds)
+            ->where('status', 'pending')
             ->whereNotNull('expires_at')
             ->where('expires_at', '<', now())
             ->update(['status' => 'expired']);
 
         $pendingPastrips = Pastrips::with('user')
             ->where('status', 'pending')
-            ->whereNull('accepted_by')
+            ->whereIn('driver_trip_id', $driverTripIds)
             ->orderBy('created_at', 'desc')
             ->take(3)
             ->get();

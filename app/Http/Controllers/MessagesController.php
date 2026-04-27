@@ -178,7 +178,7 @@ class MessagesController extends Controller
         $userId = Auth::id();
 
         // Stocker l'état de saisie dans le cache (5 secondes)
-        Cache::put("typing_{$tripId}_" . $userId, true, now()->addSeconds(5));
+        Cache::put("typing:{$tripId}:" . $userId, true, now()->addSeconds(5));
 
         return response()->json(['success' => true]);
     }
@@ -186,7 +186,7 @@ class MessagesController extends Controller
     public function typingStop($tripId)
     {
         $userId = Auth::id();
-        Cache::forget("typing_{$tripId}_" . $userId);
+        Cache::forget("typing:{$tripId}:" . $userId);
         return response()->json(['success' => true]);
     }
 
@@ -200,6 +200,6 @@ class MessagesController extends Controller
 
         if (!$otherUserId) return false;
 
-        return Cache::has("typing_{$tripId}_{$otherUserId}");
+        return Cache::has("typing:{$tripId}:{$otherUserId}");
     }
 }

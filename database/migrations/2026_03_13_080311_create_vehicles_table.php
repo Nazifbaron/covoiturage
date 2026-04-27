@@ -19,7 +19,7 @@ return new class extends Migration
                   ->onDelete('cascade');
 
             // Type de véhicule
-            $table->enum('type', ['moto', 'tricycle', 'voiture'])->default('voiture');
+            $table->enum('type', ['tricycle', 'voiture'])->default('voiture');
 
             // Infos
             $table->string('brand', 80);        // Marque

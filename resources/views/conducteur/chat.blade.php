@@ -32,11 +32,17 @@
 
     /* Input focus glow */
     #msg-input:focus { box-shadow: 0 0 0 3px #13ec4920; }
+
+    /* Fix clavier mobile */
+    #chat-root {
+        height: calc(100vh - 7rem);
+        height: calc(100dvh - 7rem);
+    }
 </style>
 @endpush
 
 @section('content')
-<div class="max-w-2xl mx-auto h-[calc(100vh-7rem)] flex flex-col">
+<div id="chat-root" class="max-w-2xl mx-auto flex flex-col">
 
     {{-- ── Header conversation ── --}}
     <div class="flex items-center gap-3 px-4 py-3
@@ -127,7 +133,7 @@
         <div id="new-messages"></div>
 
         {{-- "En train d'écrire..." (masqué par défaut) --}}
-        <div id="typing-indicator" class="hidden flex justify-start gap-2 items-end">
+        <div id="typing-indicator" class="hidden justify-start gap-2 items-end">
             <div class="w-7 h-7 rounded-lg bg-gradient-to-br from-violet-400 to-purple-600 flex items-center justify-center flex-shrink-0 font-bold text-white text-xs">
                 {{ strtoupper(substr($passenger->first_name ?? '?', 0, 1)) }}
             </div>
@@ -169,7 +175,7 @@
                 <span class="material-symbols-outlined text-xl">send</span>
             </button>
         </div>
-        <p class="text-center text-xs text-slate-400 mt-2">
+        <p class="hidden sm:block text-center text-xs text-slate-400 mt-2">
             <span class="material-symbols-outlined text-xs align-middle">lock</span>
             Conversation liée à la course · {{ $trip->departure_city }} → {{ $trip->arrival_city }}
         </p>

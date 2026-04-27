@@ -16,7 +16,7 @@ class PassengerController extends Controller
 {
     public function showCreateRequest()
     {
-       return view('passager.add-trips');
+       return view('Passager.add-trips');
     }
 
      public function showMyRequests(Request $request)
@@ -158,7 +158,7 @@ class PassengerController extends Controller
 
       public function availableTrips()
     {
-        return view('passager.tripsavailable');
+        return view('Passager.tripsavailable');
     }
 
     public function tripDetail(DriverTrips $trip)
@@ -182,23 +182,17 @@ class PassengerController extends Controller
 
     $query = DriverTrips::with(['driver'])
         ->where('status', 'scheduled')
-        ->where('departure_date', '>=', now()->startOfDay()) // Changé ici
+        ->where('departure_date', '>=', now()->startOfDay())
         ->where('seats_available', '>=', $passengers);
-
-    // Debug - Affichez le nombre de trajets avant filtres
-    \Log::info('Total trips before filters: ' . DriverTrips::where('status', 'scheduled')->count());
 
     if (!empty($departure)) {
         $query->where('departure_city', 'LIKE', "%{$departure}%");
-        \Log::info('Filtering by departure: ' . $departure);
     }
     if (!empty($arrival)) {
         $query->where('arrival_city', 'LIKE', "%{$arrival}%");
-        \Log::info('Filtering by arrival: ' . $arrival);
     }
     if (!empty($date)) {
         $query->whereDate('departure_date', $date);
-        \Log::info('Filtering by date: ' . $date);
     }
     if ($priceMax !== null) {
         $query->where('price_per_seat', '<=', $priceMax);
@@ -224,10 +218,6 @@ class PassengerController extends Controller
         $query->where('pets_allowed', true);
     }
 
-    // Debug - Affichez la requête SQL
-    \Log::info('SQL Query: ' . $query->toSql());
-    \Log::info('Bindings: ', $query->getBindings());
-
     match ($sortBy) {
         'price_asc'  => $query->orderBy('price_per_seat', 'asc')->orderBy('departure_date', 'asc'),
         'price_desc' => $query->orderBy('price_per_seat', 'desc')->orderBy('departure_date', 'asc'),
@@ -235,9 +225,6 @@ class PassengerController extends Controller
     };
 
     $trips = $query->paginate(8)->withQueryString();
-
-    // Debug - Affichez le nombre de résultats
-    \Log::info('Results count: ' . $trips->total());
 
     return view('resultat', compact(
         'trips', 'departure', 'arrival', 'date',
@@ -368,7 +355,7 @@ class PassengerController extends Controller
             ->whereNull('read_at')
             ->update(['read_at' => now()]);
 
-        return view('passager.chat', [
+        return view('Passager.chat', [
             'trip'      => $pastrip,
             'passenger' => $driver,   // variable $passenger = l'interlocuteur affiché dans la vue
             'messages'  => $messages,

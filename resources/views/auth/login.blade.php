@@ -47,7 +47,15 @@
                     <!-- EMAIL -->
                     <div class="space-y-2">
                         <label class="text-sm font-medium">Email</label>
-                        <input type="email" name="email" required placeholder="email@exemple.com" class="w-full rounded-xl border border-gray-200 p-3 focus:border-primary focus:ring-2 focus:ring-primary/30 outline-none transition">
+                        <input type="email" name="email" value="{{ old('email') }}" required placeholder="email@exemple.com"
+                               class="w-full rounded-xl border p-3 focus:ring-2 focus:ring-primary/30 outline-none transition
+                                      {{ $errors->has('email') ? 'border-red-400 bg-red-50 focus:border-red-400' : 'border-gray-200 focus:border-primary' }}">
+                        @error('email')
+                            <p class="flex items-center gap-1.5 text-xs text-red-500 font-medium mt-1">
+                                <span class="material-symbols-outlined" style="font-size:14px">error</span>
+                                {{ $message }}
+                            </p>
+                        @enderror
                     </div>
                     <!-- PASSWORD -->
                     <div class="space-y-2">
@@ -55,7 +63,21 @@
                             <label class="text-sm font-medium">Mot de passe</label>
                             <a class="text-sm font-bold text-primary hover:underline" href="{{ route('password.request') }}">Mot de passe oublié?</a>
                         </div>
-                        <input type="password" name="password" required placeholder="••••••••" class="w-full rounded-xl border border-gray-200 p-3 focus:border-primary focus:ring-2 focus:ring-primary/30 outline-none transition">
+                        <div class="relative">
+                            <input id="password-input" type="password" name="password" required placeholder="••••••••"
+                                   class="w-full rounded-xl border p-3 pr-11 focus:ring-2 focus:ring-primary/30 outline-none transition
+                                          {{ $errors->has('password') ? 'border-red-400 bg-red-50 focus:border-red-400' : 'border-gray-200 focus:border-primary' }}">
+                            <button type="button" onclick="togglePassword()"
+                                    class="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors">
+                                <span id="eye-icon" class="material-symbols-outlined" style="font-size:20px">visibility</span>
+                            </button>
+                        </div>
+                        @error('password')
+                            <p class="flex items-center gap-1.5 text-xs text-red-500 font-medium mt-1">
+                                <span class="material-symbols-outlined" style="font-size:14px">error</span>
+                                {{ $message }}
+                            </p>
+                        @enderror
                     </div>
                     <!-- BUTTON -->
                     <button type="submit"
@@ -74,5 +96,14 @@
             </div>
         </main>
 
+    <script>
+        function togglePassword() {
+            const input = document.getElementById('password-input');
+            const icon  = document.getElementById('eye-icon');
+            const show  = input.type === 'password';
+            input.type  = show ? 'text' : 'password';
+            icon.textContent = show ? 'visibility_off' : 'visibility';
+        }
+    </script>
     </body>
 </html>
