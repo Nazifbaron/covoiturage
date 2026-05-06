@@ -10,7 +10,7 @@
             <!-- Contenu -->
             <div class="relative max-w-3xl px-6 text-white">
                 <h1 class="text-4xl md:text-5xl font-extrabold mb-6">
-                    Comment fonctionne notre covoiturage ?
+                    Comment ça marche ?
                 </h1>
                 <p class="text-lg text-gray-200 leading-relaxed">
                     Notre plateforme facilite les déplacements au Bénin en permettant aux

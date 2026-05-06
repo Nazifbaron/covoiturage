@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
-    <title>{{ config('app.name', 'Covoiturage') }}</title>
+    <title>{{ config('app.name', 'ZEMIYI') }}</title>
     <link rel="icon" type="image/svg+xml" href="{{ asset('favicon.svg') }}">
 
     <link rel="preconnect" href="https://fonts.bunny.net">
@@ -117,10 +117,10 @@
 
         /* Sidebar gradient — same palette as logo section */
         #sidebar {
-            background: linear-gradient(160deg, #f0fdf4 0%, #ecfeff 100%);
+            background: linear-gradient(160deg, #bbf7d0 0%, #a5f3fc 100%);
         }
         .dark #sidebar {
-            background: linear-gradient(160deg, rgba(5,46,22,.95) 0%, rgba(8,51,68,.90) 100%);
+            background: linear-gradient(160deg, rgba(5,46,22,1) 0%, rgba(8,51,68,1) 100%);
         }
 
         /* Scrollbar */
@@ -150,7 +150,7 @@
 <body class="bg-background-light dark:bg-background-dark text-slate-900 dark:text-slate-100 h-screen overflow-hidden font-sans antialiased">
 <div id="sidebar-overlay" onclick="closeSidebar()"></div>
 
-<div class="flex h-screen overflow-hidden">
+<div id="app-layout" class="flex h-screen overflow-hidden">
 
     {{-- ══════════════════════════════════════
          SIDEBAR
@@ -163,22 +163,13 @@
                   -translate-x-full lg:translate-x-0 transition-transform duration-300">
 
         {{-- Logo --}}
-        <div class="flex items-center gap-3 px-4 py-4 border-b border-green-100 dark:border-green-900/30
+        <div class="flex justify-center px-1 py-1 border-b border-green-100 dark:border-green-900/30
                     bg-gradient-to-r from-green-50 to-cyan-50 dark:from-green-950/60 dark:to-cyan-950/40">
-            <div class="w-12 h-12 rounded-2xl bg-white shadow-md shadow-green-200/60 dark:shadow-green-900/40
-                        ring-2 ring-green-300 dark:ring-green-700 flex-shrink-0 overflow-hidden p-0.5">
-                <img src="{{ asset('images/logoC.jpeg') }}"
-                     alt="Logo Covoiturage"
-                     class="w-full h-full object-contain rounded-xl">
-            </div>
-            <div>
-                <span class="font-black text-base tracking-tight logo-gradient block leading-none">
-                    Covoiturage
-                </span>
-                <span class="text-[10px] font-semibold text-green-600/70 dark:text-green-400/60 tracking-wider uppercase">
-                    Bénin
-                </span>
-            </div>
+            <a href="/">
+                <img src="{{ asset('images/zemiyi1.png') }}"
+                     alt="Logo ZEMIYI"
+                     class="w-32 h-32 sm:w-32 sm:h-32 object-contain">
+            </a>
         </div>
 
         {{-- User info --}}
@@ -465,7 +456,7 @@
         </header>
 
         {{-- Page Content --}}
-        <main class="flex-1 overflow-y-auto bg-slate-50 dark:bg-background-dark p-4 lg:p-6">
+        <main class="flex-1 {{ isset($fullscreenChat) && $fullscreenChat ? 'overflow-hidden p-0' : 'overflow-y-auto bg-slate-50 dark:bg-background-dark p-4 lg:p-6' }}">
             {{ $slot ?? '' }}
             @hasSection('content')
                 @yield('content')

@@ -2,7 +2,7 @@
                 <div class="max-w-7xl mx-auto px-4 sm:px-6">
                     <div class="flex items-end justify-between mb-8 sm:mb-12">
                         <div>
-                            <h2 class="text-2xl sm:text-3xl md:text-4xl font-extrabold text-deep-blue dark:text-white mb-2">Itinéraires populaires</h2>
+                            <h2 class="text-2xl sm:text-3xl md:text-4xl font-extrabold text-deep-blue dark:text-white mb-2">Itinéraires les plus sollicités</h2>
                             <p class="text-slate-500 dark:text-slate-400 text-sm sm:text-base">Découvrez nos destinations les plus prisées à des prix imbattables.</p>
                         </div>
                         <a href="/search" class="hidden md:flex items-center gap-2 text-primary font-bold hover:underline flex-shrink-0 ml-4">
@@ -21,7 +21,7 @@
                                         <span class="flex items-center gap-1"><span class="material-symbols-outlined text-base">schedule</span> 4h 30m</span>
                                         <span class="flex items-center gap-1"><span class="material-symbols-outlined text-base">groups</span> Plus de 12 trajets quotidiens</span>
                                     </div>
-                                    <button class="w-full py-3 border-2 border-primary text-background-dark dark:text-primary font-bold rounded-xl hover:bg-primary dark:hover:text-background-dark transition-all">Réservez ce voyage</button>
+                                    <a href="/login" class="block w-full py-3 border-2 border-primary text-background-dark dark:text-primary font-bold rounded-xl hover:bg-primary dark:hover:text-background-dark transition-all text-center">Réservez ce voyage</a>
                                 </div>
                             </div>
                             <div class="bg-white dark:bg-charcoal rounded-2xl overflow-hidden shadow-sm hover:shadow-xl transition-all border border-slate-100 dark:border-white/5">
@@ -35,7 +35,7 @@
                                         <span class="flex items-center gap-1"><span class="material-symbols-outlined text-base">schedule</span> 3h 45m</span>
                                         <span class="flex items-center gap-1"><span class="material-symbols-outlined text-base">groups</span> Plus de 8 trajets quotidiens</span>
                                     </div>
-                                    <button class="w-full py-3 border-2 border-primary text-background-dark dark:text-primary font-bold rounded-xl hover:bg-primary dark:hover:text-background-dark transition-all">Réservez ce voyage</button>
+                                    <a href="/login" class="block w-full py-3 border-2 border-primary text-background-dark dark:text-primary font-bold rounded-xl hover:bg-primary dark:hover:text-background-dark transition-all text-center">Réservez ce voyage</a>
                                 </div>
                             </div>
                             <div class="bg-white dark:bg-charcoal rounded-2xl overflow-hidden shadow-sm hover:shadow-xl transition-all border border-slate-100 dark:border-white/5">
@@ -49,7 +49,7 @@
                                         <span class="flex items-center gap-1"><span class="material-symbols-outlined text-base">schedule</span> 6h 15m</span>
                                         <span class="flex items-center gap-1"><span class="material-symbols-outlined text-base">groups</span> Plus de 15 trajets quotidiens</span>
                                     </div>
-                                    <button class="w-full py-3 border-2 border-primary text-background-dark dark:text-primary font-bold rounded-xl hover:bg-primary dark:hover:text-background-dark transition-all">Réservez ce voyage</button>
+                                    <a href="/login" class="block w-full py-3 border-2 border-primary text-background-dark dark:text-primary font-bold rounded-xl hover:bg-primary dark:hover:text-background-dark transition-all text-center">Réservez ce voyage</a>
                                 </div>
                             </div>
                         </div>

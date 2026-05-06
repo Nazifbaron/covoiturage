@@ -36,7 +36,7 @@
 
                 </div>
 
-                <div class="max-w-7xl mx-auto p-6 pt-8">
+                <div class="max-w-7xl mx-auto p-6 pt-10">
 
                     <div class="grid lg:grid-cols-2 gap-16 items-center">
 

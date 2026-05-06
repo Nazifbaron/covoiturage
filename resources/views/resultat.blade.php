@@ -1,5 +1,38 @@
 <x-layout>
     <x-header></x-header>
+            {{-- HERO FULL SCREEN --}}
+<section class="relative min-h-[80vh] md:min-h-[50vh] w-full flex items-center justify-center overflow-hidden">
+
+    {{-- Image FULL --}}
+    <img
+        src="https://images.unsplash.com/photo-1502877338535-766e1452684a"
+        class="absolute inset-0 w-full h-full object-cover"
+        alt="Covoiturage"
+    >
+
+    {{-- Overlay sombre --}}
+    <div class="absolute inset-0 bg-black/60"></div>
+
+    {{-- Glow (option premium) --}}
+    <div class="absolute -top-40 -left-40 w-[500px] h-[500px] bg-primary/20 blur-3xl rounded-full"></div>
+    <div class="absolute -bottom-40 -right-40 w-[500px] h-[500px] bg-blue-500/20 blur-3xl rounded-full"></div>
+
+    {{-- CONTENU --}}
+    <div class="relative z-10 w-full max-w-6xl px-6 text-center">
+
+        {{-- Titre --}}
+        <h1 class="text-white text-4xl md:text-6xl font-extrabold leading-tight">
+            Trouvez votre trajet idéal 🚗
+        </h1>
+
+        {{-- Sous-titre --}}
+        <p class="mt-4 text-slate-200 text-lg md:text-xl max-w-2xl mx-auto">
+            Voyagez moins cher, plus confortable et rencontrez des personnes sur votre trajet.
+        </p>
+
+    </div>
+
+</section>
     <main class="max-w-7xl mx-auto w-full px-6 lg:px-20 py-8">
 
         {{-- ── Résumé de la recherche ── --}}
@@ -10,6 +43,38 @@
                     <span class="material-symbols-outlined text-[10px]">chevron_right</span>
                     <span class="text-slate-400">Résultats de recherche</span>
                 </nav>
+                <div class="px-6 py-10">
+                    <form action="{{ route('search.results') }}" method="GET">
+                        <div class="bg-white dark:bg-charcoal p-3 rounded-2xl shadow-2xl flex flex-col md:flex-row items-stretch gap-2">
+                        <div class="flex-1 grid grid-cols-1 md:grid-cols-4 gap-2">
+                            <div class="relative flex items-center group border-2 border-primary/20 rounded-xl focus-within:border-primary transition-all">
+                                <span class="material-symbols-outlined absolute left-4 text-slate-400 group-focus-within:text-primary text-[16px]">location_on</span>
+                                <input name="departure" class="w-full pl-12 pr-4 py-5 bg-slate-50 dark:bg-slate-800/50 border-none rounded-xl focus:ring-2 focus:ring-primary/50 text-slate-900 dark:text-white font-medium" placeholder="Départ" type="text"/>
+                            </div>
+                            <div class="relative flex items-center group border-2 border-primary/20 rounded-xl focus-within:border-primary transition-all">
+                                <span class="material-symbols-outlined absolute left-4 text-slate-400 group-focus-within:text-primary text-[20px]">near_me</span>
+                                <input name="arrival" class="w-full pl-12 pr-4 py-5 bg-slate-50 dark:bg-slate-800/50 border-none rounded-xl focus:ring-2 focus:ring-primary/50 text-slate-900 dark:text-white font-medium" placeholder="Destination" type="text"/>
+                            </div>
+                            <div class="relative flex items-center group border-2 border-primary/20 rounded-xl focus-within:border-primary transition-all">
+                                <span class="material-symbols-outlined absolute left-4 text-slate-400 group-focus-within:text-primary text-[20px]">calendar_month</span>
+                                <input name="date" class="w-full pl-12 pr-4 py-5 bg-slate-50 dark:bg-slate-800/50 border-none rounded-xl focus:ring-2 focus:ring-primary/50 text-slate-900 dark:text-white font-medium" type="date"/>
+                            </div>
+                            <div class="relative flex items-center group border-2 border-primary/20 rounded-xl focus-within:border-primary transition-all">
+                                <span class="material-symbols-outlined absolute left-4 text-slate-400 group-focus-within:text-primary text-[20px]">person</span>
+                                <select name="passengers" class="w-full pl-12 pr-4 py-5 bg-slate-50 dark:bg-slate-800/50 border-none rounded-xl focus:ring-2 focus:ring-primary/50 text-slate-900 dark:text-white font-medium appearance-none">
+                                    <option value="1">1 passager</option>
+                                    <option value="2">2 passagers</option>
+                                    <option value="3">3 passagers</option>
+                                    <option value="4">4+ passagers</option>
+                                </select>
+                            </div>
+                        </div>
+                        <button class="bg-primary text-background-dark font-bold px-10 py-5 rounded-xl hover:bg-primary/90 transition-all text-lg flex items-center justify-center gap-2">
+                            <span class="material-symbols-outlined">search</span> Rechercher
+                        </button>
+                     </div>
+                    </form>
+                </div>
                 <h1 class="text-4xl lg:text-5xl font-extrabold tracking-tight text-slate-900 dark:text-slate-100">
                     @if($departure || $arrival)
                         {{ $departure ?: '…' }}
@@ -31,12 +96,7 @@
                     <span class="font-bold text-primary">{{ $trips->total() }} trajet{{ $trips->total() > 1 ? 's' : '' }} trouvé{{ $trips->total() > 1 ? 's' : '' }}</span>
                 </p>
             </div>
-            <a href="{{ route('search.results', request()->query()) }}">
-                <button class="flex items-center gap-2 bg-primary text-white px-6 py-3 rounded-xl font-bold hover:scale-[1.02] active:scale-95 transition-all shadow-lg shadow-primary/20">
-                    <span class="material-symbols-outlined text-xl">edit_calendar</span>
-                    Modifier la recherche
-                </button>
-            </a>
+
         </div>
 
         <div class="grid grid-cols-1 lg:grid-cols-12 gap-10">

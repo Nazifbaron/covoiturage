@@ -1,3 +1,4 @@
+@php $fullscreenChat = true; @endphp
 
 @extends('layouts.app')
 
@@ -33,16 +34,15 @@
     /* Input focus glow */
     #msg-input:focus { box-shadow: 0 0 0 3px #13ec4920; }
 
-    /* Fix clavier mobile */
+    /* chat-root remplit exactement le main (overflow-hidden p-0 via $fullscreenChat) */
     #chat-root {
-        height: calc(100vh - 7rem);
-        height: calc(100dvh - 7rem);
+        height: 100%;
     }
 </style>
 @endpush
 
 @section('content')
-<div id="chat-root" class="max-w-2xl mx-auto flex flex-col">
+<div id="chat-root" class="max-w-2xl mx-auto w-full flex flex-col px-4 py-3">
 
     {{-- ── Header conversation ── --}}
     <div class="flex items-center gap-3 px-4 py-3
@@ -105,7 +105,7 @@
                 {{ strtoupper(substr($passenger->first_name ?? '?', 0, 1)) }}
             </div>
             @endif
-            <div class="max-w-[75%]">
+            <div class="max-w-[75%] break-words">
                 <div class="px-4 py-2.5 text-sm font-medium
                             {{ $isMine
                                 ? 'bg-primary text-background-dark msg-out shadow-md shadow-primary/20'
@@ -164,6 +164,7 @@
                              text-slate-800 dark:text-slate-200 placeholder-slate-400
                              max-h-32 py-2 px-1 border-none focus:ring-0
                              transition-all duration-200"
+                      style="font-size: 16px"
                       onInput="autoResize(this); handleTyping();"
                       onKeydown="handleKeydown(event)"></textarea>
 
@@ -193,6 +194,7 @@ const PASSENGER_ID = {{ $passenger->id }};
 const POLL_INTERVAL = 5000; // ms
 let lastMessageId  = {{ $messages->last()?->id ?? 0 }};
 let typingTimeout  = null;
+let typingActive   = false;
 let pollTimeout    = null;
 let isSending      = false;
 
@@ -206,7 +208,7 @@ const pollDot      = document.getElementById('poll-indicator');
 const anchor       = document.getElementById('scroll-anchor');
 
 // ── Init ─────────────────────────────────────────────────────────
-scrollToBottom();
+scrollToBottom(true);
 startPolling();
 
 // ── Polling ──────────────────────────────────────────────────────
@@ -347,7 +349,7 @@ function appendMessage(msg) {
     el.className = `flex ${isMine ? 'justify-end' : 'justify-start'} gap-2 items-end msg-pop`;
     el.innerHTML = `
         ${!isMine ? avatarOther : ''}
-        <div class="max-w-[75%]">
+        <div class="max-w-[75%] break-words">
             <div class="px-4 py-2.5 text-sm font-medium msg-content ${bubbleClass}">
                 ${escapeHtml(msg.content)}
             </div>
@@ -379,16 +381,24 @@ async function markRead() {
 // ── Typing indicator (envoi au serveur) ──────────────────────────
 async function handleTyping() {
     clearTimeout(typingTimeout);
-    try {
-        await fetch(`/chat/${TRIP_ID}/typing`, {
-            method: 'POST',
-            headers: {
-                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
-                'X-Requested-With': 'XMLHttpRequest',
-            },
-        });
-    } catch(e) {}
+
+    // Envoie la requête "typing" une seule fois par session de frappe
+    if (!typingActive) {
+        typingActive = true;
+        try {
+            await fetch(`/chat/${TRIP_ID}/typing`, {
+                method: 'POST',
+                headers: {
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
+                    'X-Requested-With': 'XMLHttpRequest',
+                },
+            });
+        } catch(e) {}
+    }
+
+    // Arrête le typing 3s après la dernière frappe
     typingTimeout = setTimeout(async () => {
+        typingActive = false;
         try {
             await fetch(`/chat/${TRIP_ID}/typing/stop`, {
                 method: 'POST',
@@ -402,8 +412,8 @@ async function handleTyping() {
 }
 
 // ── Helpers ──────────────────────────────────────────────────────
-function scrollToBottom() {
-    anchor.scrollIntoView({ behavior: 'smooth' });
+function scrollToBottom(instant = false) {
+    anchor.scrollIntoView({ behavior: instant ? 'instant' : 'smooth' });
 }
 
 function autoResize(el) {
@@ -425,6 +435,20 @@ function escapeHtml(str) {
         .replace(/>/g, '&gt;')
         .replace(/"/g, '&quot;');
 }
+
+// ── Fix clavier virtuel mobile (fix 3) ───────────────────────────
+// Quand le clavier s'ouvre, 100vh reste fixe mais visualViewport.height diminue.
+// On redimensionne #app-layout pour que le chat se comprime au-dessus du clavier.
+(function () {
+    if (!window.visualViewport) return;
+    const appLayout = document.getElementById('app-layout');
+    function syncToKeyboard() {
+        appLayout.style.height = window.visualViewport.height + 'px';
+        requestAnimationFrame(() => anchor.scrollIntoView({ behavior: 'instant' }));
+    }
+    window.visualViewport.addEventListener('resize', syncToKeyboard);
+    window.visualViewport.addEventListener('scroll', syncToKeyboard);
+})();
 
 // ── Nettoyage avant quitter la page ──────────────────────────────
 window.addEventListener('beforeunload', () => {

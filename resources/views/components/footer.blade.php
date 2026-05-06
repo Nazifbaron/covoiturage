@@ -4,8 +4,8 @@
                     <div class="col-span-2 lg:col-span-2">
                         <div class="flex items-center gap-2 mb-2">
                             <div class="p-1 rounded flex items-center justify-center">
-                                <img src="{{ asset('images/logo.png')}}" alt="" class="w-10 h-10 object-contain">                            </div>
-                            <h2 class="text-deep-blue dark:text-white text-2lg font-bold tracking-tight">Covoiturage</h2>
+                                <img src="{{ asset('images/zemiyi1.png')}}" alt="" class="w-10 h-10 object-contain">                            </div>
+                            <h2 class="text-deep-blue dark:text-white text-2lg font-bold tracking-tight">ZEMIYI</h2>
                         </div>
                         <p class="text-slate-500 dark:text-slate-400 max-w-xs mb-3 text-xs">La plateforme leader pour des voyages abordables, durables et communautaires à travers l'Europe et au-delà.</p>
                         <div class="flex gap-4">
@@ -17,29 +17,26 @@
                     <div>
                         <h4 class="font-semibold text-xs mb-4">À propos de nous</h4>
                         <ul class=" text-slate-500 dark:text-slate-400 text-xs">
-                            <li><a class="hover:text-primary transition-colors" href="#">Informations sur l'entreprise</a></li>
-                            <li><a class="hover:text-primary transition-colors" href="#">Salle de presse</a></li>
-                            <li><a class="hover:text-primary transition-colors" href="#">Carrières</a></li>
-                            <li><a class="hover:text-primary transition-colors" href="#">Développement durable</a></li>
-                        </ul>
-                    </div>
-                    <div>
-                        <h4 class="font-semibold text-xs mb-4">Assistance</h4>
-                        <ul class="text-slate-500 dark:text-slate-400 text-xs">
-                            <li><a class="hover:text-primary transition-colors" href="#">Centre d'aide</a></li>
-                            <li><a class="hover:text-primary transition-colors" href="#">Trust &amp; Sécurité</a></li>
-                            <li><a class="hover:text-primary transition-colors" href="#">Directives</a></li>
-                            <li><a class="hover:text-primary transition-colors" href="#">Contactez-nous</a></li>
+                            <li><a class="hover:text-primary transition-colors" href="/about">Informations sur l'entreprise</a></li>
+                            <li><a class="hover:text-primary transition-colors" href="/about">Carrières</a></li>
+                            <li><a class="hover:text-primary transition-colors" href="/about">Développement durable</a></li>
                         </ul>
                     </div>
                     <div>
                         <h4 class="font-semibold text-xs mb-4">Mentions légales</h4>
                         <ul class="text-slate-500 dark:text-slate-400 text-xs">
-                            <li><a class="hover:text-primary transition-colors" href="#">Conditions d'utilisation</a></li>
-                            <li><a class="hover:text-primary transition-colors" href="#">Politique de confidentialité</a></li>
-                            <li><a class="hover:text-primary transition-colors" href="#">Politique en matière de cookies</a></li>
+                            <li><a class="hover:text-primary transition-colors" href="/condition">Conditions d'utilisation</a></li>
+                            <li><a class="hover:text-primary transition-colors" href="/politique">Politique de confidentialité</a></li>
+                            <li><a class="hover:text-primary transition-colors" href="/mention">Mentions légales et cookies</a></li>
                         </ul>
                     </div>
+                    <div>
+                        <h4 class="font-semibold text-xs mb-4">Assistance</h4>
+                        <ul class="text-slate-500 dark:text-slate-400 text-xs">
+                            <li><a class="hover:text-primary transition-colors" href="/contact">Contactez-nous</a></li>
+                        </ul>
+                    </div>
+
 
                 </div>
                 <div class="border-t border-slate-200 dark:border-white/5 pt-3 text-center text-xs text-slate-500 dark:text-slate-400">

@@ -4,14 +4,14 @@
         {{-- Logo --}}
         <div class="flex items-center shrink-0">
             <a href="/">
-                <img src="{{ asset('images/logo.png') }}" alt="Covoiturage Bénin" class="w-14 h-14 sm:w-20 sm:h-20 object-contain">
+                <img src="{{ asset('images/zemiyi1.png') }}" alt="Covoiturage Bénin" class="w-20 h-20 sm:w-32 sm:h-32 object-contain">
             </a>
         </div>
 
         {{-- Nav desktop --}}
         <nav class="hidden lg:flex items-center gap-8 xl:gap-12 absolute left-1/2 -translate-x-1/2">
             <a href="/"       class="text-sm font-semibold transition-colors {{ request()->is('/')       ? 'text-primary border-b-2 border-primary pb-1' : 'hover:text-primary' }}">Accueil</a>
-            <a href="/result" class="text-sm font-semibold transition-colors {{ request()->is('search.results') ? 'text-primary border-b-2 border-primary pb-1' : 'hover:text-primary' }}">Trouver un trajet</a>
+            <a href="/result" class="text-sm font-semibold transition-colors {{ request()->is('result') ? 'text-primary border-b-2 border-primary pb-1' : 'hover:text-primary' }}">Trouver un trajet</a>
             <a href="/marche" class="text-sm font-semibold transition-colors {{ request()->is('marche') ? 'text-primary border-b-2 border-primary pb-1' : 'hover:text-primary' }}">Comment ça marche</a>
             <a href="/about"  class="text-sm font-semibold transition-colors {{ request()->is('about')  ? 'text-primary border-b-2 border-primary pb-1' : 'hover:text-primary' }}">À propos</a>
             <a href="/contact"class="text-sm font-semibold transition-colors {{ request()->is('contact')? 'text-primary border-b-2 border-primary pb-1' : 'hover:text-primary' }}">Contact</a>
